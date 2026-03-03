@@ -1,4 +1,4 @@
-package datastructure;
+package com.rds.datastructure;
 
 import java.util.ArrayList;
 

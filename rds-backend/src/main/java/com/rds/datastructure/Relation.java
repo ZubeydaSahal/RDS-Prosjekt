@@ -1,4 +1,4 @@
-package datastructure;
+package com.rds.datastructure;
 
 public class Relation{
     private String fromId; //which node the relation starts from
