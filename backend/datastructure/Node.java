@@ -1,7 +1,6 @@
-import datastructure;
+package datastructure;
 
 import java.util.ArrayList;
-
 
 public class Node{
     private String id; // id is the unique identifier for each node
