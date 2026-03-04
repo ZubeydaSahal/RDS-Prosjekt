@@ -1,7 +1,6 @@
-import datastructure;
+package datastructure;
 
 import java.util.ArrayList;
-<<<<<<< HEAD
 import java.util.List;
 
 // TODO: sikre at alle parametere ikke må fylles
@@ -39,32 +38,10 @@ public class Node {
         return code;
     }
 
-=======
-
-
-public class Node{
-    private String id; // id is the unique identifier for each node
-    private String aspect;
-    private String name;
-
-    public Node(String id, String aspect, String name){
-        this.id = id;
-        this.aspect = aspect;
-        this.name = name;
-    }
-
-    public String getId() {
-        return id;
-    }
-    public String getAspect() {
-        return aspect;
-    }
->>>>>>> parent of 41256c0 (spring boot)
     public String getName() {
         return name;
     }
 
-<<<<<<< HEAD
     public int getDepth() {
         return depth;
     }
@@ -90,6 +67,3 @@ public class Node{
         incomingRelations.add(relation);
     }
 }
-=======
-}
->>>>>>> parent of 41256c0 (spring boot)
