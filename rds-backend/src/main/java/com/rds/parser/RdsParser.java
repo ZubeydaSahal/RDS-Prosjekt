@@ -1,10 +1,10 @@
-<<<<<<<< HEAD:backend/Parser/RdsParser.java
+//<<<<<<<< HEAD:backend/Parser/RdsParser.java
 package Parser;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// the function NodeChecker and RelationChecker are placeholders.
+/* the function NodeChecker and RelationChecker are placeholders.
 public class RdsParser {
     private boolean topNodeDeclared = false;
 
@@ -135,8 +135,8 @@ public class RdsParser {
         return null;
 }
 }
+*/
 
-========
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -273,4 +273,4 @@ public class RdsParser {
 }
 }
 
->>>>>>>> zub:rds-backend/src/main/java/com/rds/parser/RdsParser.java
+//>>>>>>>> zub:rds-backend/src/main/java/com/rds/parser/RdsParser.java
