@@ -1,16 +1,16 @@
-package datastructure;
+package com.rds.datastructure;
 
 import java.util.*;
 
-public class GraphManager {
-    /*
+/*public class GraphManager {
+    
     Handles:
     -
     */
     // Attributes?
     // private List<Relations>?
-    NodeRegistry nodes = new NodeRegistry(); // Liste over alle noder, indeksert på String (aspekt)
-    private Node topNode;
+    //NodeRegistry nodes = new NodeRegistry(); // Liste over alle noder, indeksert på String (aspekt)
+    //private Node topNode;
     /*
     Questions / needs to be defined:
     - CreateNode eller InitNode
@@ -22,7 +22,7 @@ public class GraphManager {
     - Sliter litt med usikkerhet rundt hva som kommer hit? hvilken info kommer fra RDS linjer? navn en del av meta?
     */
 
-    public void nodeChecker(String id, String code, String aspect){
+    /*public void nodeChecker(String id, String code, String aspect){
         //NodeChecker(id, name, aspect);  - mener konrad name = sporveksel eller AA
 
         // Check all existing nodes by aspect
@@ -36,17 +36,17 @@ public class GraphManager {
         }
 
 
-    }
+    }*/
 
 
-    public void createNode(String id, String code, String aspect){
+    /*public void createNode(String id, String code, String aspect){
         // Anta nivå kommer som input?
         Node node = new Node(id, code);  // create node
         nodes.addNode(node, aspect);  // add node to registry 'nodes'
 
-    }
+    }*/
 
-    public void createRelation(String firstNode, String secondNode, String type){
+   /* public void createRelation(String firstNode, String secondNode, String type){
         // RelationChecker(leftNode, rightNode, "type")
         // TODO: sikre at type kan være None
         Node firstNode = nodes.getNodesById()
@@ -54,4 +54,5 @@ public class GraphManager {
     }
 
 
-}
+}*/
+

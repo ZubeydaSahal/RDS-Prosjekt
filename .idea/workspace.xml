@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="31a5d415-02b0-4d18-ab57-3f1d991953ff" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/rds-backend/src/main/java/com/rds/datastructure/GraphManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/rds-backend/src/main/java/com/rds/datastructure/GraphManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rds-backend/src/main/java/com/rds/datastructure/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/rds-backend/src/main/java/com/rds/datastructure/Node.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rds-backend/src/main/java/com/rds/datastructure/NodeRegistry.java" beforeDir="false" afterPath="$PROJECT_DIR$/rds-backend/src/main/java/com/rds/datastructure/NodeRegistry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rds-backend/src/main/java/com/rds/datastructure/Relation.java" beforeDir="false" afterPath="$PROJECT_DIR$/rds-backend/src/main/java/com/rds/datastructure/Relation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rds-backend/src/main/java/com/rds/parser/RdsParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/rds-backend/src/main/java/com/rds/parser/RdsParser.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 0
+}]]></component>
+  <component name="ProjectId" id="3AU4eolqbcBkYaZGtBwPyZAzGWg" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Users/zubey/Documents/RDS-Prosjekt/rds-backend",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="31a5d415-02b0-4d18-ab57-3f1d991953ff" name="Changes" comment="" />
+      <created>1772633913248</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1772633913248</updated>
+      <workItem from="1772633914237" duration="19000" />
+    </task>
+    <servers />
+  </component>
+</project>
