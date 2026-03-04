@@ -1,3 +1,4 @@
+package Parser;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,7 +16,7 @@ public class RdsParser {
         // 1. it checks if the topNode is declared or not in the first line
         // 2. checks the line for explicit relation being declared
         // 3. checks the line for which aspect the line belongs to, stores it, then removes the symbol.
-        // 4. 
+        // 4. checks the line and calls function to create every node.
         for (String line : lines) {
             lineNumber++;
             String trimmedLine = line.trim();
