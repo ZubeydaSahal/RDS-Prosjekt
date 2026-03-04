@@ -1,8 +1,5 @@
 # RDS-Prosjekt
 
-Kjøre prosjektet
-npm install
-npm run dev
-
+Kjøre prosjektet: 
 
 ./mvnw spring-boot:run
