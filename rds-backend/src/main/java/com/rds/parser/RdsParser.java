@@ -1,5 +1,5 @@
 //<<<<<<<< HEAD:backend/Parser/RdsParser.java
-package Parser;
+package com.rds.parser; 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -137,7 +137,7 @@ public class RdsParser {
 }
 */
 
-import java.util.*;
+/*import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -273,4 +273,4 @@ public class RdsParser {
 }
 }
 
-//>>>>>>>> zub:rds-backend/src/main/java/com/rds/parser/RdsParser.java
+*/
