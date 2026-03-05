@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/* the function NodeChecker and RelationChecker are placeholders.
+//the function NodeChecker and RelationChecker are placeholders.
 public class RdsParser {
     private boolean topNodeDeclared = false;
 
@@ -22,93 +22,99 @@ public class RdsParser {
             lineNumber++;
             String trimmedLine = line.trim();
 
-            if (trimmedLine.isEmpty()) continue;
-
+            if (trimmedLine.isEmpty()) return;
 
             // Check for top node declaration
-            if (!topNodeDeclared && lineNumber != 1){
-                if (trimmedLine.startsWith("<") && trimmedLine.endsWith(">")) {
-                    String topNodeName = trimmedLine.substring(1, trimmedLine.length() - 1);
-                    CreateTopNode(topNodeName);
-                    topNodeDeclared = true;
-                    continue;
-                } else {
-                    throw new IllegalArgumentException("Top node declaration is missing or malformed: " + line);
-            }
-            }
+            if (!topNodeDeclared) {CheckForTopNode(trimmedLine);}
 
             // check for explicit relationship
-            if (line.contains("||")){
-                String relationName = checkExplicitRelationName(line);
-                String[] parts;
-
-                if (relationName != null){
-                    parts = line.split("\\|\\|" + relationName + "\\|\\|");
-                } else {
-                    parts = line.split("\\|\\|");
-                }
-
-                String leftSide = parts[0].trim();
-                String rightSide = parts[1].trim();
-
-                // NB! their aspect symbols are also sent here.
-                String leftNode = getLastNode(leftSide);
-                String rightNode = getLastNode(rightSide);
-
-                RelationChecker(leftNode, rightNode, relationName);
-                continue;
-            }
+            if (trimmedLine.contains("||")) {CheckExplicitRelationForName(trimmedLine);}
 
             // check for aspect and remove aspect symbol
             String aspect = checkAspect(trimmedLine);
-            line = trimmedLine.substring(1).trim();
+            trimmedLine = trimmedLine.substring(1).trim();
             
             // Normal RDS line
-            String[] nodes = line.split("\\.");
-            String previousNode = null;
-            // for each node in line, check if it has a name and then check the relationship between them
-            for (String node : nodes){
-                
-                String id;
-                String name = null;
-
-                if (node.contains("(") && node.contains(")")) {
-                    int startIndex = node.indexOf("(");
-                    int endIndex = node.indexOf(")");
-
-                    id = node.substring(0, startIndex);
-                    name = node.substring(startIndex + 1, endIndex);
-                } else {
-                    id = node;
-                }
-                NodeChecker(id, name, aspect);
-
-                // implicit relationship between nodes
-                if (previousNode != null){
-                    RelationChecker(previousNode, id, null);
-                }
-                previousNode = id;
-            }
-
+            CheckNodes(trimmedLine, aspect);
         }
     }
+
+    private void CheckNodes(String trimmedLine, String aspect) {
+        String[] nodes = trimmedLine.split("\\.");
+        String previousNode = null;
+
+        // for each node in line, check if it has a name and then check the relationship between them
+        for (String node : nodes){
+
+            String id;
+            String name = null;
+
+            if (node.contains("(") && node.contains(")")) {
+                int startIndex = node.indexOf("(");
+                int endIndex = node.indexOf(")");
+
+                id = node.substring(0, startIndex);
+                name = node.substring(startIndex + 1, endIndex);
+            } else {
+                id = node;
+            }
+            // Placeholder
+            NodeChecker(id, name, aspect);
+
+            // implicit relationship between nodes
+            if (previousNode != null){
+                // Placeholder
+                RelationChecker(previousNode, id, null);
+            }
+            previousNode = id;
+        }
+    }
+
+    private void CheckExplicitRelationForName(String trimmedLine) {
+        String relationName = checkExplicitRelationName(trimmedLine);
+        String[] parts;
+
+        if (relationName != null){
+            parts = trimmedLine.split("\\|\\|" + relationName + "\\|\\|");
+        } else {
+            parts = trimmedLine.split("\\|\\|");
+        }
+
+        String leftSide = parts[0].trim();
+        String leftNodeAspect = checkAspect(leftSide);
+        CheckNodes(leftSide, leftNodeAspect);
+
+        String rightSide = parts[1].trim();
+        String rightNodeAspect = checkAspect(rightSide);
+        CheckNodes(rightSide, rightNodeAspect);
+
+
+        //Placeholder
+        RelationChecker(leftSide, leftNodeAspect, rightSide, rightNodeAspect, relationName);
+    }
+
+    private void CheckForTopNode(String trimmedLine) {
+        if (trimmedLine.startsWith("<") && trimmedLine.endsWith(">")) {
+            String topNodeName = trimmedLine.substring(1, trimmedLine.length() - 1);
+            CreateTopNode(topNodeName);
+            topNodeDeclared = true;
+        } else {
+            throw new IllegalArgumentException("Top node declaration is missing or malformed: " + trimmedLine);
+        }
+    }
+
     // Check aspect from first symbol
     private String checkAspect(String line) {
 
         char first = line.charAt(0);
 
-        switch (first) {
-            case '-':
-                return "Produktaspektet";
-            case '=':
-                return "funksjonsaspektet";
-            case '%':
-                return "typeaspektet";
-            case '$':
-                return "arbeidsprossessaspektet";
-            default:
-                throw new RuntimeException("Invalid aspect symbol.");
-        }
+        return switch (first) {
+            case '-' -> "Produktaspektet";
+            case '=' -> "funksjonsaspektet";
+            case '%' -> "typeaspektet";
+            case '$' -> "arbeidsprossessaspektet";
+            default -> throw new RuntimeException("Invalid aspect symbol.");
+        };
     }    
 
     // check if explicit relationship has a name
@@ -133,9 +139,9 @@ public class RdsParser {
     //TODO: needs to return the last node, but also make sure its from the correct aspect.
     private String getLastNode(String line){
         return null;
+    }
 }
-}
-*/
+
 
 /*import java.util.*;
 import java.util.regex.Matcher;
