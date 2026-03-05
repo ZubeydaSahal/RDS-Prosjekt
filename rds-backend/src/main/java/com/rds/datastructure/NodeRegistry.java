@@ -6,7 +6,6 @@ public class NodeRegistry {
     
     private List<String> aspects = new ArrayList();  //lists of aspects 
     //  Hardkode aspekter istedenfor String?
-        return nodes;
     public Map<String, List<Node>> getNodes() { 
         return nodes;
     }
@@ -26,7 +25,7 @@ public class NodeRegistry {
 
         List<Node> nodesInAspect = getNodesByAspect(aspect); //Uses getNodesByAspect to get the right list of nodes
         //goes through the list
-        for(Node node:NodesInAspect){
+        for(Node node:nodesInAspect){
             if(node.getId().equals(id)){
                 return node;  //return node if id matches
             }
