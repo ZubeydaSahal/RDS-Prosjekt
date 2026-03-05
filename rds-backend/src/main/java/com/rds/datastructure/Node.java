@@ -1,69 +1,45 @@
-package com.rds.datastructure;
-
+package  com.rds.datastructure;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: sikre at alle parametere ikke må fylles
+public class Node{
+    private String id; //id for node
+    private String aspect;  
+    private String name;
+    private int depth;
 
-public class Node {
-    private String id; // a.b.c
-    private String code; // c
-    private String name; // Sporveksel
-    private int depth; // node's hierarchical level in tree
-    private String metadata; // Extra data
 
-    private List<Relation> outgoingRelations = new ArrayList<>();
-    private List<Relation> incomingRelations = new ArrayList<>();
-
-    // Partial Constructor
-    public Node(String id, String code){
+    public Node(String id, String aspect, String name, int depth) {
         this.id = id;
-        this.code = code;
-    }
-
-    // full constructor
-    public Node(String id, String code, String name, int depth, String metadata) {
-        this(id, code);
+        this.aspect = aspect;
         this.name = name;
         this.depth = depth;
-        this.metadata = metadata;
     }
 
-    // Getters
     public String getId() {
         return id;
     }
-
-    public String getCode() {
-        return code;
+    public String getAspect() {
+        return aspect;
     }
-
     public String getName() {
         return name;
     }
-
     public int getDepth() {
         return depth;
     }
 
-    public String getMetadata() {
-        return metadata;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public List<Relation> getOutgoingRelations() {
-        return outgoingRelations;
+    public void setAspect(String aspect) {
+        this.aspect = aspect;
     }
-
-    public List<Relation> getIncomingRelations() {
-        return incomingRelations;
+    public void setName(String name) {
+        this.name = name;
     }
-
-    // Add relations
-    public void addOutgoingRelation(Relation relation) {
-        outgoingRelations.add(relation);
-    }
-
-    public void addIncomingRelation(Relation relation) {
-        incomingRelations.add(relation);
+    public void setDepth(int depth) {
+        this.depth = depth;
     }
 }

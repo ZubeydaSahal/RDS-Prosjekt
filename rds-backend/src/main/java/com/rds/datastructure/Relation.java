@@ -1,33 +1,40 @@
 package com.rds.datastructure;
-
-import java.util.ArrayList;
 import java.util.List;
 
-// TODO: sikre at alle parametere ikke må fylles
+public class Relation{
+    private String toId; //id for node relation points to
+    private String fromId; //id for node relation points from
+    private String typeRelation; //type of relation
 
-public class Relation {
-    private List<Node> endpoints = new ArrayList<>();  // Connected nodes
-    private String type;  // Relation type (PS, None, etc)
-
-    /*
-    private Node node1;  // From node
-    private Node node2;  // To node
-    private String type;  //
-
-    */
-
-    // Constructor
-    public Relation(List<Node> endpoints, String type) {
-        this.endpoints = endpoints;
-        this.type = type;
+    //Constructor
+    public Relation(String toId, String fromId, String typeRelation){
+        this.toId=toId;
+        this.fromId=fromId;
+        this.typeRelation=typeRelation;
     }
 
-    // Getters
-    public List<Node> getEndpoints() {
-        return endpoints;
+    //Getters and setters
+    public String getToId() {
+        return toId;
     }
 
-    public String getType() {
-        return type;
+    public void setToId(String toId) {
+        this.toId = toId;
+    }
+
+    public String getFromId() {
+        return fromId;
+    }
+
+    public void setFromId(String fromId) {
+        this.fromId = fromId;
+    }
+
+    public String getTypeRelation() {
+        return typeRelation;
+    }
+
+    public void setTypeRelation(String typeRelation) {
+        this.typeRelation = typeRelation;
     }
 }
