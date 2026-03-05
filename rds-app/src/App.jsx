@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
-import './App.css'
+// import './App.css'
+import GraphViewer from "./GraphViewer.jsx";
 
 function App() {
-  const [count, setCount] = useState(0)
+/*  const [count, setCount] = useState(0)
 
   return (
     <>
@@ -30,6 +31,13 @@ function App() {
       </p>
     </>
   )
+  */
+    return (
+        <div>
+            <h1>Graph Visualization</h1>
+            <GraphViewer/>
+        </div>
+    );
 }
 
 export default App

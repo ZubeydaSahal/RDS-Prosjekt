@@ -3,7 +3,7 @@ package com.rds.parser;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/*
 //the function NodeChecker and RelationChecker are placeholders.
 public class RdsParser {
     private boolean topNodeDeclared = false;
