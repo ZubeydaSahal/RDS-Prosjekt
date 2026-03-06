@@ -1,4 +1,4 @@
-package main.java.com.rds;
+package com.rds;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

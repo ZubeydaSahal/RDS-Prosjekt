@@ -1,11 +1,10 @@
 package com.rds;
 
-import com.rds.datastructure.*;
 import com.rds.parser.RdsParser;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "")
+@CrossOrigin
 public class RdsController{
 
     @PostMapping("/parse")
