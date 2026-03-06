@@ -1,28 +1,26 @@
-package com.rds.datastructure;
+package main.java.com.rds.datastructure;
 
-import java.util.*;
+import java.util.*;  // Dårlig praksis, should only import used tools
 
-/*public class GraphManager {
-    
-    Handles:
-    -
-    */
-    // Attributes?
-    // private List<Relations>?
-    //NodeRegistry nodes = new NodeRegistry(); // Liste over alle noder, indeksert på String (aspekt)
-    //private Node topNode;
-    /*
-    Questions / needs to be defined:
-    - CreateNode eller InitNode
-        * Will additional info update nodes in seperate lines?
-            - 1 linje initialiserer noden (AA.BB) – skaper AA
-            - 1 senere linje legger til info - (KK || AA) Legger flere relasjoner til AA
-                Isåfall: updateNode?
-    - Kan noder deklareres uten alle førkommere?
-    - Sliter litt med usikkerhet rundt hva som kommer hit? hvilken info kommer fra RDS linjer? navn en del av meta?
-    */
+public class GraphManager {
+    // Attributes
+    private Map<String, Node> nodes = new HashMap<>();  // nodes 'id' as key
+    private Set<Relation> relations = new HashSet<>();  // Relations
 
-    /*public void nodeChecker(String id, String code, String aspect){
+
+    public Node createOrUpdateNode(String id, String code, int level, String metadata){
+        Node node = nodes.get(id);  // Fetch this node from
+
+        return node;
+    }
+
+
+
+
+
+
+/*
+    public void nodeChecker(String id, String code, String aspect){
         //NodeChecker(id, name, aspect);  - mener konrad name = sporveksel eller AA
 
         // Check all existing nodes by aspect
@@ -36,23 +34,22 @@ import java.util.*;
         }
 
 
-    }*/
+    }
 
 
-    /*public void createNode(String id, String code, String aspect){
+    public void createNode(String id, String code, String aspect){
         // Anta nivå kommer som input?
         Node node = new Node(id, code);  // create node
         nodes.addNode(node, aspect);  // add node to registry 'nodes'
 
-    }*/
+    }
 
-   /* public void createRelation(String firstNode, String secondNode, String type){
+    public void createRelation(String firstNode, String secondNode, String type){
         // RelationChecker(leftNode, rightNode, "type")
         // TODO: sikre at type kan være None
-        Node firstNode = nodes.getNodesById()
+        //Node firstNode = nodes.getNodesById()
 
     }
 
-
-}*/
-
+*/
+}
