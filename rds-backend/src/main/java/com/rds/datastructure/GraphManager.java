@@ -1,18 +1,89 @@
 package com.rds.datastructure;
 
-import java.util.*;  // Dårlig praksis, should only import used tools
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GraphManager {
     // Attributes
-    private Map<String, Node> nodes = new HashMap<>();  // nodes 'id' as key
+    private Map<String, List<Node>> nodes = new HashMap<>();  // nodes 'id' as key
     private Set<Relation> relations = new HashSet<>();  // Relations
 
 
+    
+    public void addNode(Node node){
+        String aspect = node.getId().substring(0,1); //gets aspect from node id, assuming aspect is the first character of the id
+        if(!nodes.containsKey(aspect)){ //sjekker om aspect finnes fra før
+            nodes.put(aspect, new ArrayList<>()); //nei, legger til en ny liste for denne aspektet
+        } //else hopper vi over, fordi aspektet allerede finnes
+        nodes.get(aspect).add(node); //legger til noden i aspektets liste
+     
+         
+    }
+    //finner en spesifikk node ved id
+    //brukes av addreltion for å validere at noder finnes før en relasjon opprettes
+    public Node getNodeById(String id){
+        String aspect=id.substring(0,1);
+        List<Node> aspectNodes=nodes.getOrDefault(aspect, new ArrayList<>());
+        for(Node node: aspectNodes){
+            if(node.getId().equals(id)){
+                return node;
+            }
+        }
+        return null;
+    }
+    
+    //retunerer alle noder som tilhører et gitt aspect.
+    //brukes når vi vil foreksempel filtere på aspekt.
+    public List<Node> getNodesByAspect(String aspect){
+        return nodes.getOrDefault(aspect, new ArrayList<>()); 
+    }
+
+    //skal hente noder i en gitt rot id
+    public List<Node> getSubtree(String id){
+      
+    }
+
+
+    //lager relasjon mellom to noder. validere at begge finnes.
+    //relasjonen opprettes
+    public void addrelation(Relation relation){
+        Node fraNode = getNodeById(relation.getFromId());
+        Node tilNode = getNodeById(relation.getToId());
+
+    }
+    //
+    public List<Relation> getRelations(){
+    }
+
+    
+    
+    
+    
+    
     public Node createOrUpdateNode(String id, String code, int level, String metadata){
         Node node = nodes.get(id);  // Fetch this node from
 
         return node;
     }
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

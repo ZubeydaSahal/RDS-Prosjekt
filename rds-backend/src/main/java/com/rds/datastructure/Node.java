@@ -4,11 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-// TODO:
-//  - sikre at alle parametere ikke må fylles
-//  - Node sletting, om linjen fjernes, må noden slettes
-//      - Enten generer ny struktur hver gang
-//      - Eller mekasime for å oppdage endring i input linjer
 
 public class Node {
 
@@ -16,9 +11,6 @@ public class Node {
     private String code;        // c
     private int level;          // node's hierarchical depth
     private String metadata;    // Extra data in JSON (name, ..)
-
-    private Set<Relation> relations = new HashSet<>();   // Nodes relations
-    // ^^ Changed to Set, instead of List because: don't need index, no duplicates allowed
 
 
     // Partial Constructor
@@ -38,14 +30,6 @@ public class Node {
         if (metadata != null) this.metadata = metadata;
     }
 
-    // Hanlde relations
-    public void addrelation(Relation relation){
-        relations.add(relation);
-    }
-    public Set<Relation> getRelations(){
-        return relations;
-    }
-
     // Getters
 
     public String getId() {
@@ -63,21 +47,26 @@ public class Node {
         this.id = id;
     }
 
-    // Define nodes as eqqual if 'id' is the same
-    @Override
+    public String getCode() {
+        return code;
+    }
+    public void setCode(String code) {
+        this.code = code;
+    }
+    public String getMetadata() {
+        return metadata;
+    }
+
+     @Override
     public boolean equals(Object o) {
         if (this == o) return true;  // return true if same object refernece
-        if (!(o instanceof Node node)) return false;  // return false if object is not a Node
+        if (!(o instanceof Node node)) return false; // return false if object is not a Node
         return id.equals(node.id); // nodes are equal if ids are equal
     }
 
-    // bsase hashCode on id, to ensure consistency with equals()
     @Override
     public int hashCode() {
         return id.hashCode();
     }
 
-/*    public int getNodeById(String id) {
-
-    }*/
 }
