@@ -1,40 +1,48 @@
 package com.rds.datastructure;
+
+import java.util.ArrayList;
 import java.util.List;
 
-public class Relation{
-    private String toId; //id for node relation points to
-    private String fromId; //id for node relation points from
-    private String typeRelation; //type of relation
+// TODO: sikre at type kan være null
 
-    //Constructor
-    public Relation(String toId, String fromId, String typeRelation){
-        this.toId=toId;
-        this.fromId=fromId;
-        this.typeRelation=typeRelation;
+public class Relation {
+    // Connected nodes
+    private final Node nodeA;
+    private final Node nodeB;
+    private final String type;  // Relation type (PS, None, etc)
+
+
+
+    // Constructor
+    public Relation(Node nodeA, Node nodeB, String type) {
+        this.nodeA = nodeA;
+        this.nodeB = nodeB;
+        this.type = type;
     }
 
-    //Getters and setters
-    public String getToId() {
-        return toId;
+    // Getters
+    public Node getNodeA() {
+        return nodeA;
+    }
+
+    public Node getNodeB() {
+        return nodeB;
     }
 
     public void setToId(String toId) {
         this.toId = toId;
     }
 
-    public String getFromId() {
-        return fromId;
-    }
-
-    public void setFromId(String fromId) {
-        this.fromId = fromId;
-    }
-
-    public String getTypeRelation() {
-        return typeRelation;
-    }
-
-    public void setTypeRelation(String typeRelation) {
-        this.typeRelation = typeRelation;
+    // Return other node in a
+    public Node getOtherNode(Node current){
+        // TODO: returnerer 2. node i 1. relasjon en node deltar i, kan være flere for current
+        if(current.equals(nodeA)) {
+            return nodeB;
+        }
+        if(current.equals(nodeB)) {
+            return nodeA;
+        }
+        // Should never be reached
+        throw new IllegalArgumentException("This node: "+current.getId()+" is not part of a relation");
     }
 }
