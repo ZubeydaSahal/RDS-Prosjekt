@@ -1,15 +1,14 @@
 import GraphView from "./components/graph/GraphView"
+import InputPanel from "./components/InputPanel.jsx";
 
 function App() {
 
   return (
 
-    <div style={{padding:"20px"}}>
+    <div>
 
-      <h1>Trestruktur</h1>
-
-      <GraphView />
-
+        <InputPanel />
+        <GraphView />
     </div>
 
   )
