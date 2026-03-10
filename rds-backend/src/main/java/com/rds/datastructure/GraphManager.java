@@ -1,5 +1,4 @@
-package main.java.com.rds.datastructure;
-
+package com.rds.datastructure;
 import java.util.*;  // Dårlig praksis, should only import used tools
 
 public class GraphManager {
