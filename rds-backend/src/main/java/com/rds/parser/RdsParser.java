@@ -11,7 +11,7 @@ public class RdsParser {
 
     // receives the whole script as a string, splits it into lines and processes each line according to the RDS syntax rules.
     public void parse(String script){
-    
+        System.out.println(script);
         String[] lines = script.split("\\r?\\n");
         int lineNumber = 0;
 
@@ -23,30 +23,33 @@ public class RdsParser {
             lineNumber++;
             String trimmedLine = line.trim();
 
-            if (trimmedLine.isEmpty()) return;
+            if (trimmedLine.isEmpty()) continue;
 
             // Check for top node declaration
             if (!topNodeDeclared) {CheckForTopNode(trimmedLine);}
-
             // check for explicit relationship
-            if (trimmedLine.contains("||")) {CheckExplicitRelationForName(trimmedLine);}
+            else if (trimmedLine.contains("||")) {
+                CheckExplicitRelationForName(trimmedLine);
+            }else {
+                // check for aspect and remove aspect symbol
+                String aspect = checkAspect(trimmedLine);
+                trimmedLine = trimmedLine.substring(1).trim();
 
-            // check for aspect and remove aspect symbol
-            String aspect = checkAspect(trimmedLine);
-            trimmedLine = trimmedLine.substring(1).trim();
-            
-            // Normal RDS line
-            CheckNodes(trimmedLine, aspect);
+                // Normal RDS line
+                CheckNodes(trimmedLine, aspect);
+                System.out.println(lineNumber);
+            }
         }
     }
-    //
+
     private void CheckNodes(String trimmedLine, String aspect) {
         String[] nodes = trimmedLine.split("\\.");
         String previousNode = null;
+        int depth = 0;
 
         // for each node in line, check if it has a name and then check the relationship between them
         for (String node : nodes){
-
+            depth++;
             String id;
             String name = null;
 
@@ -60,7 +63,7 @@ public class RdsParser {
                 id = node;
             }
             // Placeholder
-            NodeChecker(id, name, aspect);
+            NodeChecker(id, name, aspect, depth);
 
             // implicit relationship between nodes
             if (previousNode != null){
@@ -75,10 +78,11 @@ public class RdsParser {
     private void RelationChecker(String previousNode, String aspect, String id, String aspect1, String name) {
         System.out.println("Relation between " + previousNode + " and " + aspect + " " + id + " " + aspect1 + " with name: " + name);
     }
+
     // placeholder
     // midlertidig for å se at parser funker
-    private void NodeChecker(String id, String name, String aspect) {
-        System.out.println("Node created with ID: " + id + " and name " + name + " and aspect " + aspect);
+    private void NodeChecker(String id, String name, String aspect, int depth) {
+        System.out.println("Node created with ID: " + id + " and name " + name + " and aspect " + aspect + " and depth " + depth);
     }
 
     private void CheckExplicitRelationForName(String trimmedLine) {
@@ -114,6 +118,7 @@ public class RdsParser {
         }
     }
     // Midlertidig test av parser
+
     // printer ut navn av toppnode.
     private void CreateTopNode(String topNodeName) {
         System.out.println("Creating top node " + topNodeName);
@@ -129,7 +134,7 @@ public class RdsParser {
             case '=' -> "funksjonsaspektet";
             case '%' -> "typeaspektet";
             case '$' -> "arbeidsprossessaspektet";
-            default -> throw new RuntimeException("Invalid aspect symbol.");
+            default -> throw new RuntimeException("Invalid aspect symbol. " + line );
         };
     }    
 
