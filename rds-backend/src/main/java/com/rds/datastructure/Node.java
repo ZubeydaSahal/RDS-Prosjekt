@@ -1,10 +1,6 @@
 package com.rds.datastructure;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import java.util.*; 
 
 public class Node {
 
@@ -37,20 +33,13 @@ public class Node {
         return id;
     }
     public String getAspect() {
-        return aspect;
+        return id.substring(0,1);
     }
 
     public int getLevel() {
         return level;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
     public void setCode(String code) {
         this.code = code;
     }

@@ -1,10 +1,5 @@
 package com.rds.datastructure;
 
-import java.util.ArrayList;
-import java.util.List;
-
-// TODO: sikre at type kan være null
-
 public class Relation {
     // Connected nodes
     private final Node nodeA;
@@ -29,8 +24,10 @@ public class Relation {
         return nodeB;
     }
 
-    public void setToId(String toId) {
-        this.toId = toId;
+    public String getType() {
+        return type;
     }
+
+     
 
 }

@@ -1,11 +1,16 @@
-packagepackage com.rds.datastructure;
+package com.rds.datastructure;
 
 
-import java.util.*;  // Dårlig praksis, should only import used tools
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 public class GraphManager {
     // Attributes
-    private Map<String, List<Node>> nodes = new HashMap<>();  // nodes 'id' as key
+    private Map<String, List<Node>> nodes = new LinkedHashMap<>();  // nodes 'id' as key
     private Set<Relation> relations = new HashSet<>();  // Relations
 
 
@@ -39,30 +44,43 @@ public class GraphManager {
     }
 
     //skal hente noder i en gitt rot id
-    public List<Node> getSubtree(String id){
+    /* public List<Node> getSubtree(String id){
       
-    }
+    }*/
 
 
-    //lager relasjon mellom to noder. validere at begge finnes.
-    //relasjonen opprettes
-    public void addrelation(Relation relation){
-        Node fraNode = getNodeById(relation.getFromId());
-        Node tilNode = getNodeById(relation.getToId());
+    // adds relation between two nodes
+    //valides that both nodes exist before creating relation
+    public void addRelation(Relation relation){
+        //looks up the nodes by id to verify they exist before adding the relation
+        Node fraNode = getNodeById(relation.getNodeA().getId());
+        Node tilNode = getNodeById(relation.getNodeB().getId());
 
+        //validate
+        if(fraNode==null){
+            System.out.println("Advarsel: " + relation.getNodeA().getId() + " does not exist");
+            return;
+        }
+        if (tilNode==null){
+            System.out.println("Advarsel: " + relation.getNodeB().getId() + " does not exist");
+            return;
+            
+        }
+        relations.add(relation); //both nodes exist, add relation
     }
     //
-    public List<Relation> getRelations(){
+    public Set<Relation> getRelations(){
+        return relations;
     }
 
     
-    
-    
-    
-    
-    public Node createOrUpdateNode(String id, String code, int level, String metadata){
-        Node node = nodes.get(id);  // Fetch this node from
-
+    public Node createOrUpdateNode(String id, String metadata){
+        Node node = getNodeById(id); //check if node already exists
+        if (node == null) {
+            node = new Node(id); //if nodes does not exist create new node
+            addNode(node);
+        }   
+        node.updateNode(metadata); //update node metadata
         return node;
     }
 
