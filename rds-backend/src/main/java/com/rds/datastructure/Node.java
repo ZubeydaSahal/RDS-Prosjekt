@@ -1,4 +1,4 @@
-package main.java.com.rds.datastructure;
+package com.rds.datastructure;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,13 +10,24 @@ import java.util.Set;
 //  - Node sletting, om linjen fjernes, må noden slettes
 //      - Enten generer ny struktur hver gang
 //      - Eller mekasime for å oppdage endring i input linjer
+//   .
+//   **
+//  - Noder skal kunne deklareres iumplisitt: AA.BB, hvis AA ikke eksisterer, skap AA, BB or relasjonen(A,B)
+//   **
+//   .
+//  - Assumes each node will be declared with full path e.g: AA.BB.CC, so CC can not be declared BB.CC, if AA is BB's
+//  parent
+//
 
-public class Node {
+public class
+Node {
 
+    // Assumes that id, code and level will never change
     private final String id;    // a.b.c (unique)
-    private String code;        // c
-    private int level;          // node's hierarchical depth
+    private final String code;  // c
+    private final int level;    // node's hierarchical depth
     private String metadata;    // Extra data in JSON (name, ..)
+    // TODO: metadata is a placeholder for extra data (name, documentation etc.)
 
     private Set<Relation> relations = new HashSet<>();   // Nodes relations
     // ^^ Changed to Set, instead of List because: don't need index, no duplicates allowed
@@ -37,10 +48,11 @@ public class Node {
         * Snakke med de andre - kan navn, nivå og id endres? jeg synes Nei
         */
         if (metadata != null) this.metadata = metadata;
+        // TODO: replace metadata or handle internal fields seperatly - waiting for specifications of expected data
     }
 
     // Hanlde relations
-    public void addrelation(Relation relation){
+    public void addRelation(Relation relation){
         relations.add(relation);
     }
     public Set<Relation> getRelations(){
