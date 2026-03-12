@@ -114,9 +114,11 @@ public class GraphManager {
         System.out.println("  ".repeat(depth) + node.getId());
 
         for (Relation relation : node.getRelations()) {
-            Node other = relation.getOtherNode(node);
-            if (!visited.contains(other)) {
-                dfs(other, visited, depth + 1);
+            if(relation.getType().equals("hierarchy")) {
+                Node other = relation.getOtherNode(node);
+                if (!visited.contains(other)) {
+                    dfs(other, visited, depth + 1);
+                }
             }
         }
     }
