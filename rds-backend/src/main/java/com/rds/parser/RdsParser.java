@@ -34,10 +34,10 @@ public class RdsParser {
             if (trimmedLine.isEmpty()) continue;
 
             // Check for top node declaration
-            if (!topNodeDeclared) {CheckForTopNode(trimmedLine);}
+            if (!topNodeDeclared) {CheckForTopNode(trimmedLine,graphManager);}
             // check for explicit relationship
             else if (trimmedLine.contains("||")) {
-                CheckExplicitRelationForName(trimmedLine);
+                CheckExplicitRelationForName(trimmedLine, graphManager);
             }else {
                 // check for aspect and remove aspect symbol
                 String aspect = checkAspect(trimmedLine);
@@ -79,12 +79,18 @@ public class RdsParser {
                 id = node;
             }
 
-            NodeChecker(id, name, null); //creats or update node in graph manager 
             
+            if(currentFullId.isEmpty()){
+                currentFullId = aspect + id;
+            } else {
+                currentFullId = currentFullId + "." + id;
+            }
+            
+            NodeChecker(currentFullId, name, graphManager); //creats or update node in graph manager 
             
             // implicit relationship between nodes
             if (previousFullId != null){
-                RelationChecker(previousFullId, id, aspect, null);
+                RelationChecker(previousFullId, currentFullId, aspect, graphManager);
             }
             previousFullId = currentFullId; //update previousid
         }
@@ -135,10 +141,10 @@ public class RdsParser {
         
     }
 
-    private void CheckForTopNode(String trimmedLine) {
+    private void CheckForTopNode(String trimmedLine, GraphManager graphManager) {
         if (trimmedLine.startsWith("<") && trimmedLine.endsWith(">")) {
             String topNodeName = trimmedLine.substring(1, trimmedLine.length() - 1);
-            CreateTopNode(topNodeName);
+            CreateTopNode(topNodeName, graphManager);
             topNodeDeclared = true;
         } else {
             throw new IllegalArgumentException("Top node declaration is missing or malformed: " + trimmedLine);
@@ -147,7 +153,7 @@ public class RdsParser {
     // Midlertidig test av parser
 
     // printer ut navn av toppnode.
-    private void CreateTopNode(String topNodeName) {
+    private void CreateTopNode(String topNodeName, GraphManager graphManager) {
         System.out.println("Creating top node " + topNodeName);
     }
 
