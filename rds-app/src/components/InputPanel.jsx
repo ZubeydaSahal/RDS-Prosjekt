@@ -1,8 +1,7 @@
 import {useState} from "react";
 
-export default function InputPanel() {
+export default function InputPanel( setGraph) {
     const [text, setText] = useState("");
-    const [graph, setGraph] = useState({nodes : [], relations : []});
 
     const handleBuild = async () => {
         try {
