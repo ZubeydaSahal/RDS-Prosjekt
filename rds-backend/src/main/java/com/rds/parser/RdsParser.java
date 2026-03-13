@@ -1,16 +1,22 @@
 //<<<<<<<< HEAD:backend/Parser/RdsParser.java
 
 package com.rds.parser;
+
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.rds.datastructure.GraphManager;
+import com.rds.datastructure.Relation;
+import com.rds.datastructure.Node;
 
 //the function NodeChecker and RelationChecker are placeholders.
 public class RdsParser {
     private boolean topNodeDeclared = false;
 
     // receives the whole script as a string, splits it into lines and processes each line according to the RDS syntax rules.
-    public void parse(String script){
+    public GraphManager parse(String script){
+        GraphManager graphManager = new GraphManager();
         System.out.println(script);
         String[] lines = script.split("\\r?\\n");
         int lineNumber = 0;
@@ -26,25 +32,33 @@ public class RdsParser {
             if (trimmedLine.isEmpty()) continue;
 
             // Check for top node declaration
-            if (!topNodeDeclared) {CheckForTopNode(trimmedLine);}
+            if (!topNodeDeclared) {CheckForTopNode(trimmedLine,graphManager);}
             // check for explicit relationship
             else if (trimmedLine.contains("||")) {
-                CheckExplicitRelationForName(trimmedLine);
+                CheckExplicitRelationForName(trimmedLine, graphManager);
             }else {
                 // check for aspect and remove aspect symbol
                 String aspect = checkAspect(trimmedLine);
                 trimmedLine = trimmedLine.substring(1).trim();
 
                 // Normal RDS line
-                CheckNodes(trimmedLine, aspect);
+                CheckNodes(trimmedLine, aspect,graphManager);
                 System.out.println(lineNumber);
+
             }
         }
-    }
+        return graphManager;
+        
+        }
 
-    private void CheckNodes(String trimmedLine, String aspect) {
+    
+    //processs a RDS line.
+    //build a full id  for each node and creats  relation between them 
+
+    private void CheckNodes(String trimmedLine, String aspect, GraphManager graphManager) {
         String[] nodes = trimmedLine.split("\\.");
-        String previousNode = null;
+        String previousFullId = null; // keeps truck of previous id
+        String currentFullId=""; //keeps truck of the id being built 
         int depth = 0;
 
         // for each node in line, check if it has a name and then check the relationship between them
@@ -62,30 +76,36 @@ public class RdsParser {
             } else {
                 id = node;
             }
-            // Placeholder
-            NodeChecker(id, name, aspect, depth);
 
-            // implicit relationship between nodes
-            if (previousNode != null){
-                // Placeholder
-                RelationChecker(previousNode, aspect, id, aspect, "implisitt");
+            
+            if(currentFullId.isEmpty()){
+                currentFullId = aspect + id;
+            } else {
+                currentFullId = currentFullId + "." + id;
             }
-            previousNode = id;
+            
+            NodeChecker(currentFullId, name, graphManager); //creats or update node in graph manager 
+            
+            // implicit relationship between nodes
+            if (previousFullId != null){
+                RelationChecker(previousFullId, currentFullId, aspect, graphManager);
+            }
+            previousFullId = currentFullId; //update previousid
         }
     }
-    // placeholder
-    // midlertidig for å se at parser funker
-    private void RelationChecker(String previousNode, String aspect, String id, String aspect1, String name) {
-        System.out.println("Relation between " + previousNode + " and " + aspect + " " + id + " " + aspect1 + " with name: " + name);
-    }
+    //creats relation bewteen nodes in graphmanger
+    //creats nodes only when nodes exist
+    private void RelationChecker(String fromId, String toId, String type, GraphManager graphManager) {
+        graphManager.createRelation(fromId, toId, type);
+}
 
-    // placeholder
-    // midlertidig for å se at parser funker
-    private void NodeChecker(String id, String name, String aspect, int depth) {
-        System.out.println("Node created with ID: " + id + " and name " + name + " and aspect " + aspect + " and depth " + depth);
+    //creats or update node in graphmanger. 
+    private void NodeChecker(String fullId, String name, GraphManager graphManager) {
+        graphManager.createOrUpdateNode(fullId, name);
     }
+    
 
-    private void CheckExplicitRelationForName(String trimmedLine) {
+    private void CheckExplicitRelationForName(String trimmedLine, GraphManager graphmanger) {
         String relationName = checkExplicitRelationName(trimmedLine);
         String[] parts;
 
@@ -95,23 +115,30 @@ public class RdsParser {
             parts = trimmedLine.split("\\|\\|");
         }
 
+        //process leftsidde
         String leftSide = parts[0].trim();
         String leftNodeAspect = checkAspect(leftSide);
-        CheckNodes(leftSide, leftNodeAspect);
+        leftSide=leftSide.substring(1).trim(); // remove aspect symbol
+        CheckNodes(leftSide, leftNodeAspect,graphmanger);
 
         String rightSide = parts[1].trim();
         String rightNodeAspect = checkAspect(rightSide);
-        CheckNodes(rightSide, rightNodeAspect);
+        rightSide=rightSide.substring(1).trim(); // remove aspect symbol
+        CheckNodes(rightSide, rightNodeAspect, graphmanger);
 
+        //gets last node from each side of a explicit relation
+        String leftLastId=leftNodeAspect+leftSide.split("\\.")[leftSide.split("\\.").length-1];
+        String rightLastId=rightNodeAspect+rightSide.split("\\.")[rightSide.split("\\.").length-1];
 
-        //Placeholder
-        RelationChecker(leftSide, leftNodeAspect, rightSide, rightNodeAspect, relationName);
+        //Creats explicit relation 
+        RelationChecker(leftLastId,rightLastId,relationName, graphmanger);
+        
     }
 
-    private void CheckForTopNode(String trimmedLine) {
+    private void CheckForTopNode(String trimmedLine, GraphManager graphManager) {
         if (trimmedLine.startsWith("<") && trimmedLine.endsWith(">")) {
             String topNodeName = trimmedLine.substring(1, trimmedLine.length() - 1);
-            CreateTopNode(topNodeName);
+            CreateTopNode(topNodeName, graphManager);
             topNodeDeclared = true;
         } else {
             throw new IllegalArgumentException("Top node declaration is missing or malformed: " + trimmedLine);
@@ -120,7 +147,7 @@ public class RdsParser {
     // Midlertidig test av parser
 
     // printer ut navn av toppnode.
-    private void CreateTopNode(String topNodeName) {
+    private void CreateTopNode(String topNodeName, GraphManager graphManager) {
         System.out.println("Creating top node " + topNodeName);
     }
 
@@ -130,10 +157,10 @@ public class RdsParser {
         char first = line.charAt(0);
 
         return switch (first) {
-            case '-' -> "Produktaspektet";
-            case '=' -> "funksjonsaspektet";
-            case '%' -> "typeaspektet";
-            case '$' -> "arbeidsprossessaspektet";
+            case '-' -> "-";
+            case '=' -> "=";
+            case '%' -> "%";
+            case '$' -> "$";
             default -> throw new RuntimeException("Invalid aspect symbol. " + line );
         };
     }    
