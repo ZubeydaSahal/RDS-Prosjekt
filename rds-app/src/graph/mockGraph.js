@@ -1,4 +1,4 @@
-export const mockGraph = {
+/* export const mockGraph = {
     id: "<Stasjon X.CW>",
     label: "Stasjon X.CW",
     relationType: null,
@@ -60,4 +60,4 @@ export const mockGraph = {
       }
   
     ]
-  }
+  } */

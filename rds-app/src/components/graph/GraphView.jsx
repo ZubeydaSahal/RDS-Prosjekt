@@ -1,15 +1,15 @@
 import { useMemo } from "react"
-import { mockGraph } from "../../graph/mockGraph"
 import { layoutTree } from "../../graph/layout"
+import { graphToFlow } from "../graphToFlow"
 
 import Node from "./Node"
 import Edge from "./Edge"
 
-export default function GraphView() {
+export default function GraphView({graph}) {
 
-  const graph = useMemo(() => {
+  const graphView = useMemo(() => {
 
-    const layout = layoutTree(mockGraph)
+    const layout = layoutTree(graph)
 
     return layout
 
