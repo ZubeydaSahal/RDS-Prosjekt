@@ -96,7 +96,7 @@ public class RdsParser {
     //creats relation bewteen nodes in graphmanger
     //creats nodes only when nodes exist
     private void RelationChecker(String fromId, String toId, String type, GraphManager graphManager) {
-        graphManager.addRelation(fromId, toId, type);
+        graphManager.createRelation(fromId, toId, type);
 }
 
     //creats or update node in graphmanger. 
