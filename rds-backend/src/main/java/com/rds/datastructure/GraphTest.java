@@ -1,28 +1,40 @@
 package com.rds.datastructure;
 
 public class GraphTest {
+
     public static void main(String[] args) {
+
         GraphManager graph = new GraphManager();
 
-        // Lag noder
-        graph.createOrUpdateNode("=AA.BB.CC", null);
-        graph.createOrUpdateNode("=AA.XX.XA", null);
-        graph.createOrUpdateNode("=AA.XX.XB", "Sporveksel");
+        // Opprett noen noder
+        graph.createOrUpdateNode("AA", "{name:'Root'}");
+        graph.createOrUpdateNode("AA.BB", "{name:'Child1'}");
+        graph.createOrUpdateNode("AA.BB.CC", "{name:'Child2'}");
+        graph.createOrUpdateNode("AA.XX", "{name:'ChildX'}");
+        graph.createOrUpdateNode("AA.XX.XA", "{name:'ChildXA'}");
+        graph.createOrUpdateNode("AA.XX.XB", "{name:'ChildXB'}");
+        graph.createOrUpdateNode("AA.XX.XB.B1", "{name:'ChildXB'}");
 
-        // Test kryssrelasjoner
-        graph.addRelation("=AA.BB.CC", "=AA.XX", "cross");
-        graph.addRelation("=AA", "=AA.XX.XB", "cross");
+        // Lag en ekstra relasjon
+        graph.createRelation("AA", "AA.BB.CC", "cross");
+        graph.createRelation("AA.BB.CC", "AA.XX", "cross");
 
-        // Print noder
+        // Print alle noder
         System.out.println("Nodes:");
-        for (Node node : graph.getAllNodes().values()) {
-            System.out.println(node.getId() + " level=" + node.getLevel());
+        for (Node node : graph.getAllNodes()) {
+            System.out.println(node.getId());
         }
 
+        // Print grafen
+        System.out.println("\nGraph structure:");
+        graph.printGraph();
+
         // Print relasjoner
-        System.out.println("\nRelasjoner:");
-        for (Relation rel : graph.getRelations()) {
-            System.out.println(rel.getNodeA().getId() + " → " + rel.getNodeB().getId() + " (" + rel.getType() + ")");
+        System.out.println("\nRelations:");
+        for (Relation rel : graph.getAllRelations()) {
+            System.out.println(rel.getType());
+            System.out.println(rel.getNodeA().getId());
+            System.out.println(rel.getNodeB().getId()+"\n\n");
         }
     }
 }
