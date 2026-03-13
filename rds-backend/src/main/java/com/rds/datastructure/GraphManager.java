@@ -43,16 +43,6 @@ public class GraphManager {
         return nodes;
     }
 
-    public List<Node> getNodesByAspect(String aspect) {
-        List<Node> resultat = new ArrayList<>();
-        for (Node node : nodes.values()) {
-            if (node.getId().startsWith(aspect)) {
-                resultat.add(node);
-            }
-        }
-        return resultat;
-    }
-
     public void addRelation(String idA, String idB, String type) {
         Node nodeA = createOrUpdateNode(idA, null);
         Node nodeB = createOrUpdateNode(idB, null);
