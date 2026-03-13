@@ -50,8 +50,6 @@ body {
 
 #treeContainer {
   border: none
-  min-height: 600px;
-  overflow: auto;
 }
 
 
