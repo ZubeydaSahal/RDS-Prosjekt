@@ -19,6 +19,7 @@ public class GraphManager {
         // Check if node exits
         if (node == null){
             // if not, create and add to 'nodes' hashmap
+            System.out.println("creating new node" + id);
             node = new Node(id);
             nodes.put(id, node);
 
@@ -28,12 +29,15 @@ public class GraphManager {
             if (index != -1){  // handles edge case (parent of root doesn't exist)
                 String parentId = id.substring(0, index);  // determine parent's id
                 Node parent = nodes.get(parentId);
+                System.out.println("Parent/root dont exist, this is parentID: " + parentId);
 
                 if(parent == null){  // handles non declared parent – to be replaced check TODO
                     createOrUpdateNode(parentId, null);
+                    System.out.println("not declared parentID: " + parentId);
                 }
 
                 createRelation(id, parentId, "hierarchy");
+                System.out.println("create relation: " + id + " and parent " + parentId);
             }
         }
 
@@ -67,20 +71,25 @@ public class GraphManager {
         //Check if they don't exist
         // Krav skal kunne implisitt opprette noder, som ikke allerede eksisterer
         //  TODO: Vurderer å flytte denne logikken til en egen funksjon som håndterer alle relasjoner/noder som implisit
+        // Konrad: midlertidig tatt bort kommentaren med de to første if-testene.
 
-       /* if (nodeA == null){
+        if (nodeA == null){
             createOrUpdateNode(idA, null);
             nodeA = nodes.get(idA);  // update nodeA with created node
+            System.out.println("created node A");
         }
         if (nodeB == null){
             createOrUpdateNode(idB, null);
             nodeB = nodes.get(idB);  // update nodeB with created node
-        }*/
+            System.out.println("created node B");
+        }
 
         // midlertidig kaste exeption, håndtere denne logikken senere, se over^^
+        /*
         if (nodeA == null || nodeB == null) {
             throw new IllegalArgumentException("Failed to create relation, both nodes don't exisrt");
         }
+         */
 
         Relation relation = new Relation(nodeA, nodeB, type);  // TODO: Sikre at relasjonen ikke eksisterer invers
 
