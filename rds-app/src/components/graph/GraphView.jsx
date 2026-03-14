@@ -26,7 +26,7 @@ export default function GraphView({ graph }) {
   }))
    */
 
-  const relations = layout.relations || []
+  const relations = layout.hierarchyEdges || []
   /*
   const relations = (layout.relations || []).map(r => ({
     from: r.from ?? r.nodeA?.id,
