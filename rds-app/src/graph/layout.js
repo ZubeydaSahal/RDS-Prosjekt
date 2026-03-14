@@ -1,6 +1,6 @@
-export function layoutTree(root) {
+export function layoutTree(graph) {
 
-  if (!root) return { nodes: [], hierarchyEdges: [] };
+  if (!graph) return { nodes: [], hierarchyEdges: [] };
 
   const nodes = [];
   const hierarchyEdges = [];
@@ -29,12 +29,6 @@ export function layoutTree(root) {
     "%%": 0
   };
 
-  nodes.push({
-    ...root,
-    x: 600,
-    y: 40
-  });
-
   aspects.forEach(a => {
 
     nodes.push({
@@ -44,49 +38,38 @@ export function layoutTree(root) {
       y: 120
     });
 
-    hierarchyEdges.push({
-      from: root.id,
-      to: a.id
-    });
-
   });
+  graph.nodes.forEach(node => {
 
-  function place(node, parent, depth, column) {
+    const aspect = node.id.charAt(0) // %, =, -, etc
+    const column = COLUMN_X[aspect]
 
-    const row = columnRow[column]++;
-    const x = COLUMN_X[column] + depth * INDENT;
-    const y = 200 + row * ROW_GAP;
+    if (!column) return
+
+    const row = columnRow[aspect]++
 
     nodes.push({
       ...node,
-      x,
-      y
-    });
+      x: column,
+      y: 220 + row * ROW_GAP
+    })
 
     hierarchyEdges.push({
-      from: parent.id,
+      from: "aspect_" + aspect,
       to: node.id
-    });
+    })
 
-    if (node.children) {
-      node.children.forEach(child =>
-        place(child, node, depth + 1, column)
-      );
-    }
+  })
 
-  }
+  graph.relations.forEach(rel => {
 
-  if (root.children) {
+    hierarchyEdges.push({
+      from: rel.nodeA.id,
+      to: rel.nodeB.id,
+      type: rel.type
+    })
 
-    root.children.forEach(child => {
-
-      const col = child.relationType;
-
-      place(child, { id: "aspect_" + col }, 0, col);
-
-    });
-
-  }
+  })
 
   return {
     nodes,

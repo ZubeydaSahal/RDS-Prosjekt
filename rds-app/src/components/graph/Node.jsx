@@ -1,5 +1,7 @@
 export default function Node({ node }) {
 
+    const label = node.id
+
     return (
   
       <g transform={`translate(${node.x}, ${node.y})`}>
@@ -17,7 +19,7 @@ export default function Node({ node }) {
           y="24"
           textAnchor="middle"
         >
-          {node.label}
+          {label}
         </text>
   
       </g>

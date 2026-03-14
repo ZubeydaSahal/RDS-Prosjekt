@@ -6,16 +6,34 @@ import Edge from "./Edge"
 
 export default function GraphView({ graph }) {
 
-  const nodes = graph?.nodes || []
-  const relations = graph?.relations || []
-
   const layout = useMemo(() => {
 
     if (!graph) return { nodes: [], relations: [] }
 
-    return layoutTree(graph)
+    const result = layoutTree(graph)
+
+    console.log("result of layoutTree:", result)
+    return result
 
   }, [graph])
+
+  const nodes = layout.nodes || []
+  /*
+  const nodes = graph.nodes.map((n, i) => ({
+    ...n,
+    x: 200,
+    y: 100 + i * 80
+  }))
+   */
+
+  const relations = layout.relations || []
+  /*
+  const relations = (layout.relations || []).map(r => ({
+    from: r.from ?? r.nodeA?.id,
+    to: r.to ?? r.nodeB?.id,
+    type: r.type
+  }))
+   */
 
   const nodeMap = Object.fromEntries(
     nodes.map(n => [n.id, n])
