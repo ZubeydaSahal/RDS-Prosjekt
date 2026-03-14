@@ -48,7 +48,7 @@ public class GraphManager {
         return nodes.get(id);
     }
 
-    public Collection<Node> getAllNodes(){
+    public Collection<Node> getNodes(){
         /* Gets all nodes, returns Collection,
         (som er retur verdien fra hashMap's .values())
         */
@@ -93,7 +93,7 @@ public class GraphManager {
         return relation;
     }
 
-    public Set<Relation> getAllRelations(){
+    public Set<Relation> getRelations(){
         return relations;
     }
 
