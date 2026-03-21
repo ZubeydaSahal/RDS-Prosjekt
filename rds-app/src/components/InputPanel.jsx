@@ -3,10 +3,19 @@ import { useState } from "react";
 export default function InputPanel({ setGraph }) {
 
   const [text, setText] = useState("");
+  const [error, setError] = useState(""); //ny state
 
   const handleBuild = async () => {
-    try {
 
+    setError("");
+  
+    if (!text.trim()) {
+      setError("Skriv inn noe først");
+      return;
+    }
+  
+    try {
+  
       const response = await fetch("http://localhost:8080/parse", {
         method: "POST",
         headers: {
@@ -14,16 +23,30 @@ export default function InputPanel({ setGraph }) {
         },
         body: text
       });
-
+  
+      // 🔥 SJEKK FØR json()
+      if (!response.ok) {
+  
+        const errorText = await response.text();
+  
+        console.log("Backend error:", errorText);
+  
+        setError(
+          "❌ Ugyldig input.\n" +
+          "Sørg for at linjene starter med %, = eller -"
+        );
+  
+        return;
+      }
+  
+      // ✅ KUN hvis OK
       const graph = await response.json();
-
-      console.log("nodes:", graph.nodes);
-      console.log("relations:", graph.relations);
-
+  
       setGraph(graph);
-
+  
     } catch (err) {
-      console.error("error sending script", err);
+      console.error("Network error:", err);
+      setError("❌ Noe gikk galt med serveren");
     }
   };
 
@@ -38,6 +61,13 @@ export default function InputPanel({ setGraph }) {
         onChange={(e) => setText(e.target.value)}
         placeholder="Paste RDS script here..."
       />
+
+      {/*FEIL VISNING */}
+      {error && (
+        <div className="error-box">
+          {error}
+        </div>
+      )}
 
       <div className="buttons">
         <button onClick={handleBuild}>Bygg tre</button>

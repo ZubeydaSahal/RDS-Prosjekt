@@ -1,5 +1,5 @@
-/* NAVBAR */
 
+/*  #### NAVBAR #### */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -23,12 +23,14 @@
 }
 
 
+/* ##### BODY ##### */
 body {
   font-family: Arial, sans-serif;
   margin: 20px;
   background-color: rgb(223, 240, 245);
 }
 
+/* #### GRAPH ####*/
 .layout {
   display: flex;
   gap: 40px;
@@ -42,16 +44,23 @@ body {
 
 .tree-section {
   flex: 1;
-  overflow: auto;
+  min-width: 0;
   padding: 10px;
   background-color:  rgb(223, 240, 245);
   border: none;
 }
 
-#treeContainer {
-  border: none
+.graph-container {
+  height: 600px;        /* fast høyde på visning */
+  overflow: auto;       /* scroll når grafen blir stor */
+  background: white;
+  border: 1px solid #ccc;
 }
 
+svg {
+  background-color: white;
+  display: block;
+}
 
 textarea {
   width: 100%;
@@ -65,20 +74,38 @@ textarea {
   gap: 10px;
 }
 
-.tree-section {
-  flex: 1;
+/* #### ERROR BOX #### */ 
+.error-box {
+  margin-top: 10px;
+  padding: 12px;
+  background: #ffe0e0;
+  color: #900;
+  border: 2px solid red;
+  border-radius: 6px;
+  font-weight: bold;
+  white-space: pre-line;
 }
 
-#treeContainer {
-  border: none;
-  min-height: 600px;
-  overflow: auto;
+/* #### Endre rekkefølge på aspekter #### */
+.aspect-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-svg {
-  background-color: white;
-  width: fit-content;
+.aspect-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #f0f0f0;
+  padding: 5px 8px;
+  border-radius: 6px;
 }
+
+.aspect-item button {
+  cursor: pointer;
+}
+
 
 /* FOOTER */
 
@@ -91,5 +118,4 @@ svg {
 
   background: #1f2937;
   color: white;
-  
 }
