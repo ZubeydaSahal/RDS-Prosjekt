@@ -1,97 +1,116 @@
-export function layoutTree(root) {
+export function layoutTree(graph) {
 
-  if (!root) return { nodes: [], hierarchyEdges: [] };
+  // Hvis graf mangler eller ikke inneholder noder, returner tomt resultat
+  if (!graph || !graph.nodes) {
+    return { nodes: [], hierarchyEdges: [] };
+  }
 
+  // Lister som skal returneres til GraphView
   const nodes = [];
   const hierarchyEdges = [];
 
-  const aspects = [
-    { id: "aspect_%", label: "Typeaspekt (%)", type: "%" },
-    { id: "aspect_=", label: "Funksjonsaspekt (=)", type: "=" },
-    { id: "aspect_-", label: "Produktaspekt (-)", type: "-" },
-    { id: "aspect_%%", label: "Typeaspekt (%%)", type: "%%" }
-  ];
-
-  const COLUMN_X = {
-    "%": 150,
-    "=": 450,
-    "-": 750,
-    "%%": 1050
+  // ----------------------------
+  // ROOT NODE (toppnode)
+  // ----------------------------
+  // Dette er hovednoden øverst i visualiseringen
+  const root = {
+    id: graph.root,
+    label: graph.root,
+    x: 700,   // horisontal posisjon (midtstilt)
+    y: 40     // vertikal posisjon (øverst)
   };
 
-  const ROW_GAP = 80;
-  const INDENT = 40;
+  nodes.push(root);
 
-  const columnRow = {
-    "%": 0,
-    "=": 0,
-    "-": 0,
-    "%%": 0
-  };
+  // ----------------------------
+  // ASPEKTER (kolonner)
+  // ----------------------------
+  // Rekkefølgen bestemmes av frontend (App.jsx)
+  const aspects = graph.aspects || ["%", "=", "-", "%%"];
 
-  nodes.push({
-    ...root,
-    x: 600,
-    y: 40
+  // Lager dynamiske x-posisjoner basert på rekkefølge
+  const COLUMN_X = {};
+
+  aspects.forEach((aspect, index) => {
+    COLUMN_X[aspect] = 150 + index * 350;
   });
 
-  aspects.forEach(a => {
+  // Holder styr på hvor mange noder som er plassert i hver kolonne
+  const columnRow = {};
+  aspects.forEach(a => columnRow[a] = 0);
+
+  // Avstand mellom noder vertikalt
+  const ROW_GAP = 80;
+
+  // ----------------------------
+  // ASPEKT-NODER (visuelle overskrifter)
+  // ----------------------------
+  // Disse er ikke ekte data, kun for layout
+  aspects.forEach(type => {
+
+    const id = "aspect_" + type;
 
     nodes.push({
-      id: a.id,
-      label: a.label,
-      x: COLUMN_X[a.type],
-      y: 120
+      id,
+      label: "aspect " + type,
+      x: COLUMN_X[type], // plasseres i riktig kolonne
+      y: 120             // fast høyde under root
     });
 
+    // Kobler root til hver aspekt-kolonne
     hierarchyEdges.push({
       from: root.id,
-      to: a.id
+      to: id
     });
 
   });
 
-  function place(node, parent, depth, column) {
+  // ----------------------------
+  // NODER FRA BACKEND
+  // ----------------------------
+  // Plasserer hver node i riktig kolonne basert på aspekt
+  graph.nodes.forEach(node => {
 
-    const row = columnRow[column]++;
-    const x = COLUMN_X[column] + depth * INDENT;
-    const y = 200 + row * ROW_GAP;
+    // Første tegn i id bestemmer aspekt (% = - osv)
+    const aspect = node.id.charAt(0);
+
+    // Hvis aspekt ikke finnes i layouten, hopp over
+    if (!COLUMN_X[aspect]) return;
+
+    // Finn neste ledige rad i kolonnen
+    const row = columnRow[aspect]++;
 
     nodes.push({
       ...node,
-      x,
-      y
+      x: COLUMN_X[aspect],           // kolonneposisjon
+      y: 200 + row * ROW_GAP         // vertikal plassering
     });
 
+    // Kobler aspekt til node
     hierarchyEdges.push({
-      from: parent.id,
+      from: "aspect_" + aspect,
       to: node.id
     });
 
-    if (node.children) {
-      node.children.forEach(child =>
-        place(child, node, depth + 1, column)
-      );
-    }
+  });
 
-  }
-
-  if (root.children) {
-
-    root.children.forEach(child => {
-
-      const col = child.relationType;
-
-      place(child, { id: "aspect_" + col }, 0, col);
-
+  // ----------------------------
+  // RELASJONER FRA BACKEND
+  // ----------------------------
+  // Tegner forbindelser mellom noder
+  // OBS: Dette kan påvirke layout visuelt
+  graph.relations.forEach(rel => {
+    hierarchyEdges.push({
+      from: rel.from,
+      to: rel.to
     });
+  });
 
-  }
-
+  // ----------------------------
+  // RETURNER RESULTAT
+  // ----------------------------
   return {
     nodes,
     hierarchyEdges
   };
-
 }
-// ...

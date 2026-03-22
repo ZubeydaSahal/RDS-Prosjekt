@@ -21,7 +21,7 @@ public class GraphTest {
 
         // Print alle noder
         System.out.println("Nodes:");
-        for (Node node : graph.getAllNodes()) {
+        for (Node node : graph.getNodes()) {
             System.out.println(node.getId());
         }
 
@@ -31,7 +31,7 @@ public class GraphTest {
 
         // Print relasjoner
         System.out.println("\nRelations:");
-        for (Relation rel : graph.getAllRelations()) {
+        for (Relation rel : graph.getRelations()) {
             System.out.println(rel.getType());
             System.out.println(rel.getNodeA().getId());
             System.out.println(rel.getNodeB().getId()+"\n\n");

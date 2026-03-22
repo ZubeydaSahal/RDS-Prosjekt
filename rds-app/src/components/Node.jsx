@@ -1,4 +1,11 @@
+/* 
+Får inn node (med x, y, label)
+Tegner en boks + tekst
+ */
+
 export default function Node({ node }) {
+
+    const label = node.id
 
     return (
   
@@ -17,7 +24,7 @@ export default function Node({ node }) {
           y="24"
           textAnchor="middle"
         >
-          {node.label}
+          {label}
         </text>
   
       </g>

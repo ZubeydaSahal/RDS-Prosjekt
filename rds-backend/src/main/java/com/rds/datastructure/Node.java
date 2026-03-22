@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 // TODO:
 //  - sikre at alle parametere ikke må fylles
@@ -28,6 +30,9 @@ Node {
     private final int level;    // node's hierarchical depth
     private String metadata;    // Extra data in JSON (name, ..)
     // TODO: metadata is a placeholder for extra data (name, documentation etc.)
+    @JsonIgnore
+    private Set<Relation> relations = new HashSet<>();   // Nodes relations
+    // ^^ Changed to Set, instead of List because: don't need index, no duplicates allowed
 
 
     // Partial Constructor
