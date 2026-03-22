@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function InputPanel({ setGraph }) {
+export default function InputPanel({ setGraph, setHasUserInput }) {
 
   const [text, setText] = useState("");
   const [error, setError] = useState(""); //ny state
@@ -10,7 +10,9 @@ export default function InputPanel({ setGraph }) {
     setError("");
   
     if (!text.trim()) {
-      setError("Skriv inn noe først");
+      setError("");
+      setHasUserInput(false);
+      setGraph(null);
       return;
     }
   
@@ -24,7 +26,7 @@ export default function InputPanel({ setGraph }) {
         body: text
       });
   
-      // 🔥 SJEKK FØR json()
+      //SJEKK FØR json()
       if (!response.ok) {
   
         const errorText = await response.text();
@@ -32,21 +34,22 @@ export default function InputPanel({ setGraph }) {
         console.log("Backend error:", errorText);
   
         setError(
-          "❌ Ugyldig input.\n" +
+          "Ugyldig input.\n" +
           "Sørg for at linjene starter med %, = eller -"
         );
   
         return;
       }
   
-      // ✅ KUN hvis OK
+      // KUN hvis OK
       const graph = await response.json();
-  
-      setGraph(graph);
+
+setGraph(graph);
+setHasUserInput(true);
   
     } catch (err) {
       console.error("Network error:", err);
-      setError("❌ Noe gikk galt med serveren");
+      setError("Noe gikk galt med serveren");
     }
   };
 
@@ -54,13 +57,26 @@ export default function InputPanel({ setGraph }) {
     <div className="input-section">
 
       <h2>Input</h2>
+<textarea
+  rows="12"
+  value={text}
+  onChange={(e) => {
+    setText(e.target.value);
 
-      <textarea
-        rows="12"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Paste RDS script here..."
-      />
+    if (!e.target.value.trim()) {
+      setHasUserInput(false);
+    }
+  }}
+  placeholder="Paste RDS script here..."
+
+    /*Gjør det mulig å bygge tre med cmd/ctrl + Enter */
+  onKeyDown={(e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      e.preventDefault();
+      handleBuild();
+    }
+  }}
+/>
 
       {/*FEIL VISNING */}
       {error && (
@@ -77,3 +93,7 @@ export default function InputPanel({ setGraph }) {
     </div>
   );
 }
+
+
+
+
