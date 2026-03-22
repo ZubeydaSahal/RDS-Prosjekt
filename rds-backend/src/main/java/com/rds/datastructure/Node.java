@@ -66,31 +66,34 @@ Node {
     public String getId() {
         return id;
     }
-    public String getAspect() {
-        return id.substring(0,1);
+
+    public String getCode() {
+        return code;
     }
 
     public int getLevel() {
         return level;
     }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
     public String getMetadata() {
         return metadata;
     }
 
-     @Override
+    // Define nodes as eqqual if 'id' is the same
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;  // return true if same object refernece
-        if (!(o instanceof Node node)) return false; // return false if object is not a Node
+        if (!(o instanceof Node node)) return false;  // return false if object is not a Node
         return id.equals(node.id); // nodes are equal if ids are equal
     }
 
+    // bsase hashCode on id, to ensure consistency with equals()
     @Override
     public int hashCode() {
         return id.hashCode();
     }
 
+/*    public int getNodeById(String id) {
+
+    }*/
 }
