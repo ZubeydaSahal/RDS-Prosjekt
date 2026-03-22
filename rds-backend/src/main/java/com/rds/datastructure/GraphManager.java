@@ -134,7 +134,16 @@ public class GraphManager {
 
 
 
+    public void filterRelations(Map<String, Boolean> filters){
+        if (filters == null) return;
+        relations.removeIf(relation -> {
+            Boolean show = filters.get(relation.getType());
+            return show != null && !show;
+     });
+    }
 
+
+  
 
 /*
     public void nodeChecker(String id, String code, String aspect){
