@@ -88,7 +88,7 @@ public class RdsParser {
             
             // implicit relationship between nodes
             if (previousFullId != null){
-                RelationChecker(previousFullId, currentFullId, aspect, graphManager);
+                RelationChecker(previousFullId, currentFullId, "implisitt", graphManager);
             }
             previousFullId = currentFullId; //update previousid
         }
