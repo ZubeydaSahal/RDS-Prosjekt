@@ -134,6 +134,8 @@ public class GraphManager {
         }
     }
 
+
+    // Filter functions
     /*public void filterRelations(Map<String, Boolean> filters){
         if (filters == null) return;
         relations.removeIf(relation -> {
@@ -143,16 +145,26 @@ public class GraphManager {
     }*/
 
 
+     public Set<Relation> getFilteredRelations(Map<String, Boolean> filters) {
+    if (filters == null) {
+        return relations;
+    }
 
-    public Set<Relation> getFilteredRelations(Map<String, Boolean> filters) {
-    if (filters == null) return relations;
     return relations.stream()
         .filter(r -> {
-            Boolean show = filters.get(r.getType());
-            return show == null || show;
+            String type = r.getType() == null ? "" : r.getType();
+            Boolean show = filters.get(type);
+
+            // hvis ikke spesifisert → vis
+            if (show == null) {
+                return true;
+            }
+
+            return show;
         })
         .collect(Collectors.toSet());
 }
+  
 
 
   
