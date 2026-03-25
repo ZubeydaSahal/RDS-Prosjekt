@@ -3,33 +3,10 @@ import GraphView from "./components/GraphView";
 import InputPanel from "./components/InputPanel.jsx";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
+import { mockGraph } from "./components/MockGraph"; // slett når mockgraph slettes 
 
 // Importerer React hooks
 import { useState } from "react";
-
-// Midlertidig testdata for å kunne utvikle frontend uten backend
-// Denne skal fjernes når backend er ferdig
-const testGraph = {
-  root: "<Stasjon XCW>",
-
-  // Liste med noder (elementer i grafen)
-  nodes: [
-    { id: "%DA1", label: "Spor" },
-    { id: "%DA2", label: "Sporveksel" },
-    { id: "%DA2.DA1", label: "Enkel" },
-    { id: "%DA2.DA1.DA1", label: "Venstre" },
-    { id: "%DA2.DA1.DA2", label: "Høyre" }
-  ],
-
-  // Relasjoner mellom noder (kan brukes til å tegne forbindelser)
-  relations: [
-    { from: "<Stasjon XCW>", to: "%DA1" },
-    { from: "<Stasjon XCW>", to: "%DA2" },
-    { from: "%DA2", to: "%DA2.DA1" },
-    { from: "%DA2.DA1", to: "%DA2.DA1.DA1" },
-    { from: "%DA2.DA1", to: "%DA2.DA1.DA2" }
-  ]
-};
 
 function App() {
 
@@ -67,7 +44,7 @@ function App() {
 
   // State som holder grafdata
   // Når backend er klar, vil denne bli satt fra API-respons
-  const [graph, setGraph] = useState(testGraph);
+  const [graph, setGraph] = useState(mockGraph);  // slett når mockgraph slettes 
 
   // State som bestemmer rekkefølgen på aspektene (kolonnene)
   // Dette er frontend-logikk (visualisering), ikke backend-data

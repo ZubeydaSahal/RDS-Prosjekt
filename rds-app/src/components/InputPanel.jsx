@@ -24,7 +24,7 @@ export default function InputPanel({ setGraph }) {
         body: text
       });
   
-      // 🔥 SJEKK FØR json()
+      // SJEKK FØR json()
       if (!response.ok) {
   
         const errorText = await response.text();
@@ -32,21 +32,21 @@ export default function InputPanel({ setGraph }) {
         console.log("Backend error:", errorText);
   
         setError(
-          "❌ Ugyldig input.\n" +
+          "Ugyldig input.\n" +
           "Sørg for at linjene starter med %, = eller -"
         );
   
         return;
       }
   
-      // ✅ KUN hvis OK
+      // KUN hvis OK
       const graph = await response.json();
   
       setGraph(graph);
   
     } catch (err) {
       console.error("Network error:", err);
-      setError("❌ Noe gikk galt med serveren");
+      setError(" Noe gikk galt med serveren");
     }
   };
 

@@ -1,8 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { layoutTree } from "../graph/layout";
 
 import Node from "./Node";
 import Edge from "./Edge";
+
 
 export default function GraphView({ graph, aspects }) {
 
@@ -28,35 +29,67 @@ export default function GraphView({ graph, aspects }) {
     nodes.map(node => [node.id, node])
   );
 
+
+  const [fitView, setFitView] = useState(true);
+  // plasser trestukturen innenfor boksen både vertikalt og horisontalt 
+  const minX = Math.min(...nodes.map(n => n.x || 0), 0);
+const maxX = Math.max(...nodes.map(n => n.x || 0), 1400);
+
+const minY = Math.min(...nodes.map(n => n.y || 0), 0);
+const maxY = Math.max(...nodes.map(n => n.y || 0), 800);
+
+// padding rundt grafen
+const padding = 100;
+
+const width = maxX - minX + padding * 2;
+const height = maxY - minY + padding * 2;
+
   return (
-    <svg width="1400" height="800">
+   <div className="graph-container">
+    
+    <button onClick={() => setFitView(!fitView)}>
+  {fitView ? "Scroll mode" : "Fit to screen"}
+</button>
 
-      {/* Tegner edges først (bak nodene) */}
-      {relations.map((edge, index) => {
+<svg
+  width={fitView ? "100%" : width}
+  height={fitView ? 600 : height}
+  viewBox={
+    fitView
+      ? `${minX - padding} ${minY - padding} ${width} ${height}`
+      : undefined
+  }
+  preserveAspectRatio="xMidYMid meet"
+>   // scroll i trestukturen
 
-        const from = nodeMap[edge.from];
-        const to = nodeMap[edge.to];
+  
+{/* Tegner edges først (bak nodene) */}
+{relations.map((edge, index) => {
 
-        // Hvis node mangler, ikke tegn edge
-        if (!from || !to) return null;
+  const from = nodeMap[edge.from];
+  const to = nodeMap[edge.to];
 
-        return (
-          <Edge
-            key={`${edge.from}-${edge.to}-${index}`}
-            from={from}
-            to={to}
-          />
-        );
-      })}
+  // Hvis node mangler, ikke tegn edge
+  if (!from || !to) return null;
 
-      {/* Tegner noder */}
-      {nodes.map((node, index) => (
-        <Node
-          key={`${node.id}-${index}`}
-          node={node}
-        />
-      ))}
+  return (
+    <Edge
+      key={`${edge.from}-${edge.to}-${index}`}
+      from={from}
+      to={to}
+    />
+  );
+})}
 
-    </svg>
+{/* Tegner noder */}
+{nodes.map((node, index) => (
+  <Node
+    key={`${node.id}-${index}`}
+    node={node}
+  />
+))}
+
+</svg>
+   </div>
   );
 }
