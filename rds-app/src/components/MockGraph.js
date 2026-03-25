@@ -9,19 +9,19 @@ export const mockGraph = {
     ],
   
     nodes: [
-      { id: "%DA1", label: "Spor" },
-      { id: "%DA2", label: "Sporveksel" },
-      { id: "%DA2.DA1", label: "Enkel sporveksel" },
-      { id: "%DA2.DA1.DA1", label: "Venstre" },
-      { id: "%DA2.DA1.DA2", label: "Høyre" },
-      { id: "%DA2.DA2", label: "Dobbel kryssveksel" },
-      { id: "%DA2.DA3", label: "Usymmetrisk dobbelveksel" },
-      { id: "%DA2.DA4", label: "Sporkryss" },
-      { id: "%DB1", label: "Sporvekselspor" },
-      { id: "%WRA1", label: "Sporgeometrielement" },
+      { id: "%DA1", name: "Spor", description: "nettverklink" },
+      { id: "%DA2", name: "Sporveksel", description: "nettverknode" },
+      { id: "%DA2.DA1", name: "Enkel sporveksel" },
+      { id: "%DA2.DA1.DA1", name: "Venstre" },
+      { id: "%DA2.DA1.DA2", name: "Høyre" },
+      { id: "%DA2.DA2", name: "Dobbel kryssveksel" },
+      { id: "%DA2.DA3", name: "Usymmetrisk dobbelveksel" },
+      { id: "%DA2.DA4", name: "Sporkryss" },
+      { id: "%DB1", name: "Sporvekselspor" },
+      { id: "%WRA1", name: "Sporgeometrielement" },
   
-      { id: "=R1", label: "Sporsystem" },
-      { id: "=R1.DA1", label: "Sporveksel 1" }
+      { id: "=R1", name: "Sporsystem" },
+      { id: "=R1.DA1", name: "Sporveksel 1" }
     ],
   
     relations: [
@@ -31,7 +31,6 @@ export const mockGraph = {
   
       { from: "=R1", to: "=R1.DA1" },
   
-      // eksempel på kryss-relasjon (som backend har)
       { from: "%DA2.DA1", to: "=R1.DA1", type: "cross" }
     ]
   };

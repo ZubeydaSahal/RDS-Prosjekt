@@ -45,12 +45,14 @@ const width = maxX - minX + padding * 2;
 const height = maxY - minY + padding * 2;
 
   return (
-   <div className="graph-container">
+   <div id="graph-wrapper" className="graph-container">
     
     <button onClick={() => setFitView(!fitView)}>
   {fitView ? "Scroll mode" : "Fit to screen"}
 </button>
 
+
+{/* #### SVG #### */}
 <svg
   width={fitView ? "100%" : width}
   height={fitView ? 600 : height}
@@ -59,8 +61,8 @@ const height = maxY - minY + padding * 2;
       ? `${minX - padding} ${minY - padding} ${width} ${height}`
       : undefined
   }
-  preserveAspectRatio="xMidYMid meet"
->   // scroll i trestukturen
+  preserveAspectRatio="xMidYMid meet"  // scroll i trestukturen
+>   
 
   
 {/* Tegner edges først (bak nodene) */}

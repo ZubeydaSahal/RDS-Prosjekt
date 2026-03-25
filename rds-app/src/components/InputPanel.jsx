@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toPng } from "html-to-image";
 
 export default function InputPanel({ setGraph }) {
 
@@ -50,6 +51,31 @@ export default function InputPanel({ setGraph }) {
     }
   };
 
+  {/* Funksjonen for å laste ned bilde (lastet ned bibilotek: html-to-image)*/}
+  const handleDownload = async () => {
+    const node = document.getElementById("graph-wrapper");
+  
+    if (!node) {
+      alert("Fant ikke grafen");
+      return;
+    }
+  
+    try {
+      const dataUrl = await toPng(node, {
+        cacheBust: true, // unngår cache-problemer
+      });
+  
+      const link = document.createElement("a");
+      link.download = "graph.png";
+      link.href = dataUrl;
+      link.click();
+  
+    } catch (err) {
+      console.error("Download failed:", err);
+      alert("Kunne ikke laste ned bilde");
+    }
+  };
+
   return (
     <div className="input-section">
 
@@ -69,10 +95,13 @@ export default function InputPanel({ setGraph }) {
         </div>
       )}
 
+      {/* Knapper */}
       <div className="buttons">
         <button onClick={handleBuild}>Bygg tre</button>
-        <button>Last ned som bilde</button>
-      </div>
+        <button onClick={handleDownload}>
+  Last ned som bilde
+</button>      
+</div>
 
     </div>
   );

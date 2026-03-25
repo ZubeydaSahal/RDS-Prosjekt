@@ -1,32 +1,20 @@
-export default function Edge({ from, to, label }) {
+export default function Edge({ from, to }) {
 
-    const startX = from.x + 70
-    const startY = from.y + 40
+    const midY = (from.y + to.y) / 2;
   
-    const endX = to.x + 70
-    const endY = to.y
-
-    const midX = (startX + endX) / 2
-    const midY = (startY + endY) / 2
+    const path = `
+      M ${from.x} ${from.y}
+      C ${from.x} ${midY},
+        ${to.x} ${midY},
+        ${to.x} ${to.y}
+    `;
+  
     return (
-        <g>
-            <path
-                d={`M ${startX} ${startY} V ${endY} H ${endX}`}
-                stroke="#444"
-                fill="none"
-            />
-
-            {label && (
-                <text
-                    x={midX}
-                    y={midY - 4}
-                    textAnchor="middle"
-                    fontSize="12"
-                >
-                    {label}
-                </text>
-            )}
-        </g>
-    )
-  
+      <path
+        d={path}
+        stroke="#bbb"
+        strokeWidth={1.5}
+        fill="none"
+      />
+    );
   }
