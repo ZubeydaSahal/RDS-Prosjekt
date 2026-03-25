@@ -11,9 +11,9 @@ public class GraphTest {
 
         // Test 1 — manuell graf
         GraphManager graph1 = new GraphManager();
-        graph1.createOrUpdateNode("AA", "{name:'Root'}", "D1");
-        graph1.createOrUpdateNode("AA.BB", "{name:'Child1'}", "D1");
-        graph1.createOrUpdateNode("AA.BB.CC", "{name:'Child2'}", "D1");
+        graph1.createOrUpdateNode("AA", "{name:'Root'}");
+        graph1.createOrUpdateNode("AA.BB", "{name:'Child1'}");
+        graph1.createOrUpdateNode("AA.BB.CC", "{name:'Child2'}");
         graph1.createRelation("AA", "AA.BB.CC", "cross");
 
         System.out.println("=== MANUELL GRAF ===");

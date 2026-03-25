@@ -15,14 +15,14 @@ public class GraphManager {
     private Set<Relation> relations = new HashSet<>();  // Relations
 
     // Node functions
-    public Node createOrUpdateNode(String id, String metadata, String aspect){
+    public Node createOrUpdateNode(String id, String metadata){
         Node node = nodes.get(id);  // Fetch this node from hashmap
 
         // Check if node exits
         if (node == null){
             // if not, create and add to 'nodes' hashmap
             System.out.println("creating new node" + id);
-            node = new Node(id, aspect);
+            node = new Node(id);
             nodes.put(id, node);
 
             // find parent and create relation  // TEMP - se TODO øverst
@@ -34,7 +34,7 @@ public class GraphManager {
                 System.out.println("Parent/root dont exist, this is parentID: " + parentId);
 
                 if(parent == null){  // handles non declared parent – to be replaced check TODO
-                    createOrUpdateNode(parentId, null, aspect);  // create parent node, with null metadata, same aspect
+                    createOrUpdateNode(parentId, null);  // create parent node, with null metadata, same aspect
                     System.out.println("not declared parentID: " + parentId);
                 }
 
@@ -61,6 +61,7 @@ public class GraphManager {
         return nodes.values();
     }
 
+    
 
     // Relation functions
     public Relation createRelation(String idA, String idB, String type){
@@ -76,12 +77,12 @@ public class GraphManager {
         // Konrad: midlertidig tatt bort kommentaren med de to første if-testene.
 
         if (nodeA == null){
-            createOrUpdateNode(idA, null, null);
+            createOrUpdateNode(idA, null);  // create nodeA with null metadata, aspect inferred from id
             nodeA = nodes.get(idA);  // update nodeA with created node
             System.out.println("created node A");
         }
         if (nodeB == null){
-            createOrUpdateNode(idB, null, null);
+            createOrUpdateNode(idB, null);  // create nodeB with null metadata, aspect inferred from id
             nodeB = nodes.get(idB);  // update nodeB with created node
             System.out.println("created node B");
         }
