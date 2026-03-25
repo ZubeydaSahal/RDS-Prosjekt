@@ -72,7 +72,7 @@ export function layoutTree(graph) {
       y
     });
 
-    // 🔥 FINN PARENT
+    // FINN PARENT
     const parts = node.id.split(".");
 
     if (parts.length === 1) {
