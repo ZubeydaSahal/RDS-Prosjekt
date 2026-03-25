@@ -1,6 +1,7 @@
 package com.rds.datastructure;
 
 import java.util.*;  // Dårlig praksis, should only import used tools
+import java.util.stream.Collectors;
 
 // TODO: Noder skal kunne opprettes implisitt AA.BB||K1, skal opprette alle noder og relasjoner som ikke eksiterer
 //  -> Dette var funksjonen til nodeChecker, må lage ordentlig
@@ -131,6 +132,49 @@ public class GraphManager {
             }
         }
     }
+
+    public Set<Relation> getFilteredRelations(Map<String, Boolean> filters) {
+    if (filters == null) {
+        return relations;
+    }
+    return relations.stream()
+        .filter(r -> {
+            String type = r.getType() == null ? "" : r.getType();
+            Boolean show = filters.get(type);
+
+            // hvis ikke spesifisert → vis
+            if (show == null) {
+                return true;
+            }
+
+            return show;
+        })
+        .collect(Collectors.toSet());
+}
+  // filter for aspect 
+  public Map<String, Node> getFilteredNodesByAspect(Map<String, Boolean> filters) {
+    if (filters == null) {
+        return nodes;
+    }
+
+    return nodes.entrySet().stream()
+        .filter(entry -> {
+            Node node = entry.getValue();
+
+            String aspect = node.getAspect();
+            Boolean show = filters.get(aspect);
+
+            if (show == null) {
+                return true;
+            }
+
+            return show;
+        })
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            Map.Entry::getValue
+        ));
+}
 
 
 
