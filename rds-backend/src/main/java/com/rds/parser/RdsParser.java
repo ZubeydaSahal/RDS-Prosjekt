@@ -84,7 +84,7 @@ public class RdsParser {
                 currentFullId = currentFullId + "." + id;
             }
             
-            NodeChecker(currentFullId, name, graphManager); //creats or update node in graph manager 
+            NodeChecker(currentFullId, name, graphManager, aspect); //creats or update node in graph manager 
             
             // implicit relationship between nodes
             if (previousFullId != null){
@@ -100,8 +100,8 @@ public class RdsParser {
 }
 
     //creats or update node in graphmanger. 
-    private void NodeChecker(String fullId, String name, GraphManager graphManager) {
-        graphManager.createOrUpdateNode(fullId, name);
+    private void NodeChecker(String fullId, String name, GraphManager graphManager, String aspect) {
+        graphManager.createOrUpdateNode(fullId, name, aspect);
     }
     
 

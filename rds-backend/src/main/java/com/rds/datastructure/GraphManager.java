@@ -15,14 +15,14 @@ public class GraphManager {
     private Set<Relation> relations = new HashSet<>();  // Relations
 
     // Node functions
-    public Node createOrUpdateNode(String id, String metadata){
+    public Node createOrUpdateNode(String id, String metadata, String aspect){
         Node node = nodes.get(id);  // Fetch this node from hashmap
 
         // Check if node exits
         if (node == null){
             // if not, create and add to 'nodes' hashmap
             System.out.println("creating new node" + id);
-            node = new Node(id);
+            node = new Node(id, aspect);
             nodes.put(id, node);
 
             // find parent and create relation  // TEMP - se TODO øverst
@@ -34,7 +34,7 @@ public class GraphManager {
                 System.out.println("Parent/root dont exist, this is parentID: " + parentId);
 
                 if(parent == null){  // handles non declared parent – to be replaced check TODO
-                    createOrUpdateNode(parentId, null);
+                    createOrUpdateNode(parentId, null, aspect);  // create parent node, with null metadata, same aspect
                     System.out.println("not declared parentID: " + parentId);
                 }
 
@@ -76,12 +76,12 @@ public class GraphManager {
         // Konrad: midlertidig tatt bort kommentaren med de to første if-testene.
 
         if (nodeA == null){
-            createOrUpdateNode(idA, null);
+            createOrUpdateNode(idA, null, null);
             nodeA = nodes.get(idA);  // update nodeA with created node
             System.out.println("created node A");
         }
         if (nodeB == null){
-            createOrUpdateNode(idB, null);
+            createOrUpdateNode(idB, null, null);
             nodeB = nodes.get(idB);  // update nodeB with created node
             System.out.println("created node B");
         }
@@ -145,11 +145,10 @@ public class GraphManager {
     }*/
 
 
-     public Set<Relation> getFilteredRelations(Map<String, Boolean> filters) {
+    public Set<Relation> getFilteredRelations(Map<String, Boolean> filters) {
     if (filters == null) {
         return relations;
     }
-
     return relations.stream()
         .filter(r -> {
             String type = r.getType() == null ? "" : r.getType();
@@ -164,7 +163,30 @@ public class GraphManager {
         })
         .collect(Collectors.toSet());
 }
-  
+  // filter for aspect 
+  public Map<String, Node> getFilteredNodesByAspect(Map<String, Boolean> filters) {
+    if (filters == null) {
+        return nodes;
+    }
+
+    return nodes.entrySet().stream()
+        .filter(entry -> {
+            Node node = entry.getValue();
+
+            String aspect = node.getAspect();
+            Boolean show = filters.get(aspect);
+
+            if (show == null) {
+                return true;
+            }
+
+            return show;
+        })
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            Map.Entry::getValue
+        ));
+}
 
 
   

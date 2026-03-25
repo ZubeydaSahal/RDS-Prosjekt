@@ -29,6 +29,7 @@ Node {
     private final String code;  // c
     private final int level;    // node's hierarchical depth
     private String metadata;    // Extra data in JSON (name, ..)
+    private final String aspect; // Aspect of node, e.g: D1, D2, .. (to be used for filtering and visualization)
     // TODO: metadata is a placeholder for extra data (name, documentation etc.)
     @JsonIgnore
     private Set<Relation> relations = new HashSet<>();   // Nodes relations
@@ -36,8 +37,9 @@ Node {
 
 
     // Partial Constructor
-    public Node(String id){
+    public Node(String id, String aspect) {
         this.id = id;
+        this.aspect = aspect;
         // calculate level and code
         String[] parts = id.split("\\.");
         this.level = parts.length;
@@ -78,6 +80,11 @@ Node {
     public String getMetadata() {
         return metadata;
     }
+    public String getAspect() {
+        return aspect;
+        }
+
+
 
     // Define nodes as eqqual if 'id' is the same
     @Override
