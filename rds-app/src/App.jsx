@@ -10,45 +10,52 @@ import { useState } from "react";
 
 function App() {
 
-   /* 
+  /* 
   Kan fjerne denne kommentaren og slette testGraph under når backend er klar 
+  */
 
-  const [graph, setGraph] = useState({
-    nodes: [],
-    relations: []
-  }); */
+  // ----------------------------
+  // STATE FOR REKKEFØLGE AV ASPEKTER
+  // ----------------------------
+  // Denne styrer KUN visning i frontend (ikke backend-data)
+  const [aspectOrder, setAspectOrder] = useState(["=", "%", "-", "%%"]);
 
+
+  //  ---------------------------------
+  //GIR BRUKER MULIGHET TIL Å FLYTTE ASPEKTER I VILKÅRLIG REKKEFØLGE 
+  // -----------------------------------
   function moveLeft(index) {
     if (index === 0) return;
   
-    const newAspects = [...aspects];
+    const newOrder = [...aspectOrder];
+
+    // Bytter plass med elementet til venstre
+    [newOrder[index - 1], newOrder[index]] =
+      [newOrder[index], newOrder[index - 1]];
   
-    // bytt plass med elementet til venstre
-    [newAspects[index - 1], newAspects[index]] =
-      [newAspects[index], newAspects[index - 1]];
-  
-    setAspects(newAspects);
+    setAspectOrder(newOrder);
   }
   
+  // Flytter aspekt til høyre
   function moveRight(index) {
-    if (index === aspects.length - 1) return;
+    if (index === aspectOrder.length - 1) return;
   
-    const newAspects = [...aspects];
+    const newOrder = [...aspectOrder];
+
+    // Bytter plass med elementet til høyre
+    [newOrder[index], newOrder[index + 1]] =
+      [newOrder[index + 1], newOrder[index]];
   
-    // bytt plass med elementet til høyre
-    [newAspects[index], newAspects[index + 1]] =
-      [newAspects[index + 1], newAspects[index]];
-  
-    setAspects(newAspects);
+    setAspectOrder(newOrder);
   }
 
-  // State som holder grafdata
+
+  // ----------------------------
+  // STATE FOR GRAFDATA
+  // ----------------------------
   // Når backend er klar, vil denne bli satt fra API-respons
   const [graph, setGraph] = useState(mockGraph);  // slett når mockgraph slettes 
 
-  // State som bestemmer rekkefølgen på aspektene (kolonnene)
-  // Dette er frontend-logikk (visualisering), ikke backend-data
-  const [aspects, setAspects] = useState(["=", "%", "-", "%%"]);
 
   return (
     <div>
@@ -66,21 +73,37 @@ function App() {
         <div className="tree-section">
           <h2>Trestruktur</h2>
 
+          {/* ----------------------------
+              KONTROLLER FOR ASPEKT-REKKEFØLGE
+          ---------------------------- */}
           <div className="aspect-controls">
-  {aspects.map((aspect, index) => (
-    <div key={aspect} className="aspect-item">
 
-      <span>{aspect}</span>
+            {aspectOrder.map((aspect, index) => (
+              <div key={aspect} className="aspect-item">
 
-      <button onClick={() => moveLeft(index)}>←</button>
-      <button onClick={() => moveRight(index)}>→</button>
+                {/* Viser aspekt-id (% = - osv) */}
+                <span>{aspect}</span>
 
-    </div>
-  ))}
-</div>
+                {/* Knapper for å flytte aspekt */}
+                <button onClick={() => moveLeft(index)}>←</button>
+                <button onClick={() => moveRight(index)}>→</button>
 
-          {/* Sender både grafdata og aspekt-rekkefølge videre */}
-          <GraphView graph={graph} aspects={aspects} />
+              </div>
+            ))}
+
+          </div>
+
+
+          {/* ----------------------------
+              SENDER DATA TIL GRAPHVIEW
+          ---------------------------- */}
+          {/* graph = backend-data
+              aspectOrder = frontend sin visningsrekkefølge */}
+          <GraphView 
+            graph={graph} 
+            aspectOrder={aspectOrder} 
+          />
+
         </div>
 
       </div>
@@ -92,7 +115,3 @@ function App() {
 }
 
 export default App;
-
-
-
-

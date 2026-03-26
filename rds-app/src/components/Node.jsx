@@ -34,8 +34,8 @@ export default function Node({ node }) {
 
   // Type nodes
   const isAspect = node.id?.startsWith("aspect_");
-    const isRoot = node.id === node.label;
-
+  const isRoot = node.type === "root";
+  
   // Finn aspect key for header
   const aspectKey = isAspect ? node.id.replace("aspect_", "") : null;
 

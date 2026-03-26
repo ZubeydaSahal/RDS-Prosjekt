@@ -1,36 +1,44 @@
 export const mockGraph = {
-    root: "<Stasjon XCW>",
+    root: {
+      id: "XCW",
+      label: "Stasjon XCW"
+    },
   
     aspects: [
-      { type: "%", label: "Typeaspekt" },
-      { type: "=", label: "Funksjonsaspekt" },
-      { type: "-", label: "Produktaspekt" },
-      { type: "%%", label: "Typeaspekt (produkt)" }
+      { id: "%", label: "Typeaspekt", order: 0 },
+      { id: "=", label: "Funksjonsaspekt", order: 1 },
+      { id: "-", label: "Produktaspekt", order: 2 },
+      { id: "%%", label: "Typeaspekt (produkt)", order: 3 }
     ],
   
     nodes: [
-      { id: "%DA1", name: "Spor", description: "nettverklink" },
-      { id: "%DA2", name: "Sporveksel", description: "nettverknode" },
-      { id: "%DA2.DA1", name: "Enkel sporveksel" },
-      { id: "%DA2.DA1.DA1", name: "Venstre" },
-      { id: "%DA2.DA1.DA2", name: "Høyre" },
-      { id: "%DA2.DA2", name: "Dobbel kryssveksel" },
-      { id: "%DA2.DA3", name: "Usymmetrisk dobbelveksel" },
-      { id: "%DA2.DA4", name: "Sporkryss" },
-      { id: "%DB1", name: "Sporvekselspor" },
-      { id: "%WRA1", name: "Sporgeometrielement" },
+      { id: "%DA1", label: "Spor", aspect: "%" },
+      { id: "%DA2", label: "Sporveksel", aspect: "%" },
+      { id: "%DA2.DA1", label: "Enkel sporveksel", aspect: "%" },
   
-      { id: "=R1", name: "Sporsystem" },
-      { id: "=R1.DA1", name: "Sporveksel 1" }
+      { id: "=R1", label: "Sporsystem", aspect: "=" },
+      { id: "=R1.DA1", label: "Sporveksel 1", aspect: "=" }
     ],
   
     relations: [
-      { from: "%DA2", to: "%DA2.DA1" },
-      { from: "%DA2.DA1", to: "%DA2.DA1.DA1" },
-      { from: "%DA2.DA1", to: "%DA2.DA1.DA2" },
+      // root → aspects
+      { from: "XCW", to: "aspect_%", type: "root" },
+      { from: "XCW", to: "aspect_=", type: "root" },
+      { from: "XCW", to: "aspect_-", type: "root" },
+      { from: "XCW", to: "aspect_%%", type: "root" },
   
-      { from: "=R1", to: "=R1.DA1" },
+      // aspect → nodes
+      { from: "aspect_%", to: "%DA1", type: "belongs" },
+      { from: "aspect_%", to: "%DA2", type: "belongs" },
+      { from: "aspect_%", to: "%DA2.DA1", type: "belongs" },
   
+      { from: "aspect_=", to: "=R1", type: "belongs" },
+      { from: "aspect_=", to: "=R1.DA1", type: "belongs" },
+  
+      // hierarchy
+      { from: "%DA2", to: "%DA2.DA1", type: "hierarchy" },
+  
+      // cross
       { from: "%DA2.DA1", to: "=R1.DA1", type: "cross" }
     ]
   };

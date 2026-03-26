@@ -5,9 +5,9 @@ import Node from "./Node";
 import Edge from "./Edge";
 
 
-export default function GraphView({ graph, aspects }) {
+export default function GraphView({ graph, aspectOrder }) {
 
-  // Beregner layout kun når graph eller aspects endres
+  // Beregner layout kun når graph eller rekkefølge endres
   const layout = useMemo(() => {
 
     // Hvis ingen data, returner tom struktur
@@ -15,14 +15,19 @@ export default function GraphView({ graph, aspects }) {
       return { nodes: [], hierarchyEdges: [] };
     }
 
-    // Sender både graph og aspects til layout
-    return layoutTree({ ...graph, aspects });
+    // Sender både graph (backend-data) og aspectOrder (frontend-visning)
+    return layoutTree({
+      ...graph,
+      aspectOrder
+    });
 
-  }, [graph, aspects]);
+  }, [graph, aspectOrder]);
+
 
   // Hent noder og edges fra layout
   const nodes = layout.nodes || [];
   const relations = layout.hierarchyEdges || [];
+
 
   // Lager oppslagskart for rask tilgang til noder via id
   const nodeMap = Object.fromEntries(
@@ -30,68 +35,78 @@ export default function GraphView({ graph, aspects }) {
   );
 
 
+  // State for visning (fit vs scroll)
   const [fitView, setFitView] = useState(true);
-  // plasser trestukturen innenfor boksen både vertikalt og horisontalt 
+
+
+  // Finn ytterpunkter i grafen (brukes til zoom/fit)
   const minX = Math.min(...nodes.map(n => n.x || 0), 0);
-const maxX = Math.max(...nodes.map(n => n.x || 0), 1400);
+  const maxX = Math.max(...nodes.map(n => n.x || 0), 1400);
 
-const minY = Math.min(...nodes.map(n => n.y || 0), 0);
-const maxY = Math.max(...nodes.map(n => n.y || 0), 800);
+  const minY = Math.min(...nodes.map(n => n.y || 0), 0);
+  const maxY = Math.max(...nodes.map(n => n.y || 0), 800);
 
-// padding rundt grafen
-const padding = 100;
 
-const width = maxX - minX + padding * 2;
-const height = maxY - minY + padding * 2;
+  // Padding rundt grafen
+  const padding = 100;
+
+  const width = maxX - minX + padding * 2;
+  const height = maxY - minY + padding * 2;
+
 
   return (
-   <div id="graph-wrapper" className="graph-container">
-    
-    <button onClick={() => setFitView(!fitView)}>
-  {fitView ? "Scroll mode" : "Fit to screen"}
-</button>
+    <div id="graph-wrapper" className="graph-container">
+
+      {/* Knapp for å bytte visning */}
+      <button onClick={() => setFitView(!fitView)}>
+        {fitView ? "Scroll mode" : "Fit to screen"}
+      </button>
 
 
-{/* #### SVG #### */}
-<svg
-  width={fitView ? "100%" : width}
-  height={fitView ? 600 : height}
-  viewBox={
-    fitView
-      ? `${minX - padding} ${minY - padding} ${width} ${height}`
-      : undefined
-  }
-  preserveAspectRatio="xMidYMid meet"  // scroll i trestukturen
->   
+      {/* SVG som tegner grafen */}
+      <svg
+        width={fitView ? "100%" : width}
+        height={fitView ? 600 : height}
+        viewBox={
+          fitView
+            ? `${minX - padding} ${minY - padding} ${width} ${height}`
+            : undefined
+        }
+        preserveAspectRatio="xMidYMid meet"
+      >
 
-  
-{/* Tegner edges først (bak nodene) */}
-{relations.map((edge, index) => {
+        {/* Tegner edges først (bak nodene) */}
+        {relations.map((edge, index) => {
 
-  const from = nodeMap[edge.from];
-  const to = nodeMap[edge.to];
+          // Hvis edge mangler data, hopp over
+          if (!edge.from || !edge.to) return null;
 
-  // Hvis node mangler, ikke tegn edge
-  if (!from || !to) return null;
+          const from = nodeMap[edge.from];
+          const to = nodeMap[edge.to];
 
-  return (
-    <Edge
-      key={`${edge.from}-${edge.to}-${index}`}
-      from={from}
-      to={to}
-    />
-  );
-})}
+          // Hvis node ikke finnes, ikke tegn edge
+          if (!from || !to) return null;
 
-{/* Tegner noder */}
-{nodes.map((node, index) => (
-  <Node
-    key={`${node.id}-${index}`}
-    node={node}
-  />
-))}
+          return (
+            <Edge
+              key={`${edge.from}-${edge.to}-${index}`}
+              from={from}
+              to={to}
+              type={edge.type}
+            />
+          );
+        })}
 
-</svg>
-   </div>
+
+        {/* Tegner noder */}
+        {nodes.map((node, index) => (
+          <Node
+            key={`${node.id}-${index}`}
+            node={node}
+          />
+        ))}
+
+      </svg>
+    </div>
   );
 }
