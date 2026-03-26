@@ -33,8 +33,8 @@ export default function Node({ node }) {
   const strokeColor = aspectColors[aspect] || "#888";
 
   // Type nodes
-  const isAspect = node.id.startsWith("aspect_");
-  const isRoot = node.id === node.label;
+  const isAspect = node.id?.startsWith("aspect_");
+    const isRoot = node.id === node.label;
 
   // Finn aspect key for header
   const aspectKey = isAspect ? node.id.replace("aspect_", "") : null;
