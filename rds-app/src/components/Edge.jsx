@@ -3,13 +3,11 @@ export default function Edge({ from, to, type }) {
     // Midtpunkt mellom noder (brukes for buet linje)
     const midY = (from.y + to.y) / 2;
   
-    // Lager en kurvet path mellom nodene
+    // Lager en path mellom nodene
     const path = `
-      M ${from.x} ${from.y}
-      C ${from.x} ${midY},
-        ${to.x} ${midY},
-        ${to.x} ${to.y}
-    `;
+  M ${from.x} ${from.y}
+  L ${to.x} ${to.y}
+`;
   
     // Farge basert på type relasjon
     const stroke =
