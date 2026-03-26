@@ -10,14 +10,6 @@ import { useState } from "react";
 
 function App() {
   // ----------------------------
-  // TOGGLE MELLOM MOCK OG BACKEND
-  // ----------------------------
-  // true = bruker mockGraph
-  // false = bruker backend-data
-  const USE_MOCK = true;
-
-
-  // ----------------------------
   // STATE FOR REKKEFØLGE AV ASPEKTER
   // ----------------------------
   // Denne styrer KUN visning i frontend (ikke backend-data)
@@ -62,9 +54,9 @@ function App() {
 
 
   // ----------------------------
-  // VELGER HVILKEN GRAF SOM SKAL VISES
+  //// Hvis backendGraph finnes → bruk backend
+  // Hvis ikke → fallback til mockGraph
   // ----------------------------
-
   const graph = backendGraph || mockGraph; //############## Hvis noe skrives inn i input feltet brukes det, hvis ikke er det mockgraph
 
 
