@@ -9,10 +9,13 @@ import { mockGraph } from "./components/MockGraph"; // slett når mockgraph slet
 import { useState } from "react";
 
 function App() {
+  // ----------------------------
+  // TOGGLE MELLOM MOCK OG BACKEND
+  // ----------------------------
+  // true = bruker mockGraph
+  // false = bruker backend-data
+  const USE_MOCK = true;
 
-  /* 
-  Kan fjerne denne kommentaren og slette testGraph under når backend er klar 
-  */
 
   // ----------------------------
   // STATE FOR REKKEFØLGE AV ASPEKTER
@@ -21,9 +24,9 @@ function App() {
   const [aspectOrder, setAspectOrder] = useState(["=", "%", "-", "%%"]);
 
 
-  //  ---------------------------------
-  //GIR BRUKER MULIGHET TIL Å FLYTTE ASPEKTER I VILKÅRLIG REKKEFØLGE 
-  // -----------------------------------
+  // ---------------------------------
+  // GIR BRUKER MULIGHET TIL Å FLYTTE ASPEKTER I VILKÅRLIG REKKEFØLGE 
+  // ---------------------------------
   function moveLeft(index) {
     if (index === 0) return;
   
@@ -36,6 +39,7 @@ function App() {
     setAspectOrder(newOrder);
   }
   
+
   // Flytter aspekt til høyre
   function moveRight(index) {
     if (index === aspectOrder.length - 1) return;
@@ -53,8 +57,15 @@ function App() {
   // ----------------------------
   // STATE FOR GRAFDATA
   // ----------------------------
-  // Når backend er klar, vil denne bli satt fra API-respons
-  const [graph, setGraph] = useState(mockGraph);  // slett når mockgraph slettes 
+  // Starter med mock hvis toggle er true
+  const [backendGraph, setBackendGraph] = useState(null);
+
+
+  // ----------------------------
+  // VELGER HVILKEN GRAF SOM SKAL VISES
+  // ----------------------------
+
+  const graph = backendGraph || mockGraph; //############## Hvis noe skrives inn i input feltet brukes det, hvis ikke er det mockgraph
 
 
   return (
@@ -66,8 +77,8 @@ function App() {
       {/* Hovedlayout med input til venstre og graf til høyre */}
       <div className="layout">
 
-        {/* InputPanel sender tekst til backend og oppdaterer graph */}
-        <InputPanel setGraph={setGraph} />
+        {/* InputPanel er ALLTID synlig */}
+        <InputPanel setGraph={setBackendGraph} />
 
         {/* Seksjon for visualisering */}
         <div className="tree-section">
@@ -95,14 +106,16 @@ function App() {
 
 
           {/* ----------------------------
-              SENDER DATA TIL GRAPHVIEW
+              VISER GRAF HVIS DATA FINNES
           ---------------------------- */}
-          {/* graph = backend-data
-              aspectOrder = frontend sin visningsrekkefølge */}
-          <GraphView 
-            graph={graph} 
-            aspectOrder={aspectOrder} 
-          />
+          {graph ? (
+            <GraphView 
+              graph={graph} 
+              aspectOrder={aspectOrder} 
+            />
+          ) : (
+            <p>Ingen graf lastet</p>
+          )}
 
         </div>
 

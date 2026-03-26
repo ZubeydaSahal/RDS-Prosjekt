@@ -1,5 +1,15 @@
 export function layoutTree(graph) {
 
+  if (!graph.root || !graph.nodes) {
+    console.log("Ugyldig backend-data");
+    return { nodes: [], hierarchyEdges: [] };
+  }
+
+  if (!graph.aspects) {
+    console.log("Backend mangler aspects");
+    return { nodes: [], hierarchyEdges: [] };
+  }
+
   // Hvis graf mangler eller ikke inneholder noder, returner tomt resultat
   if (!graph || !graph.nodes) {
     console.log("Ingen graph eller nodes");
