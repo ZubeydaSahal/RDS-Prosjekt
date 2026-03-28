@@ -68,7 +68,7 @@ function App() {
   // State som holder grafdata
   // Når backend er klar, vil denne bli satt fra API-respons
   const [graph, setGraph] = useState(testGraph);
-
+const [hasUserInput, setHasUserInput] = useState(false);
   // State som bestemmer rekkefølgen på aspektene (kolonnene)
   // Dette er frontend-logikk (visualisering), ikke backend-data
   const [aspects, setAspects] = useState(["=", "%", "-", "%%"]);
@@ -83,7 +83,10 @@ function App() {
       <div className="layout">
 
         {/* InputPanel sender tekst til backend og oppdaterer graph */}
-        <InputPanel setGraph={setGraph} />
+        <InputPanel 
+  setGraph={setGraph}
+  setHasUserInput={setHasUserInput}
+/>
 
         {/* Seksjon for visualisering */}
         <div className="tree-section">
@@ -103,8 +106,10 @@ function App() {
 </div>
 
           {/* Sender både grafdata og aspekt-rekkefølge videre */}
-          <GraphView graph={graph} aspects={aspects} />
-        </div>
+          <GraphView 
+  graph={hasUserInput ? graph : testGraph}
+  aspects={aspects}
+/>        </div>
 
       </div>
 

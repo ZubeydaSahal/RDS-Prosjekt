@@ -84,24 +84,24 @@ public class RdsParser {
                 currentFullId = currentFullId + "." + id;
             }
             
-            NodeChecker(currentFullId, name, graphManager); //creats or update node in graph manager 
+            NodeChecker(currentFullId, aspect, name, graphManager); //creats or update node in graph manager
             
             // implicit relationship between nodes
             if (previousFullId != null){
-                RelationChecker(previousFullId, currentFullId, "implisitt", graphManager);
+                RelationChecker(previousFullId, aspect, currentFullId, aspect, null, graphManager);
             }
             previousFullId = currentFullId; //update previousid
         }
     }
     //creats relation bewteen nodes in graphmanger
     //creats nodes only when nodes exist
-    private void RelationChecker(String fromId, String toId, String type, GraphManager graphManager) {
-        graphManager.createRelation(fromId, toId, type);
+    private void RelationChecker(String fromId, String aspectFrom, String toId, String aspectTo, String type, GraphManager graphManager) {
+        graphManager.createRelation(fromId, aspectFrom, toId, aspectTo, type);
 }
 
     //creats or update node in graphmanger. 
-    private void NodeChecker(String fullId, String name, GraphManager graphManager) {
-        graphManager.createOrUpdateNode(fullId, name);
+    private void NodeChecker(String fullId, String aspect, String name, GraphManager graphManager) {
+        graphManager.createOrUpdateNode(fullId, aspect, name);
     }
     
 
@@ -131,7 +131,7 @@ public class RdsParser {
         String rightLastId=rightNodeAspect+rightSide.split("\\.")[rightSide.split("\\.").length-1];
 
         //Creats explicit relation 
-        RelationChecker(leftLastId,rightLastId,relationName, graphmanger);
+        RelationChecker(leftLastId, null,rightLastId, null,relationName, graphmanger);
         
     }
 

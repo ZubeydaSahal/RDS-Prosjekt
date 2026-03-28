@@ -20,8 +20,9 @@ export default function GraphView({ graph, aspects }) {
   }, [graph, aspects]);
 
   // Hent noder og edges fra layout
-  const nodes = layout.nodes || [];
-  const relations = layout.hierarchyEdges || [];
+  const nodes = layout.nodes || []
+const relations = layout.hierarchyEdges || []
+const groups = layout.groups || []
 
   // Lager oppslagskart for rask tilgang til noder via id
   const nodeMap = Object.fromEntries(
