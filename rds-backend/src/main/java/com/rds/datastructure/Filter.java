@@ -24,6 +24,9 @@ public class Filter {
     public Map<String, Boolean> getAspectFilters() {
         return aspectFilters;
     }
+    public void setAspectFilters(Map<String, Boolean> aspectFilters) {
+        this.aspectFilters = aspectFilters;
+    }
     
 
 }
