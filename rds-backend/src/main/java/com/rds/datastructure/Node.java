@@ -93,11 +93,7 @@ Node {
     public String getMetadata() {
         return metadata;
     }
-    public String getAspect() {
-        return String.valueOf(id.charAt(0));
-    }   
-
-
+  
 
     // Define nodes as eqqual if 'id' is the same
     @Override
