@@ -3,6 +3,7 @@ import GraphView from "./components/GraphView";
 import InputPanel from "./components/InputPanel.jsx";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
+import FilterDropdown from "./components/FilterDropdown.jsx";
 
 // Importerer React hooks
 import { useState } from "react";
@@ -11,7 +12,7 @@ import { useState } from "react";
 // Denne skal fjernes når backend er ferdig
 const testGraph = {
   root: "<Stasjon XCW>",
-
+ 
   // Liste med noder (elementer i grafen)
   nodes: [
     { id: "%DA1", label: "Spor" },
@@ -20,7 +21,6 @@ const testGraph = {
     { id: "%DA2.DA1.DA1", label: "Venstre" },
     { id: "%DA2.DA1.DA2", label: "Høyre" }
   ],
-
   // Relasjoner mellom noder (kan brukes til å tegne forbindelser)
   relations: [
     { from: "<Stasjon XCW>", to: "%DA1" },
@@ -33,83 +33,92 @@ const testGraph = {
 
 function App() {
 
-   /* 
-  Kan fjerne denne kommentaren og slette testGraph under når backend er klar 
-
-  const [graph, setGraph] = useState({
+    /* 
+  Kan fjerne denne kommentaren og slette testGraph under når backend er klar
+   const [graph, setGraph] = useState({
     nodes: [],
     relations: []
   }); */
 
+  // State som holder grafdata
+  const [graph, setGraph]               = useState(testGraph);
+  const [hasUserInput, setHasUserInput] = useState(false);
+
+  // State som bestemmer rekkefølgen på aspektene (kolonnene)
+  const [aspects, setAspects] = useState(["=", "%", "-", "$"]);
+
+  // State for filter
+  const [activeAspect,   setActiveAspect]   = useState(["=", "%", "-", "$"]);
+  const [activeRelation, setActiveRelation] = useState(["cross", "hierarchy"]);
+
   function moveLeft(index) {
     if (index === 0) return;
-  
     const newAspects = [...aspects];
-  
-    // bytt plass med elementet til venstre
     [newAspects[index - 1], newAspects[index]] =
       [newAspects[index], newAspects[index - 1]];
-  
-    setAspects(newAspects);
-  }
-  
-  function moveRight(index) {
-    if (index === aspects.length - 1) return;
-  
-    const newAspects = [...aspects];
-  
-    // bytt plass med elementet til høyre
-    [newAspects[index], newAspects[index + 1]] =
-      [newAspects[index + 1], newAspects[index]];
-  
     setAspects(newAspects);
   }
 
-  // State som holder grafdata
-  // Når backend er klar, vil denne bli satt fra API-respons
-  const [graph, setGraph] = useState(testGraph);
-const [hasUserInput, setHasUserInput] = useState(false);
-  // State som bestemmer rekkefølgen på aspektene (kolonnene)
-  // Dette er frontend-logikk (visualisering), ikke backend-data
-  const [aspects, setAspects] = useState(["=", "%", "-", "%%"]);
+  function moveRight(index) {
+    if (index === aspects.length - 1) return;
+    const newAspects = [...aspects];
+    [newAspects[index], newAspects[index + 1]] =
+      [newAspects[index + 1], newAspects[index]];
+    setAspects(newAspects);
+  }
 
   return (
     <div>
 
       {/* Toppmeny */}
-      <Navbar/>
+      <Navbar />
 
       {/* Hovedlayout med input til venstre og graf til høyre */}
       <div className="layout">
 
-        {/* InputPanel sender tekst til backend og oppdaterer graph */}
-        <InputPanel 
-  setGraph={setGraph}
-  setHasUserInput={setHasUserInput}
-/>
+        {/* Venstre panel */}
+        <div className="input-section">
+
+          {/* Filter dropdown */}
+          <FilterDropdown
+            activeAspect={activeAspect}
+            setActiveAspect={setActiveAspect}
+            activeRelation={activeRelation}
+            setActiveRelation={setActiveRelation}
+          />
+
+          {/* InputPanel sender tekst til backend og oppdaterer graph */}
+          <InputPanel
+            setGraph={setGraph}
+            setHasUserInput={setHasUserInput}
+            activeAspect={activeAspect}
+            activeRelation={activeRelation}
+          />
+
+        </div>
 
         {/* Seksjon for visualisering */}
         <div className="tree-section">
           <h2>Trestruktur</h2>
 
           <div className="aspect-controls">
-  {aspects.map((aspect, index) => (
-    <div key={aspect} className="aspect-item">
+            {aspects.map((aspect, index) => (
+              <div key={aspect} className="aspect-item">
+                <span>{aspect}</span>
+                <button onClick={() => moveLeft(index)}>←</button>
+                <button onClick={() => moveRight(index)}>→</button>
+              </div>
+            ))}
+          </div>
 
-      <span>{aspect}</span>
+          {/* Sender grafdata, aspekt-rekkefølge og aktive relasjoner videre */}
+          <GraphView
+            graph={hasUserInput ? graph : testGraph}
+            aspects={aspects}
+            activeRelation={activeRelation}
+          />
 
-      <button onClick={() => moveLeft(index)}>←</button>
-      <button onClick={() => moveRight(index)}>→</button>
-
-    </div>
-  ))}
-</div>
-
-          {/* Sender både grafdata og aspekt-rekkefølge videre */}
-          <GraphView 
-  graph={hasUserInput ? graph : testGraph}
-  aspects={aspects}
-/>        </div>
+        </div>
 
       </div>
 
@@ -120,7 +129,3 @@ const [hasUserInput, setHasUserInput] = useState(false);
 }
 
 export default App;
-
-
-
-

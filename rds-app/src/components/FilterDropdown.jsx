@@ -13,14 +13,14 @@ const RELATIONS = [
 ];
 
 export default function FilterDropdown({
-  activeAspects,    setActiveAspects,
-  activeRelations,  setActiveRelations,
+  activeAspect = [], setActiveAspect,
+  activeRelation = [], setActiveRelation,
 }) {
   const [open, setOpen] = useState(false);
 
   // Lokale kopier mens dropdown er åpen
-  const [pendingAspects,   setPendingAspects]   = useState(activeAspects);
-  const [pendingRelations, setPendingRelations] = useState(activeRelations);
+  const [pendingAspect,   setPendingAspect]   = useState(activeAspect);
+  const [pendingRelation, setPendingRelation] = useState(activeRelation);
 
   const ref = useRef(null);
 
@@ -29,41 +29,40 @@ export default function FilterDropdown({
     function handleClickOutside(e) {
       if (ref.current && !ref.current.contains(e.target)) {
         setOpen(false);
-        // reset pending
-        setPendingAspects(activeAspects);
-        setPendingRelations(activeRelations);
+        setPendingAspect(activeAspect);
+        setPendingRelation(activeRelation);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [activeAspects, activeRelations]);
+  }, [activeAspect, activeRelation]);
 
   function toggleAspect(symbol) {
-    setPendingAspects(prev =>
+    setPendingAspect(prev =>
       prev.includes(symbol) ? prev.filter(a => a !== symbol) : [...prev, symbol]
     );
   }
 
   function toggleRelation(type) {
-    setPendingRelations(prev =>
+    setPendingRelation(prev =>
       prev.includes(type) ? prev.filter(r => r !== type) : [...prev, type]
     );
   }
 
   function handleApply() {
-    setActiveAspects(pendingAspects);
-    setActiveRelations(pendingRelations);
+    setActiveAspect(pendingAspect);
+    setActiveRelation(pendingRelation);
     setOpen(false);
   }
 
   function handleOpen() {
-    setPendingAspects(activeAspects);
-    setPendingRelations(activeRelations);
+    setPendingAspect(activeAspect);
+    setPendingRelation(activeRelation);
     setOpen(o => !o);
   }
 
   // Tell hvor mange filtre som er skrudd av
-  const totalActive = activeAspects.length + activeRelations.length;
+  const totalActive = activeAspect.length + activeRelation.length;
   const totalAll    = ASPECTS.length + RELATIONS.length;
   const hasFilter   = totalActive < totalAll;
 
@@ -83,7 +82,7 @@ export default function FilterDropdown({
       {open && (
         <div className="fd-dropdown">
 
-          {/* ── Aspekter ── */}
+          {/* Aspekter */}
           <p className="fd-section-title">Aspekter</p>
           <ul className="fd-list">
             {ASPECTS.map(({ symbol, label }) => (
@@ -91,7 +90,7 @@ export default function FilterDropdown({
                 <label className="fd-item">
                   <input
                     type="checkbox"
-                    checked={pendingAspects.includes(symbol)}
+                    checked={pendingAspect.includes(symbol)}
                     onChange={() => toggleAspect(symbol)}
                   />
                   <span className="fd-symbol">{symbol}</span>
@@ -103,7 +102,7 @@ export default function FilterDropdown({
 
           <div className="fd-divider" />
 
-          {/* ── Relasjoner ── */}
+          {/* Relasjoner */}
           <p className="fd-section-title">Relasjoner</p>
           <ul className="fd-list">
             {RELATIONS.map(({ type, label }) => (
@@ -111,7 +110,7 @@ export default function FilterDropdown({
                 <label className="fd-item">
                   <input
                     type="checkbox"
-                    checked={pendingRelations.includes(type)}
+                    checked={pendingRelation.includes(type)}
                     onChange={() => toggleRelation(type)}
                   />
                   <span className="fd-label">{label}</span>
