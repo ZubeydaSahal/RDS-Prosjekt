@@ -71,15 +71,30 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-// KOBLE FORELDER → BARN
+// KOBLE FORELDER → BARN (fra ID)
 // ----------------------------
-hierarchyEdges.forEach(edge => {
-  if (edge.type === "hierarchy") {
-    if (nodeMap[edge.from] && nodeMap[edge.to]) {
-      nodeMap[edge.from].children.push(nodeMap[edge.to]);
-    }
+const generatedHierarchyEdges = [];
+
+graph.nodes.forEach(n => {
+  const parts = n.id.split(".");
+  parts.pop();
+
+  const parentId = parts.join(".");
+
+  if (nodeMap[parentId]) {
+
+    // Koble i tre
+    nodeMap[parentId].children.push(nodeMap[n.id]);
+
+    // GENERER EDGE
+    generatedHierarchyEdges.push({
+      from: parentId,
+      to: n.id,
+      type: "hierarchy"
+    });
   }
 });
+
 
   // ----------------------------
   // FINN ROOT NODER PER ASPEKT
@@ -88,10 +103,15 @@ hierarchyEdges.forEach(edge => {
 
   aspects.forEach(a => {
     rootsByAspect[a.id] = graph.nodes.filter(n => {
+  
       if (n.aspect !== a.id) return false;
-
-      const parentId = n.id.split(".").slice(0, -1).join(".");
-      return !nodeMap[parentId];
+  
+      // node er root hvis INGEN peker til den via hierarchy
+      const hasParent = hierarchyEdges.some(e =>
+        e.to === n.id && e.type === "hierarchy"
+      );
+  
+      return !hasParent;
     });
   });
 
@@ -154,7 +174,10 @@ hierarchyEdges.forEach(edge => {
   
   return {
     nodes,
-    hierarchyEdges
+    hierarchyEdges: [
+      ...generatedHierarchyEdges,
+      ...hierarchyEdges.filter(e => e.type !== "hierarchy")
+    ]
   };
 } 
 
