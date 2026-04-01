@@ -46,9 +46,10 @@ body {
   background-color:  rgb(223, 240, 245);
 }
 
+/* Trestruktur boks */ 
 .graph-container {
   height: 600px;        /* fast høyde på visning */
-  overflow: auto;       /* scroll når grafen blir stor */
+  overflow: auto;       /* scroll når grafen blir stor:vertikalt og horisontalt */
   background: white;
   border: 1px solid #ccc;
 }
