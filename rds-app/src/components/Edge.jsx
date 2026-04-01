@@ -44,7 +44,7 @@ export default function Edge({ from, to, type }) {
   }
 
 
-// Gir rette streker mellom relasjoner 
+// Gir rette streker mellom relasjoner
 /* 
 export default function Edge({ from, to, type }) {
 
