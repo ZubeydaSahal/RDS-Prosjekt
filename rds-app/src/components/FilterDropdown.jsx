@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 
 const ASPECTS = [
-  { symbol: "=", label: "Funksjon" },
-  { symbol: "%", label: "Plassering" },
-  { symbol: "-", label: "Produkt" },
-  { symbol: "$", label: "Økonomi" },
+  { symbol: "=", label: "Funksjon aspektet" },
+  { symbol: "%", label: "Type aspekt for funksjon aspekt" },
+  { symbol: "-", label: "produktapektet" },
+  { symbol: "%%", label: "Type aspekt for produktaspekt "},
 ];
 
 const RELATIONS = [
