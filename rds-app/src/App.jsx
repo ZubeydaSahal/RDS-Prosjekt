@@ -3,75 +3,62 @@ import GraphView from "./components/GraphView";
 import InputPanel from "./components/InputPanel.jsx";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
+import { mockGraph } from "./components/MockGraph"; // slett når mockgraph slettes 
 
 // Importerer React hooks
 import { useState } from "react";
 
-// Midlertidig testdata for å kunne utvikle frontend uten backend
-// Denne skal fjernes når backend er ferdig
-const testGraph = {
-  root: "<Stasjon XCW>",
-
-  // Liste med noder (elementer i grafen)
-  nodes: [
-    { id: "%DA1", label: "Spor" },
-    { id: "%DA2", label: "Sporveksel" },
-    { id: "%DA2.DA1", label: "Enkel" },
-    { id: "%DA2.DA1.DA1", label: "Venstre" },
-    { id: "%DA2.DA1.DA2", label: "Høyre" }
-  ],
-
-  // Relasjoner mellom noder (kan brukes til å tegne forbindelser)
-  relations: [
-    { from: "<Stasjon XCW>", to: "%DA1" },
-    { from: "<Stasjon XCW>", to: "%DA2" },
-    { from: "%DA2", to: "%DA2.DA1" },
-    { from: "%DA2.DA1", to: "%DA2.DA1.DA1" },
-    { from: "%DA2.DA1", to: "%DA2.DA1.DA2" }
-  ]
-};
-
 function App() {
+  // ----------------------------
+  // STATE FOR REKKEFØLGE AV ASPEKTER
+  // ----------------------------
+  // Denne styrer KUN visning i frontend (ikke backend-data)
+  const [aspectOrder, setAspectOrder] = useState(["=", "%", "-", "%%"]);
 
-   /* 
-  Kan fjerne denne kommentaren og slette testGraph under når backend er klar 
 
-  const [graph, setGraph] = useState({
-    nodes: [],
-    relations: []
-  }); */
-
+  // ---------------------------------
+  // GIR BRUKER MULIGHET TIL Å FLYTTE ASPEKTER I VILKÅRLIG REKKEFØLGE 
+  // ---------------------------------
   function moveLeft(index) {
     if (index === 0) return;
   
-    const newAspects = [...aspects];
+    const newOrder = [...aspectOrder];
+
+    // Bytter plass med elementet til venstre
+    [newOrder[index - 1], newOrder[index]] =
+      [newOrder[index], newOrder[index - 1]];
   
-    // bytt plass med elementet til venstre
-    [newAspects[index - 1], newAspects[index]] =
-      [newAspects[index], newAspects[index - 1]];
-  
-    setAspects(newAspects);
+    setAspectOrder(newOrder);
   }
   
+
+  // Flytter aspekt til høyre
   function moveRight(index) {
-    if (index === aspects.length - 1) return;
+    if (index === aspectOrder.length - 1) return;
   
-    const newAspects = [...aspects];
+    const newOrder = [...aspectOrder];
+
+    // Bytter plass med elementet til høyre
+    [newOrder[index], newOrder[index + 1]] =
+      [newOrder[index + 1], newOrder[index]];
   
-    // bytt plass med elementet til høyre
-    [newAspects[index], newAspects[index + 1]] =
-      [newAspects[index + 1], newAspects[index]];
-  
-    setAspects(newAspects);
+    setAspectOrder(newOrder);
   }
 
-  // State som holder grafdata
-  // Når backend er klar, vil denne bli satt fra API-respons
-  const [graph, setGraph] = useState(testGraph);
-const [hasUserInput, setHasUserInput] = useState(false);
-  // State som bestemmer rekkefølgen på aspektene (kolonnene)
-  // Dette er frontend-logikk (visualisering), ikke backend-data
-  const [aspects, setAspects] = useState(["=", "%", "-", "%%"]);
+
+  // ----------------------------
+  // STATE FOR GRAFDATA
+  // ----------------------------
+  // Starter med mock hvis toggle er true
+  const [backendGraph, setBackendGraph] = useState(null);
+
+
+  // ----------------------------
+  //// Hvis backendGraph finnes → bruk backend
+  // Hvis ikke → fallback til mockGraph
+  // ----------------------------
+  const graph = backendGraph || mockGraph; //############## Hvis noe skrives inn i input feltet brukes det, hvis ikke er det mockgraph
+
 
   return (
     <div>
@@ -82,34 +69,47 @@ const [hasUserInput, setHasUserInput] = useState(false);
       {/* Hovedlayout med input til venstre og graf til høyre */}
       <div className="layout">
 
-        {/* InputPanel sender tekst til backend og oppdaterer graph */}
-        <InputPanel 
-  setGraph={setGraph}
-  setHasUserInput={setHasUserInput}
-/>
+        {/* InputPanel er ALLTID synlig */}
+        <InputPanel setGraph={setBackendGraph} />
 
         {/* Seksjon for visualisering */}
         <div className="tree-section">
           <h2>Trestruktur</h2>
 
+          {/* ----------------------------
+              KONTROLLER FOR ASPEKT-REKKEFØLGE
+          ---------------------------- */}
           <div className="aspect-controls">
-  {aspects.map((aspect, index) => (
-    <div key={aspect} className="aspect-item">
 
-      <span>{aspect}</span>
+            {aspectOrder.map((aspect, index) => (
+              <div key={aspect} className="aspect-item">
 
-      <button onClick={() => moveLeft(index)}>←</button>
-      <button onClick={() => moveRight(index)}>→</button>
+                {/* Viser aspekt-id (% = - osv) */}
+                <span>{aspect}</span>
 
-    </div>
-  ))}
-</div>
+                {/* Knapper for å flytte aspekt */}
+                <button onClick={() => moveLeft(index)}>←</button>
+                <button onClick={() => moveRight(index)}>→</button>
 
-          {/* Sender både grafdata og aspekt-rekkefølge videre */}
-          <GraphView 
-  graph={hasUserInput ? graph : testGraph}
-  aspects={aspects}
-/>        </div>
+              </div>
+            ))}
+
+          </div>
+
+
+          {/* ----------------------------
+              VISER GRAF HVIS DATA FINNES
+          ---------------------------- */}
+          {graph ? (
+            <GraphView 
+              graph={graph} 
+              aspectOrder={aspectOrder} 
+            />
+          ) : (
+            <p>Ingen graf lastet</p>
+          )}
+
+        </div>
 
       </div>
 
@@ -120,7 +120,3 @@ const [hasUserInput, setHasUserInput] = useState(false);
 }
 
 export default App;
-
-
-
-

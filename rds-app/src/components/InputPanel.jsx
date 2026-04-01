@@ -1,23 +1,26 @@
 import { useState } from "react";
+import { toPng } from "html-to-image";
 
 export default function InputPanel({ setGraph, setHasUserInput }) {
 
   const [text, setText] = useState("");
-  const [error, setError] = useState(""); //ny state
+  const [error, setError] = useState("");
 
+  // ----------------------------
+  // BUILD GRAPH
+  // ----------------------------
   const handleBuild = async () => {
 
     setError("");
-  
+
     if (!text.trim()) {
-      setError("");
       setHasUserInput(false);
       setGraph(null);
       return;
     }
-  
+
     try {
-  
+
       const response = await fetch("http://localhost:8080/parse", {
         method: "POST",
         headers: {
@@ -25,53 +28,69 @@ export default function InputPanel({ setGraph, setHasUserInput }) {
         },
         body: text
       });
-  
-      //SJEKK FØR json()
+
       if (!response.ok) {
-  
+
         const errorText = await response.text();
-  
         console.log("Backend error:", errorText);
-  
+
         setError(
           "Ugyldig input.\n" +
           "Sørg for at linjene starter med %, = eller -"
         );
-  
+
         return;
       }
-  
-      // KUN hvis OK
+
       const graph = await response.json();
 
-setGraph(graph);
-setHasUserInput(true);
-  
+      setGraph(graph);
+      setHasUserInput(true);
+
     } catch (err) {
       console.error("Network error:", err);
       setError("Noe gikk galt med serveren");
     }
   };
 
-  // denne funksjonen lar bruker laste opp en .txt fil programmet og setter det inn i input boksen.
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
 
-    const reader = new FileReader();
+  // ----------------------------
+  // DOWNLOAD IMAGE
+  // ----------------------------
+  const handleDownloadImage = async () => {
 
-    reader.onload = (e) => {
-      const text = e.target.result;
-      setText(text);
+    const node = document.getElementById("graph-wrapper");
+
+    if (!node) {
+      alert("Fant ikke grafen");
+      return;
     }
-    reader.readAsText(file)
-  }
 
-  // denne funksjonen lagrer alt ifra inputteksten til en .txt fil.
-  const handleDownload = () => {
-    const blob = new Blob([text], {type: "text/plain"});
+    try {
+      const dataUrl = await toPng(node, {
+        cacheBust: true,
+        pixelRatio: 2 // bedre kvalitet 🔥
+      });
 
-    const url = URL.createObjectURL(blob)
+      const link = document.createElement("a");
+      link.download = "graph.png";
+      link.href = dataUrl;
+      link.click();
+
+    } catch (err) {
+      console.error("Download failed:", err);
+      alert("Kunne ikke laste ned bilde");
+    }
+  };
+
+
+  // ----------------------------
+  // DOWNLOAD TEXT
+  // ----------------------------
+  const handleDownloadText = () => {
+
+    const blob = new Blob([text], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
     link.href = url;
@@ -81,56 +100,78 @@ setHasUserInput(true);
     link.click();
 
     document.body.removeChild(link);
-    URL.revokeObjectURL(url)
-  }
+    URL.revokeObjectURL(url);
+  };
+
+
+  // ----------------------------
+  // FILE UPLOAD
+  // ----------------------------
+  const handleFileUpload = (event) => {
+
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      setText(e.target.result);
+    };
+
+    reader.readAsText(file);
+  };
+
 
   return (
     <div className="input-section">
 
       <h2>Input</h2>
-<textarea
-  rows="12"
-  value={text}
-  onChange={(e) => {
-    setText(e.target.value);
 
-    if (!e.target.value.trim()) {
-      setHasUserInput(false);
-    }
-  }}
-  placeholder="Paste RDS script here..."
+      <textarea
+        rows="12"
+        value={text}
+        onChange={(e) => {
+          setText(e.target.value);
 
-    /*Gjør det mulig å bygge tre med cmd/ctrl + Enter */
-  onKeyDown={(e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-      e.preventDefault();
-      handleBuild();
-    }
-  }}
-/>
+          if (!e.target.value.trim()) {
+            setHasUserInput(false);
+          }
+        }}
+        placeholder="Paste RDS script here..."
 
-      {/*FEIL VISNING */}
+        onKeyDown={(e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+            e.preventDefault();
+            handleBuild();
+          }
+        }}
+      />
+
+      {/* ERROR */}
       {error && (
         <div className="error-box">
           {error}
         </div>
       )}
 
+      {/* BUTTONS */}
       <div className="buttons">
         <button onClick={handleBuild}>Bygg tre</button>
-        <button>Last ned som bilde</button>
+        <button onClick={handleDownloadImage}>
+          Last ned som bilde
+        </button>
+        <button onClick={handleDownloadText}>
+          Last ned tekst
+        </button>
       </div>
-      <div>
-        <input type="file" accept=".txt" onChange={handleFileUpload}/>
-      </div>
-      <div>
-        <button onClick={handleDownload}>download text to file</button>
-      </div>
+
+      {/* FILE UPLOAD */}
+      <input
+        type="file"
+        accept=".txt"
+        onChange={handleFileUpload}
+      />
 
     </div>
   );
 }
-
-
-
-
