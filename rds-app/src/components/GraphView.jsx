@@ -5,7 +5,7 @@ import Node from "./Node";
 import Edge from "./Edge";
 
 
-export default function GraphView({ graph, aspectOrder }) {
+export default function GraphView({ graph, aspectOrder, graphRef }) {
 
   // Beregner layout kun når graph eller rekkefølge endres
   const layout = useMemo(() => {
@@ -27,12 +27,20 @@ export default function GraphView({ graph, aspectOrder }) {
   // Hent noder og edges fra layout
   const nodes = layout.nodes || [];
   const relations = layout.hierarchyEdges || [];
+  const groups = layout.groups || [];
 
 
   // Lager oppslagskart for rask tilgang til noder via id
   const nodeMap = Object.fromEntries(
     nodes.map(node => [node.id, node])
   );
+
+
+  // ----------------------------
+  // SPLITT ROOT OG ANDRE EDGES
+  // ----------------------------
+  const rootEdges = relations.filter(e => e.type === "root");
+  const otherEdges = relations.filter(e => e.type !== "root");
 
 
   // State for visning (fit vs scroll)
@@ -54,8 +62,31 @@ export default function GraphView({ graph, aspectOrder }) {
   const height = maxY - minY + padding * 2;
 
 
+  // ----------------------------
+  // FINN ROOT NODE (for topp-linje)
+  // ----------------------------
+  const rootNode = nodes.find(n => n.type === "root");
+
+  // Y-posisjon for "bus line"
+  const busY = rootNode ? rootNode.y + 40 : 80;
+
+
+  // ----------------------------
+  // MAPPE EDGE-TYPER
+  // ----------------------------
+  function mapEdgeType(type) {
+    if (type === "hierarchy") return "hierarchy";
+    if (type === "root") return "root";
+    return "cross";
+  }
+
+
   return (
-    <div id="graph-wrapper" className="graph-container">
+    <div
+      id="graph-wrapper"
+      ref={graphRef} // ref koblet til grafen
+      className="graph-container"
+    >
 
       {/* Knapp for å bytte visning */}
       <button onClick={() => setFitView(!fitView)}>
@@ -75,8 +106,70 @@ export default function GraphView({ graph, aspectOrder }) {
         preserveAspectRatio="xMidYMid meet"
       >
 
+        {/* Vertikal linje fra root ned til bus */}
+{rootNode && (
+  <line
+    x1={rootNode.x}
+    y1={rootNode.y + 20}
+    x2={rootNode.x}
+    y2={busY}
+    stroke="#999"
+    strokeWidth={2}
+  />
+)}
+
+        {/* ----------------------------
+            ROOT BUS LINE (toppnode → aspekter)
+        ---------------------------- */}
+        {rootEdges.length > 0 && (() => {
+
+          // Henter x-posisjonene til alle aspekt-noder
+          const xValues = rootEdges
+            .map(e => nodeMap[e.to]?.x)
+            .filter(Boolean);
+
+          if (xValues.length === 0) return null;
+
+          const minX = Math.min(...xValues);
+          const maxX = Math.max(...xValues);
+
+          return (
+            <>
+              {/* Horisontal topp-linje */}
+              <line
+                x1={minX}
+                y1={busY}
+                x2={maxX}
+                y2={busY}
+                stroke="#999"
+                strokeWidth={2}
+              />
+
+              {/* Vertikale linjer ned til hver aspekt-node */}
+              {rootEdges.map((edge, index) => {
+
+                const target = nodeMap[edge.to];
+                if (!target) return null;
+
+                return (
+                  <line
+                    key={index}
+                    x1={target.x}
+                    y1={busY}
+                    x2={target.x}
+                    y2={target.y - 20}
+                    stroke="#999"
+                    strokeWidth={2}
+                  />
+                );
+              })}
+            </>
+          );
+        })()}
+
+
         {/* Tegner edges først (bak nodene) */}
-        {relations.map((edge, index) => {
+        {otherEdges.map((edge, index) => {
 
           // Hvis edge mangler data, hopp over
           if (!edge.from || !edge.to) return null;
@@ -92,7 +185,7 @@ export default function GraphView({ graph, aspectOrder }) {
               key={`${edge.from}-${edge.to}-${index}`}
               from={from}
               to={to}
-              type={edge.type}
+              type={mapEdgeType(edge.type)}
             />
           );
         })}
