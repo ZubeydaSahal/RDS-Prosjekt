@@ -109,6 +109,8 @@ textarea {
   position: relative;
   display: inline-block;
   margin-bottom: 12px;
+  margin-top: 15px;
+
 }
 
 .fd-trigger {

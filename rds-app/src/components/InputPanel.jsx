@@ -56,7 +56,7 @@ export default function InputPanel({ setGraph, graphRef }) {
   // ----------------------------
   const handleDownloadImage = async () => {
 
-    const node = graphRef.current; // ✅ bruker ref fra App
+    const node = graphRef.current;
 
     if (!node) {
       alert("Fant ikke grafen");
@@ -66,7 +66,7 @@ export default function InputPanel({ setGraph, graphRef }) {
     try {
       const dataUrl = await toPng(node, {
         cacheBust: true,
-        pixelRatio: 2 // bedre kvalitet 🔥
+        pixelRatio: 2 
       });
 
       const link = document.createElement("a");
