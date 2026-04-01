@@ -106,18 +106,6 @@ export default function GraphView({ graph, aspectOrder, graphRef }) {
         preserveAspectRatio="xMidYMid meet"
       >
 
-        {/* Vertikal linje fra root ned til bus */}
-{rootNode && (
-  <line
-    x1={rootNode.x}
-    y1={rootNode.y + 20}
-    x2={rootNode.x}
-    y2={busY}
-    stroke="#999"
-    strokeWidth={2}
-  />
-)}
-
         {/* ----------------------------
             ROOT BUS LINE (toppnode → aspekter)
         ---------------------------- */}

@@ -6,7 +6,7 @@ import Navbar from "./components/Navbar";
 import { mockGraph } from "./components/MockGraph"; // slett når mockgraph slettes 
 
 // Importerer React hooks
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 function App() {
   // ----------------------------
@@ -15,6 +15,7 @@ function App() {
   // Denne styrer KUN visning i frontend (ikke backend-data)
   const [aspectOrder, setAspectOrder] = useState(["=", "%", "-", "%%"]);
 
+  const graphRef = useRef(null); 
 
   // ---------------------------------
   // GIR BRUKER MULIGHET TIL Å FLYTTE ASPEKTER I VILKÅRLIG REKKEFØLGE 
@@ -45,20 +46,16 @@ function App() {
     setAspectOrder(newOrder);
   }
 
-
   // ----------------------------
   // STATE FOR GRAFDATA
   // ----------------------------
-  // Starter med mock hvis toggle er true
   const [backendGraph, setBackendGraph] = useState(null);
 
-
   // ----------------------------
-  //// Hvis backendGraph finnes → bruk backend
+  // Hvis backendGraph finnes → bruk backend
   // Hvis ikke → fallback til mockGraph
   // ----------------------------
-  const graph = backendGraph || mockGraph; //############## Hvis noe skrives inn i input feltet brukes det, hvis ikke er det mockgraph
-
+  const graph = backendGraph || mockGraph;
 
   return (
     <div>
@@ -70,7 +67,10 @@ function App() {
       <div className="layout">
 
         {/* InputPanel er ALLTID synlig */}
-        <InputPanel setGraph={setBackendGraph} />
+        <InputPanel 
+          setGraph={setBackendGraph}
+          graphRef={graphRef} // 
+        />
 
         {/* Seksjon for visualisering */}
         <div className="tree-section">
@@ -96,14 +96,14 @@ function App() {
 
           </div>
 
-
           {/* ----------------------------
               VISER GRAF HVIS DATA FINNES
           ---------------------------- */}
           {graph ? (
             <GraphView 
               graph={graph} 
-              aspectOrder={aspectOrder} 
+              aspectOrder={aspectOrder}
+              graphRef={graphRef} 
             />
           ) : (
             <p>Ingen graf lastet</p>

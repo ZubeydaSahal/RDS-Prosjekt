@@ -27,7 +27,8 @@ Node {
     // Assumes that id, code and level will never change
     private final String id;    // a.b.c (unique)
     private final String code;  // c
-    private final int level;    // node's hierarchical depth
+    private String aspect;
+    private int level;    // node's hierarchical depth
     private String metadata;    // Extra data in JSON (name, ..)
     // TODO: metadata is a placeholder for extra data (name, documentation etc.)
     @JsonIgnore
@@ -42,6 +43,12 @@ Node {
         String[] parts = id.split("\\.");
         this.level = parts.length;
         this.code = parts[parts.length - 1];
+    }
+
+    // Temp constructor with aspect – refactoring
+    public Node(String id, String aspect){
+        this(id);
+        this.aspect = aspect;
     }
 
     // Update node
@@ -73,6 +80,14 @@ Node {
 
     public int getLevel() {
         return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public String getAspect(){
+        return aspect;
     }
 
     public String getMetadata() {

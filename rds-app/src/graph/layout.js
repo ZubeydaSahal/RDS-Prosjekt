@@ -71,7 +71,7 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-// KOBLE FORELDER → BARN (FRA BACKEND)
+// KOBLE FORELDER → BARN
 // ----------------------------
 hierarchyEdges.forEach(edge => {
   if (edge.type === "hierarchy") {
@@ -156,4 +156,9 @@ hierarchyEdges.forEach(edge => {
     nodes,
     hierarchyEdges
   };
-}
+} 
+
+
+
+
+
