@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toPng } from "html-to-image";
 
-export default function InputPanel({ setGraph, setHasUserInput }) {
+export default function InputPanel({ setGraph, graphRef }) {
 
   const [text, setText] = useState("");
   const [error, setError] = useState("");
@@ -14,7 +14,6 @@ export default function InputPanel({ setGraph, setHasUserInput }) {
     setError("");
 
     if (!text.trim()) {
-      setHasUserInput(false);
       setGraph(null);
       return;
     }
@@ -43,9 +42,7 @@ export default function InputPanel({ setGraph, setHasUserInput }) {
       }
 
       const graph = await response.json();
-
       setGraph(graph);
-      setHasUserInput(true);
 
     } catch (err) {
       console.error("Network error:", err);
@@ -59,7 +56,7 @@ export default function InputPanel({ setGraph, setHasUserInput }) {
   // ----------------------------
   const handleDownloadImage = async () => {
 
-    const node = document.getElementById("graph-wrapper");
+    const node = graphRef.current; // ✅ bruker ref fra App
 
     if (!node) {
       alert("Fant ikke grafen");
@@ -132,19 +129,8 @@ export default function InputPanel({ setGraph, setHasUserInput }) {
         value={text}
         onChange={(e) => {
           setText(e.target.value);
-
-          if (!e.target.value.trim()) {
-            setHasUserInput(false);
-          }
         }}
         placeholder="Paste RDS script here..."
-
-        onKeyDown={(e) => {
-          if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-            e.preventDefault();
-            handleBuild();
-          }
-        }}
       />
 
       {/* ERROR */}

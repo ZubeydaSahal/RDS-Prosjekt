@@ -71,18 +71,16 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-  // KOBLE FORELDER → BARN
-  // ----------------------------
-  graph.nodes.forEach(n => {
-    const parts = n.id.split(".");
-    parts.pop();
-
-    const parentId = parts.join(".");
-
-    if (nodeMap[parentId]) {
-      nodeMap[parentId].children.push(nodeMap[n.id]);
+// KOBLE FORELDER → BARN
+// ----------------------------
+hierarchyEdges.forEach(edge => {
+  if (edge.type === "hierarchy") {
+    if (nodeMap[edge.from] && nodeMap[edge.to]) {
+      nodeMap[edge.from].children.push(nodeMap[edge.to]);
     }
-  });
+  }
+});
+
 
   // ----------------------------
   // FINN ROOT NODER PER ASPEKT
