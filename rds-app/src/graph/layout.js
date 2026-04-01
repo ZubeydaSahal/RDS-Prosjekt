@@ -81,7 +81,6 @@ hierarchyEdges.forEach(edge => {
   }
 });
 
-
   // ----------------------------
   // FINN ROOT NODER PER ASPEKT
   // ----------------------------
