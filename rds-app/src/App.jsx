@@ -4,6 +4,7 @@ import InputPanel from "./components/InputPanel.jsx";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import { mockGraph } from "./components/MockGraph"; // slett når mockgraph slettes 
+import FilterDropdown from "./components/FilterDropdown";
 
 // Importerer React hooks
 import { useState, useRef } from "react";
