@@ -47,6 +47,7 @@ public class RdsParser {
 
             }
         }
+        graphManager.finalizeGraph();
         return graphManager;
         
         }
@@ -149,6 +150,7 @@ public class RdsParser {
     // printer ut navn av toppnode.
     private void CreateTopNode(String topNodeName, GraphManager graphManager) {
         System.out.println("Creating top node " + topNodeName);
+        graphManager.setRoot(topNodeName);
     }
 
     // Check aspect from first symbol
