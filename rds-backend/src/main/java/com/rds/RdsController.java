@@ -18,12 +18,4 @@ public class RdsController {
         return parser.parse(rdsScript);
     }
 
-
-    @PostMapping(value = "/relations", consumes = "application/json")
-    public Set<Relation> getFilteredRelations(@RequestBody Filter request) {
-    RdsParser parser = new RdsParser();
-    GraphManager graph = parser.parse(request.getScript()); 
-    Set<Relation> filtered = graph.getFilteredRelations(request.getFilters());
-    return filtered;
-}
 }
