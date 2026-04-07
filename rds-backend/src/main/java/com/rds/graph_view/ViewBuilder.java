@@ -47,7 +47,7 @@ public class ViewBuilder {
     }
 
 
-    public Map<String, List<NodeDTO>> buildAspectLists(Map<String, Node> nodeMap) {
+    public void buildAspectLists(Map<String, Node> nodeMap) {
 
         // === Group nodes by aspekt ===
 
@@ -82,8 +82,6 @@ public class ViewBuilder {
 
 
         }
-
-        return nodesByApsect;
 
     }
 

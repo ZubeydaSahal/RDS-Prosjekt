@@ -19,6 +19,7 @@ public class RdsController {
 
         // Create a graphView for frontend (selected data)
         ViewBuilder graphView = new ViewBuilder();
+        graphView.buildView(graph);  // builds view
 
         return graphView;
     }
