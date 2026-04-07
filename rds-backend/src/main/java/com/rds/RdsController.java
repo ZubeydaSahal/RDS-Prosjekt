@@ -1,6 +1,7 @@
 package com.rds;
 
 import com.rds.datastructure.GraphManager;
+import com.rds.graph_view.ViewBuilder;
 import com.rds.parser.RdsParser;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,8 +10,16 @@ import org.springframework.web.bind.annotation.*;
 public class RdsController {
 
     @PostMapping(value = "/parse", consumes = "text/plain")
-    public GraphManager parseRds(@RequestBody String rdsScript) {
+    public ViewBuilder parseRds(@RequestBody String rdsScript) {
+
+        // Parse script and create datastructure
         RdsParser parser = new RdsParser();
-        return parser.parse(rdsScript);
+        GraphManager graph = parser.parse(rdsScript);
+        graph.finalizeGraph();  // Connects root to aspects
+
+        // Create a graphView for frontend (selected data)
+        ViewBuilder graphView = new ViewBuilder();
+
+        return graphView;
     }
 }

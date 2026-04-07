@@ -109,7 +109,8 @@ public class GraphTest {
         System.out.println("\n\n=== Sorterte lister ===:\n");
 
         ViewBuilder viewBuilder = new ViewBuilder();
-        viewBuilder.buildAspectLists(graph);
+        //viewBuilder.buildAspectLists(graph);
+        viewBuilder.buildView(graph);
 
     }
 }

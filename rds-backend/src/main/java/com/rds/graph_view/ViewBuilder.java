@@ -33,6 +33,8 @@ class NodeDTO{
 
 public class ViewBuilder {
     /* Builds a visualization-friendly view of the graph datastructure, without altering the datastructure */
+    private Map<String, List<NodeDTO>> nodesByApsect = new HashMap<>();  // Map<aspect, List<NodeDTO>>)
+    private Set<Relation> crossRelations = new HashSet<>();  // Relations
 
     private NodeDTO toDTO(Node node) {
         // Maps a node to nodeDTO class
@@ -45,15 +47,12 @@ public class ViewBuilder {
     }
 
 
-    public Map<String, List<NodeDTO>> buildAspectLists(GraphManager graphManager) {
-        //  Import nodes
-        Map<String, Node> nodes = graphManager.getNodeList();
+    public Map<String, List<NodeDTO>> buildAspectLists(Map<String, Node> nodeMap) {
 
         // === Group nodes by aspekt ===
-        Map<String, List<NodeDTO>> nodesByApsect = new HashMap<>();
 
         // Iterate through each node
-        for (Node node : nodes.values()) {
+        for (Node node : nodeMap.values()) {
             String aspect = node.getAspect();
 
             //If its aspect isn't in the hashmap, add it
@@ -86,6 +85,28 @@ public class ViewBuilder {
 
         return nodesByApsect;
 
+    }
+
+    public void getRelations(GraphManager graphManager){
+        crossRelations = graphManager.getCrossRelations();
+    }
+
+    public ViewBuilder buildView(GraphManager graphManager){
+
+        // initiate view
+        ViewBuilder graphView = new ViewBuilder();
+
+        // Filter options …
+
+        // Build Lists for all nodes per aspect
+        graphView.buildAspectLists(graphManager.getNodeList());
+
+        // Get relation list
+        graphView.crossRelations = graphManager.getCrossRelations();
+
+
+
+        return graphView;
     }
 }
 
