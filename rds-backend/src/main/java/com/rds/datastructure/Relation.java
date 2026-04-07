@@ -7,8 +7,8 @@ import java.util.List;
 
 public class Relation {
     // Connected nodes
-    private final Node nodeA;
-    private final Node nodeB;
+    private final Node nodeA;  // Always parent in 'hierarchy' type
+    private final Node nodeB;  // Always child in 'hierarchy' type
     private final String type;  // Relation type (PS, None, etc)
 
 
@@ -22,10 +22,12 @@ public class Relation {
 
     // Getters
     public Node getNodeA() {
+        // GetParent, if type is 'hierarchical'
         return nodeA;
     }
 
     public Node getNodeB() {
+        // GetChild, if type is 'hierarchical'
         return nodeB;
     }
 

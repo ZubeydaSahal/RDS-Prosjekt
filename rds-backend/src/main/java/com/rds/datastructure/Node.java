@@ -1,17 +1,12 @@
 package com.rds.datastructure;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 // TODO:
 //  - sikre at alle parametere ikke må fylles
-//  - Node sletting, om linjen fjernes, må noden slettes
-//      - Enten generer ny struktur hver gang
-//      - Eller mekasime for å oppdage endring i input linjer
 //   .
 //   **
 //  - Noder skal kunne deklareres iumplisitt: AA.BB, hvis AA ikke eksisterer, skap AA, BB or relasjonen(A,B)
@@ -32,7 +27,7 @@ Node {
     private String metadata;    // Extra data in JSON (name, ..)
     // TODO: metadata is a placeholder for extra data (name, documentation etc.)
     @JsonIgnore
-    private Set<Relation> relations = new HashSet<>();   // Nodes relations
+    private Set<Relation> hierarchyRelations = new HashSet<>();   // Nodes relations
     // ^^ Changed to Set, instead of List because: don't need index, no duplicates allowed
 
 
@@ -62,10 +57,10 @@ Node {
 
     // Hanlde relations
     public void addRelation(Relation relation){
-        relations.add(relation);
+        hierarchyRelations.add(relation);
     }
-    public Set<Relation> getRelations(){
-        return relations;
+    public Set<Relation> getHierarchyRelations(){
+        return hierarchyRelations;
     }
 
     // Getters

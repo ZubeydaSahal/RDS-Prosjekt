@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class GraphManager {
     // Attributes
     private Map<String, Node> nodes = new HashMap<>();  // nodes 'id' as key
-    private Set<Relation> relations = new HashSet<>();  // Relations
+    private Set<Relation> crossRelations = new HashSet<>();  // Relations
     private Node root = null;
 
 
@@ -52,7 +52,8 @@ public class GraphManager {
                     System.out.println("<-Node-> Parent doesn't exist, creating parent: " + parentId);
                 }
 
-                createRelation(id, aspect, parentId, aspect, "hierarchy");  // parents and children share aspect
+                createRelation(parentId, aspect, id, aspect, "hierarchy");  // parents and children share aspect
+                // Relation (nodeA, nodeA_aspect, nodeB, nodeB_aspect) –> nodeA = parent, nodeB = child
                 System.out.println("<Relation> create relation: " + id + " and parent " + parentId);
             }
         }
@@ -72,6 +73,10 @@ public class GraphManager {
         (som er retur verdien fra hashMap's .values())
         */
         return nodes.values();
+    }
+
+    public Map<String, Node> getNodeList(){
+        return nodes;
     }
 
 
@@ -106,19 +111,24 @@ public class GraphManager {
         }
          */
 
+
         Relation relation = new Relation(nodeA, nodeB, type);  // TODO: Sikre at relasjonen ikke eksisterer invers
 
-        relations.add(relation);  // Add relation to total list of relations 'relations'
+        if (!type.equals("hierarchy")) {
+            crossRelations.add(relation);  // Add relation to total list of cross relations 'cross_relations'
+        }
 
         // Add this relations to each nodes list of own relations
-        nodeA.addRelation(relation);
-        nodeB.addRelation(relation);
+        if (type.equals("hierarchy")) {
+            nodeA.addRelation(relation);
+            nodeB.addRelation(relation);
+        }
 
         return relation;
     }
 
-    public Set<Relation> getRelations() {
-        return relations;
+    public Set<Relation> getCrossRelations() {
+        return crossRelations;
     }
 
     public void finalizeGraph() {
@@ -136,7 +146,7 @@ public class GraphManager {
                 boolean connnectedToRoot = false;
 
                 // Check if node is connected to root (suspect redundant, but might as well be safe)
-                for (Relation relation : node.getRelations()) {
+                for (Relation relation : node.getHierarchyRelations()) {
                     // get all its relations and check if the other node is root
                     if (relation.getOtherNode(node) == root) {
                         connnectedToRoot = true;  // if root is related, break and go to next node
@@ -148,7 +158,7 @@ public class GraphManager {
                 }  // go to next node
 
                 // Handle top level nodes, which aren't connected to root
-                createRelation(node.getId(), node.getAspect(), root.getId(), root.getAspect(), "hierarchy");  // Connect to root
+                createRelation(root.getId(), root.getAspect(), node.getId(), node.getAspect(),  "hierarchy");  // Connect to root
 
             }
         }
@@ -172,7 +182,7 @@ public class GraphManager {
 
         System.out.println("  ".repeat(depth) + node.getAspect() + node.getId());
 
-        for (Relation relation : node.getRelations()) {
+        for (Relation relation : node.getHierarchyRelations()) {
             if (relation.getType().equals("hierarchy")) {
                 Node other = relation.getOtherNode(node);
                 if (!visited.contains(other)) {
@@ -184,9 +194,9 @@ public class GraphManager {
 
     public Set<Relation> getFilteredRelations(Map<String, Boolean> filters) {
     if (filters == null) {
-        return relations;
+        return crossRelations;
     }
-    return relations.stream()
+    return crossRelations.stream()
         .filter(r -> {
             String type = r.getType() == null ? "" : r.getType();
             Boolean show = filters.get(type);
