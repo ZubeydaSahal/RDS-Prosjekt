@@ -18,6 +18,7 @@ public class Relation {
         this.nodeA = nodeA;
         this.nodeB = nodeB;
         this.type = type;
+        if(type==null) {System.out.println("<Relation> Constructor: " + type);}  // Sean debugger manglende relasjoner
     }
 
     // Getters
@@ -32,6 +33,7 @@ public class Relation {
     }
 
     public String getType() {
+        System.out.println("<Relation> kaller GetType");  // Sean debugger manglende relasjoner
         return type;
     }
 
@@ -39,7 +41,9 @@ public class Relation {
     public Node getOtherNode(Node current){
         // TODO: returnerer 2. node i 1. relasjon en node deltar i, kan være flere for current
         // SEan debugger "Error  line 3: Cannot invoke "String.equals(Object)" because "type" is null"
-        System.out.println("<Relation> inneholder equals");
+        if(type==null) {
+            System.out.println("<Relation> inneholder equals");
+        }
 
         if(current.equals(nodeA)) {
             return nodeB;

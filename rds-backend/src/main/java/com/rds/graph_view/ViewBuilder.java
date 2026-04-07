@@ -64,15 +64,12 @@ public class ViewBuilder {
             String aspect = entry.getKey();
             List<NodeDTO> aspectList = entry.getValue();
 
-            System.out.println("==== Aspekt: " + aspect + "====");
+            // System.out.println("==== Aspekt: " + aspect + "===="); //temp komm ut
             for (NodeDTO node : aspectList){
-                System.out.println(node.getId());
+                //System.out.println(node.getId());  // temp komment ut
             }
             System.out.println("\n\n");
-
-
         }
-
     }
 
     public void getRelations(GraphManager graphManager){
@@ -81,20 +78,21 @@ public class ViewBuilder {
 
     public ViewBuilder buildView(GraphManager graphManager){
 
-        // initiate view
-        ViewBuilder graphView = new ViewBuilder();
-
         // Filter options …
 
         // Build Lists for all nodes per aspect
-        graphView.buildAspectLists(graphManager.getNodeList());
+        this.buildAspectLists(graphManager.getNodeList());
 
         // Get relation list
-        graphView.crossRelations = graphManager.getCrossRelations();
+        this.crossRelations = graphManager.getCrossRelations();
 
+        // Debugging missing relations
+        System.out.println("<ViewBuilder> crossrelations: ");
+        for(Relation relation : this.crossRelations){
+            System.out.println(relation.getNodeB());
+        }
 
-
-        return graphView;
+        return this;
     }
 }
 

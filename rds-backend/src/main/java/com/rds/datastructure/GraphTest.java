@@ -57,7 +57,7 @@ public class GraphTest {
 
 // -- ----- Relations ---
         // relasjoner
-        graph.createRelation("SA", "$", "RA.FF1", "+", "cross");
+        graph.createRelation("SA", "$", "RA.FF1", "+", "null");
         graph.createRelation("QA", "-", "PA.BB3", "%", "cross");
 
         graph.finalizeGraph();  // Connects root to aspects
@@ -78,9 +78,10 @@ public class GraphTest {
             List<NodeDTO> aspectList = entry.getValue();
             String aspect = entry.getKey();
 
-            System.out.println("\n--> aspect '"+ aspect+"': ");
+            //System.out.println("\n--> aspect '"+ aspect+"': ");
             for (NodeDTO node : aspectList){
-                System.out.println(node.getId());
+                break;
+                //System.out.println(node.getId());
             }
         }
         return gv;
@@ -162,8 +163,9 @@ public class GraphTest {
         graph.createOrUpdateNode("MM","$", "Aspected Node");
 
         // Lag en ekstra relasjon
-        graph.createRelation("XX", "-", "BB.CC", "%", "cross");
+        graph.createRelation("XX", "-", "BB.CC", "%", null);
         graph.createRelation("BB.CC", "%", "XX.XB", "-", "cross");
+/*
 
 
         // Print alle noder
@@ -171,23 +173,24 @@ public class GraphTest {
         for (Node node : graph.getNodes()) {
             System.out.println(node.getId() + ", lev: "+ node.getLevel()+", aspect: "+node.getAspect());
         }
+*/
 
         // Print grafen
-        System.out.println("\nGraph structure:");
-        graph.printGraph();
+        //System.out.println("\nGraph structure:");
+        //graph.printGraph();
 
-        // Print relasjoner
+        /*// Print relasjoner
         System.out.println("\nRelations:");
         for (Relation rel : graph.getCrossRelations()) {
             System.out.println(rel.getType());
             System.out.println(rel.getNodeA().getId());
             System.out.println(rel.getNodeB().getId()+"\n\n");
-        }
+        }*/
 
 
         // Devugger kobling
 
-        System.out.println("\n\n=== Sorterte lister ===:\n");
+        //System.out.println("\n\n=== Sorterte lister ===:\n");
 
         graph.finalizeGraph();  // Connects root to aspects
 
@@ -202,7 +205,7 @@ public class GraphTest {
             graphView.getCrossRelations()
         );
 
-
+/*
         // Print object
         System.out.println("++++ Aspects: \n");
         for (Map.Entry<String, List<NodeDTO>> entry : gv.aspects.entrySet()) {
@@ -217,6 +220,6 @@ public class GraphTest {
         System.out.println("++++ Relations: \n");
         for (Relation relation : gv.getRelations()){
             System.out.println(relation.getType());
-        }
+        }*/
     }
 }

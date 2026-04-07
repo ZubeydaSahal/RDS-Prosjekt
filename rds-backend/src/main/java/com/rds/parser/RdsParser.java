@@ -36,7 +36,7 @@ public class RdsParser {
             try{
             if (!topNodeDeclared) {CheckForTopNode(trimmedLine,graphManager);}
             // check for explicit relationship
-            else if (trimmedLine.contains("||")) {
+            else if (trimmedLine.contains("|")) {
                 System.out.println("<Parser> || detected, check relation?:" + trimmedLine);// SEan debugger
                 CheckExplicitRelationForName(trimmedLine, graphManager);
             }else {
@@ -104,14 +104,14 @@ public class RdsParser {
     //creats relation bewteen nodes in graphmanger
     //creats nodes only when nodes exist
     private void RelationChecker(String fromId, String aspectFrom, String toId, String aspectTo, String type, GraphManager graphManager) {
-        System.out.println("<Parser> Creating relation: "); // Sean debugger
+        System.out.println("<Parser> Creating relation: " + type); // Sean debugger
         graphManager.createRelation(fromId, aspectFrom, toId, aspectTo, type);
 
 }
 
     //creats or update node in graphmanger. 
     private void NodeChecker(String fullId, String aspect, String name, GraphManager graphManager) {
-        System.out.println("<Parser> Creating node: "); // Sean debugger
+        System.out.println("<Parser> Creating node: " + fullId); // Sean debugger
         graphManager.createOrUpdateNode(fullId, aspect, name);
 
     }
@@ -119,10 +119,11 @@ public class RdsParser {
 
     private void CheckExplicitRelationForName(String trimmedLine, GraphManager graphmanger) {
         String relationName = checkExplicitRelationName(trimmedLine);
+        System.out.println("<Parser> Relation name: " + relationName);  // sean debugger
         String[] parts;
 
         if (relationName != null){
-            parts = trimmedLine.split("\\|\\|" + relationName + "\\|\\|");
+            parts = trimmedLine.split("\\|" + relationName + "\\|");
         } else {
             parts = trimmedLine.split("\\|\\|");
         }
@@ -131,19 +132,25 @@ public class RdsParser {
         String leftSide = parts[0].trim();
         String leftNodeAspect = checkAspect(leftSide);
         leftSide=leftSide.substring(1).trim(); // remove aspect symbol
+        System.out.println("<Parse rel>" + leftSide);  // Sean debugger manglende relasjoner
         CheckNodes(leftSide, leftNodeAspect,graphmanger);
+
 
         String rightSide = parts[1].trim();
         String rightNodeAspect = checkAspect(rightSide);
         rightSide=rightSide.substring(1).trim(); // remove aspect symbol
+        System.out.println("<Parse rel>" + rightSide);  // Sean debugger manglende relasjoner
         CheckNodes(rightSide, rightNodeAspect, graphmanger);
+
 
         //gets last node from each side of a explicit relation
         String leftLastId=leftNodeAspect+leftSide.split("\\.")[leftSide.split("\\.").length-1];
         String rightLastId=rightNodeAspect+rightSide.split("\\.")[rightSide.split("\\.").length-1];
 
-        //Creats explicit relation 
-        RelationChecker(leftLastId, null,rightLastId, null,relationName, graphmanger);
+        //Creats explicit relation
+
+        System.out.println("<Parse rel> calling relationChecker");  // Sean debugger manglende relasjoner
+        RelationChecker(leftLastId, leftNodeAspect,rightLastId, rightNodeAspect,relationName, graphmanger);
         
     }
 
@@ -182,12 +189,13 @@ public class RdsParser {
     // check if explicit relationship has a name
     private String checkExplicitRelationName(String line) {
         // Named relation has pattern ||NAME||
-        int first = line.indexOf("||");
-        int second = line.indexOf("||", first + 2);
+        int first = line.indexOf("|");
+        int second = line.indexOf("|", first + 2);
 
         if (first != -1 && second != -1) {
 
-            String between = line.substring(first + 2, second).trim();
+            String between = line.substring(first + 1, second).trim();
+            System.out.println("<Parser> Between ||: "+between);  // Sean debugger manglende relasjoner
 
             if (!between.isEmpty()) {
                 return between;

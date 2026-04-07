@@ -114,16 +114,22 @@ public class GraphManager {
 
         Relation relation = new Relation(nodeA, nodeB, type);  // TODO: Sikre at relasjonen ikke eksisterer invers
 
-        if (!type.equals("hierarchy")) {
-            if (type == null){
-                System.out.println("<GraphManager> Relation type equals 'null'");
-                crossRelations.add(relation);
+
+        if (type != null && !type.equals("hierarchy")) {
+            System.out.println("<GraphManager> Adding rel to crossRelations, type: " + type);
+            crossRelations.add(relation);
+            System.out.println("<GrMan> crossRel:");  // Sean debugging missing relations
+            for (Relation rel : crossRelations){
+                System.out.println(relation.getNodeA());
             }
-            crossRelations.add(relation);  // Add relation to total list of cross relations 'cross_relations'
+        }
+        if(type == null){
+            System.out.println("<GraphManager> Adding rel to crossRelations, type: " + type);
+            crossRelations.add(relation);
         }
 
         // Add this relations to each nodes list of own relations
-        if (type.equals("hierarchy")) {
+        if (type != null && type.equals("hierarchy")) {
             nodeA.addRelation(relation);
             nodeB.addRelation(relation);
         }
