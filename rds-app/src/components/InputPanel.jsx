@@ -11,6 +11,7 @@ export default function InputPanel({ setGraph, graphRef }) {
   // ----------------------------
   const handleBuild = async () => {
 
+    console.log("==== Starter handlebuild");  // Sean tester
     setError("");
 
     if (!text.trim()) {
@@ -19,15 +20,16 @@ export default function InputPanel({ setGraph, graphRef }) {
     }
 
     try {
-
       const response = await fetch("http://localhost:8080/parse", {
         method: "POST",
         headers: {
-          "content-type": "text/plain"
+          "content-type": "text/plain",
+          "Accept": "application/json"  // Sean Tester
         },
         body: text
       });
 
+      console.log("Response: " + response);  // Sean tester
       if (!response.ok) {
 
         const errorText = await response.text();
@@ -41,8 +43,16 @@ export default function InputPanel({ setGraph, graphRef }) {
         return;
       }
 
+      console.log("=== Reached graph")
       const graph = await response.json();
+      console.log(graph);  // Sean tester
+      console.log("Aspekter: " + graph.aspects)
+      console.log("Keys for list:\n")
+      console.log(Object.keys(graph.aspects))
       setGraph(graph);
+
+
+
 
     } catch (err) {
       console.error("Network error:", err);

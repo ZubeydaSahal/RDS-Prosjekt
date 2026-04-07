@@ -31,11 +31,13 @@ public class RdsParser {
 
             if (trimmedLine.isEmpty()) continue;
 
+            System.out.println("<Parser>Trimmed line:" + trimmedLine);// SEan debugger
             // Check for top node declaration
             try{
             if (!topNodeDeclared) {CheckForTopNode(trimmedLine,graphManager);}
             // check for explicit relationship
             else if (trimmedLine.contains("||")) {
+                System.out.println("<Parser> || detected, check relation?:" + trimmedLine);// SEan debugger
                 CheckExplicitRelationForName(trimmedLine, graphManager);
             }else {
                 // check for aspect and remove aspect symbol
@@ -102,12 +104,16 @@ public class RdsParser {
     //creats relation bewteen nodes in graphmanger
     //creats nodes only when nodes exist
     private void RelationChecker(String fromId, String aspectFrom, String toId, String aspectTo, String type, GraphManager graphManager) {
+        System.out.println("<Parser> Creating relation: "); // Sean debugger
         graphManager.createRelation(fromId, aspectFrom, toId, aspectTo, type);
+
 }
 
     //creats or update node in graphmanger. 
     private void NodeChecker(String fullId, String aspect, String name, GraphManager graphManager) {
+        System.out.println("<Parser> Creating node: "); // Sean debugger
         graphManager.createOrUpdateNode(fullId, aspect, name);
+
     }
     
 
@@ -145,6 +151,7 @@ public class RdsParser {
         if (trimmedLine.startsWith("<") && trimmedLine.endsWith(">")) {
             String topNodeName = trimmedLine.substring(1, trimmedLine.length() - 1);
             CreateTopNode(topNodeName, graphManager);
+            System.out.println("<Parser> Creating toppnode "); // Sean debugger
             topNodeDeclared = true;
         } else {
             throw new IllegalArgumentException("Top node declaration is missing or malformed: " + trimmedLine);

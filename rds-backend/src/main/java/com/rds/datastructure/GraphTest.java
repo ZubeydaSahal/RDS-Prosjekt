@@ -1,11 +1,90 @@
 package com.rds.datastructure;
 
 import com.rds.graph_view.*;
+import com.rds.graph_view.DTO.*;
+import com.rds.datastructure.Relation;
 
+import javax.swing.*;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 public class GraphTest {
+
+    public GraphViewDTO testController(){
+        // BARE TESTING UNDER
+
+        GraphManager graph = new GraphManager();
+        graph.setRoot("AA");
+
+        // --- % aspekt ---
+        graph.createOrUpdateNode("PA","%" , null);
+        graph.createOrUpdateNode("PA.BB1","%" , null);
+        graph.createOrUpdateNode("PA.BB1.CC1","%" , null);
+        graph.createOrUpdateNode("PA.BB2","%" , null);
+        graph.createOrUpdateNode("PA.BB2.CC2","%" , null);
+        graph.createOrUpdateNode("PA.BB3","%" , null);
+        graph.createOrUpdateNode("PA.BB4","%" , null);
+
+// --- - aspekt ---
+        graph.createOrUpdateNode("QA","-" , null);
+        graph.createOrUpdateNode("QA.DD1","-" , null);
+        graph.createOrUpdateNode("QA.DD1.EE1","-" , null);
+        graph.createOrUpdateNode("QA.DD2","-" , null);
+        graph.createOrUpdateNode("QA.DD2.EE2","-" , null);
+        graph.createOrUpdateNode("QA.DD3","-" , null);
+        graph.createOrUpdateNode("QA.DD4","-" , null);
+
+// --- + aspekt ---
+        graph.createOrUpdateNode("RA","+" , null);
+        graph.createOrUpdateNode("RA.FF1","+" , null);
+        graph.createOrUpdateNode("RA.FF1.GG1","+" , null);
+        graph.createOrUpdateNode("RA.FF2","+" , null);
+        graph.createOrUpdateNode("RA.FF2.GG2","+" , null);
+        graph.createOrUpdateNode("RA.FF3","+" , null);
+        graph.createOrUpdateNode("RA.FF4","+" , null);
+
+// --- $ aspekt ---
+        graph.createOrUpdateNode("SA","$" , null);
+        graph.createOrUpdateNode("SA.HH1","$" , null);
+        graph.createOrUpdateNode("SA.HH1.II1","$" , null);
+        graph.createOrUpdateNode("SA.HH2","$" , null);
+        graph.createOrUpdateNode("SA.HH2.II2","$" , null);
+        graph.createOrUpdateNode("SA.HH3","$" , null);
+        graph.createOrUpdateNode("SA.HH4","$" , null);
+
+
+// -- ----- Relations ---
+        // relasjoner
+        graph.createRelation("SA", "$", "RA.FF1", "+", "cross");
+        graph.createRelation("QA", "-", "PA.BB3", "%", "cross");
+
+        graph.finalizeGraph();  // Connects root to aspects
+
+        // Create a graphView for frontend (selected data)
+        ViewBuilder graphViewer = new ViewBuilder();
+        graphViewer = graphViewer.buildView(graph);  // builds view
+
+        //System.out.println("Relations: " +graphView.getCrossRelations());
+
+        GraphViewDTO gv = new GraphViewDTO(
+                graphViewer.getNodesByApsect(),
+                graphViewer.getCrossRelations()
+        );
+        System.out.println("Created GraphView GraphTest from controller");
+
+        for (Map.Entry<String, List<NodeDTO>> entry : gv.aspects.entrySet()) {
+            List<NodeDTO> aspectList = entry.getValue();
+            String aspect = entry.getKey();
+
+            System.out.println("\n--> aspect '"+ aspect+"': ");
+            for (NodeDTO node : aspectList){
+                System.out.println(node.getId());
+            }
+        }
+        return gv;
+    }
 
     public static void main(String[] args) {
 
@@ -86,7 +165,6 @@ public class GraphTest {
         graph.createRelation("XX", "-", "BB.CC", "%", "cross");
         graph.createRelation("BB.CC", "%", "XX.XB", "-", "cross");
 
-        graph.finalizeGraph();
 
         // Print alle noder
         System.out.println("Nodes:");
@@ -106,11 +184,39 @@ public class GraphTest {
             System.out.println(rel.getNodeB().getId()+"\n\n");
         }
 
+
+        // Devugger kobling
+
         System.out.println("\n\n=== Sorterte lister ===:\n");
 
-        ViewBuilder viewBuilder = new ViewBuilder();
-        //viewBuilder.buildAspectLists(graph);
-        viewBuilder.buildView(graph);
+        graph.finalizeGraph();  // Connects root to aspects
 
+        // Create a graphView for frontend (selected data)
+        ViewBuilder graphView = new ViewBuilder();
+        graphView = graphView.buildView(graph);  // builds view
+
+        //System.out.println("Relations: " +graphView.getCrossRelations());
+
+        GraphViewDTO gv = new GraphViewDTO(
+            graphView.getNodesByApsect(),
+            graphView.getCrossRelations()
+        );
+
+
+        // Print object
+        System.out.println("++++ Aspects: \n");
+        for (Map.Entry<String, List<NodeDTO>> entry : gv.aspects.entrySet()) {
+            List<NodeDTO> aspectList = entry.getValue();
+            String aspect = entry.getKey();
+
+            System.out.println("\n--> aspect '"+ aspect+"': ");
+            for (NodeDTO node : aspectList){
+                System.out.println(node.getId());
+            }
+        }
+        System.out.println("++++ Relations: \n");
+        for (Relation relation : gv.getRelations()){
+            System.out.println(relation.getType());
+        }
     }
 }

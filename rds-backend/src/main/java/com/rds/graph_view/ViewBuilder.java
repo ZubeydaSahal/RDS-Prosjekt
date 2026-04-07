@@ -11,23 +11,7 @@ import java.util.stream.Collectors;
 import com.rds.datastructure.Filter;
 import com.rds.datastructure.Node;
 import com.rds.datastructure.Relation;
-
-class NodeDTO{
-    String id;
-    String name;
-    int level;
-
-    public NodeDTO(String id, String name, int level) {
-        //node data transfer objects
-        this.id = id;
-        this.name = name;
-        this.level = level;
-    }
-
-    public String getId() {
-        return id;
-    }
-}
+import com.rds.graph_view.DTO.*;
 
 
 
@@ -43,9 +27,15 @@ public class ViewBuilder {
                 node.getCode(),
                 node.getLevel()
         );
-
     }
 
+    public Map<String, List<NodeDTO>> getNodesByApsect() {
+        return nodesByApsect;
+    }
+
+    public Set<Relation> getCrossRelations() {
+        return crossRelations;
+    }
 
     public void buildAspectLists(Map<String, Node> nodeMap) {
 

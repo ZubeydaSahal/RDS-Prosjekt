@@ -115,6 +115,10 @@ public class GraphManager {
         Relation relation = new Relation(nodeA, nodeB, type);  // TODO: Sikre at relasjonen ikke eksisterer invers
 
         if (!type.equals("hierarchy")) {
+            if (type == null){
+                System.out.println("<GraphManager> Relation type equals 'null'");
+                crossRelations.add(relation);
+            }
             crossRelations.add(relation);  // Add relation to total list of cross relations 'cross_relations'
         }
 
@@ -183,7 +187,7 @@ public class GraphManager {
         System.out.println("  ".repeat(depth) + node.getAspect() + node.getId());
 
         for (Relation relation : node.getHierarchyRelations()) {
-            if (relation.getType().equals("hierarchy")) {
+            if (!relation.getType().isEmpty() && relation.getType().equals("hierarchy")) {
                 Node other = relation.getOtherNode(node);
                 if (!visited.contains(other)) {
                     dfs(other, visited, depth + 1);
