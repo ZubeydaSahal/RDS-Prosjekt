@@ -32,7 +32,7 @@ Node {
 
 
     // Partial Constructor
-    public Node(String id){
+    public Node(String id) {
         this.id = id;
         // calculate level and code
         String[] parts = id.split("\\.");
@@ -88,6 +88,7 @@ Node {
     public String getMetadata() {
         return metadata;
     }
+  
 
     // Define nodes as eqqual if 'id' is the same
     @Override

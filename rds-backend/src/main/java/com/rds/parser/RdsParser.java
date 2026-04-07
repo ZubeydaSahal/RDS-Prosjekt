@@ -32,6 +32,7 @@ public class RdsParser {
             if (trimmedLine.isEmpty()) continue;
 
             // Check for top node declaration
+            try{
             if (!topNodeDeclared) {CheckForTopNode(trimmedLine,graphManager);}
             // check for explicit relationship
             else if (trimmedLine.contains("||")) {
@@ -46,7 +47,12 @@ public class RdsParser {
                 System.out.println(lineNumber);
 
             }
+        }catch (Exception e){
+                System.out.println("Error  line " + lineNumber + ": " + e.getMessage());
+            }
+        
         }
+        graphManager.finalizeGraph();
         return graphManager;
         
         }
@@ -149,6 +155,7 @@ public class RdsParser {
     // printer ut navn av toppnode.
     private void CreateTopNode(String topNodeName, GraphManager graphManager) {
         System.out.println("Creating top node " + topNodeName);
+        graphManager.setRoot(topNodeName);
     }
 
     // Check aspect from first symbol
