@@ -91,9 +91,9 @@ public class ViewBuilder {
             String aspect = entry.getKey();
             List<NodeDTO> aspectList = entry.getValue();
 
-            // System.out.println("==== Aspekt: " + aspect + "===="); //temp komm ut
+            System.out.println("==== Aspekt: " + aspect + "===="); //temp komm ut
             for (NodeDTO node : aspectList){
-                //System.out.println(node.getId());  // temp komment ut
+                System.out.println(node.getId());  // temp komment ut
             }
             System.out.println("\n\n");
         }
@@ -121,7 +121,7 @@ public class ViewBuilder {
         System.out.println("<Viewbuilder> 'corssrelation' size: " + crossRelation.size());
         for (RelationDTO relation : this.crossRelation){
             System.out.println("<>Node A: "+ relation.getNode1());
-        }*/
+        }*/;
 
 
 
