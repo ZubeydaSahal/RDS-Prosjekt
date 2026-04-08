@@ -1,8 +1,5 @@
 export function layoutTree(graph) {
 
-  // ----------------------------
-  // VALIDERING AV INPUT
-  // ----------------------------
   if (!graph || !graph.aspects || !graph.relations) {
     console.log("Ugyldig graph");
     return { nodes: [], hierarchyEdges: [] };
@@ -12,38 +9,70 @@ export function layoutTree(graph) {
 
   const nodes = [];
 
-  // Bruk relasjoner direkte fra backend
-  const hierarchyEdges = graph.relations || [];
+  // ----------------------------
+  // NORMALISER DATA
+  // ----------------------------
+
+  const rootArray = graph.aspects["<root>"] || [];
+  const rootNode = rootArray[0];
+
+  const allNodes = Object.values(graph.aspects).flat();
+
+  // Convert backend relations → edges
+  const allEdges = (graph.relations || [])
+      .filter(r => r?.nodeA?.id && r?.nodeB?.id)
+      .map(r => {
+        const from = r.nodeA.id;
+        const to = r.nodeB.id;
+
+        const sameAspect = from[0] === to[0];
+
+        return {
+          from,
+          to,
+          type: sameAspect ? "hierarchy" : "relation"
+        };
+      });
+
+  const hierarchyEdges = allEdges.filter(e => e.type === "hierarchy");
+  const relationEdges = allEdges.filter(e => e.type === "relation");
 
   // ----------------------------
   // ROOT NODE
   // ----------------------------
-  nodes.push({
-    ...graph.aspects["<root>"],
-    x: 700,
-    y: 40,
-    type: "root"
-  });
+  if (rootNode) {
+    nodes.push({
+      ...rootNode,
+      x: 700,
+      y: 40,
+      type: "root"
+    });
+  }
 
   // ----------------------------
-  // ASPEKTER (rekkefølge fra frontend)
+  // ASPEKTER
   // ----------------------------
   let aspects;
 
-  const allAspects = Object.values(graph.aspects || {}).flat();
+  const aspectKeys = Object.keys(graph.aspects).filter(k => k !== "<root>");
+
+  const aspectMeta = aspectKeys.map(key => ({
+    id: key,
+    label: key
+  }));
 
   if (graph.aspectOrder && graph.aspectOrder.length) {
     aspects = graph.aspectOrder
-        .map(id => allAspects.find(a => a.id === id))
+        .map(id => aspectMeta.find(a => a.id === id))
         .filter(Boolean);
   } else {
-    aspects = allAspects.sort((a, b) => a.order - b.order);
+    aspects = aspectMeta;
   }
 
   console.log("Aspects:", aspects);
 
   // ----------------------------
-  // KOLONNEPOSISJON
+  // KOLONNER
   // ----------------------------
   const COLUMN_X = {};
 
@@ -52,7 +81,7 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-  // ASPEKT HEADERS
+  // ASPECT HEADERS
   // ----------------------------
   aspects.forEach((aspect) => {
     nodes.push({
@@ -65,60 +94,45 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-  // BYGG NODE-MAP (for DFS)
+  // NODE MAP
   // ----------------------------
   const nodeMap = {};
-  graph.nodes.forEach(n => {
-    nodeMap[n.id] = { ...n, children: [] };
+
+  allNodes.forEach(n => {
+    nodeMap[n.id] = {
+      ...n,
+      children: [],
+      aspect: n.id?.[0] // derive aspect from id prefix (% - =)
+    };
   });
 
   // ----------------------------
-// KOBLE FORELDER → BARN (fra ID)
-// ----------------------------
-const generatedHierarchyEdges = [];
+  // BUILD TREE FROM RELATIONS
+  // ----------------------------
 
-graph.nodes.forEach(n => {
-  const parts = n.id.split(".");
-  parts.pop();
-
-  const parentId = parts.join(".");
-
-  if (nodeMap[parentId]) {
-
-    // Koble i tre
-    nodeMap[parentId].children.push(nodeMap[n.id]);
-
-    // GENERER EDGE
-    generatedHierarchyEdges.push({
-      from: parentId,
-      to: n.id,
-      type: "hierarchy"
-    });
-  }
-});
-
+  hierarchyEdges.forEach(e => {
+    if (nodeMap[e.from] && nodeMap[e.to]) {
+      nodeMap[e.from].children.push(nodeMap[e.to]);
+    }
+  });
 
   // ----------------------------
-  // FINN ROOT NODER PER ASPEKT
+  // ROOTS PER ASPECT
   // ----------------------------
   const rootsByAspect = {};
 
   aspects.forEach(a => {
-    rootsByAspect[a.id] = graph.nodes.filter(n => {
-  
-      if (n.aspect !== a.id) return false;
-  
-      // node er root hvis INGEN peker til den via hierarchy
-      const hasParent = hierarchyEdges.some(e =>
-        e.to === n.id && e.type === "hierarchy"
-      );
-  
+    rootsByAspect[a.id] = allNodes.filter(n => {
+
+      if (n.id[0] !== a.id) return false;
+
+      const hasParent = hierarchyEdges.some(e => e.to === n.id);
       return !hasParent;
     });
   });
 
   // ----------------------------
-  // TRE LAYOUT (DFS)
+  // LAYOUT (DFS)
   // ----------------------------
   const ROW_GAP = 70;
   const INDENT = 40;
@@ -129,59 +143,42 @@ graph.nodes.forEach(n => {
 
     function dfs(node, depth) {
 
-      const name = node.name || node.label || "";
-
-      const label = node.id
-        ? node.description
-          ? `${node.id} ${name} (${node.description})`
-          : `${node.id} ${name}`
-        : "";
+      const label = node.name
+          ? `${node.id} ${node.name}`
+          : node.id;
 
       nodes.push({
         ...node,
         label,
-
-        // ----------------------------
-        // INDENT BASERT PÅ NIVÅ
-        // ----------------------------
         x: COLUMN_X[aspect.id] + depth * INDENT,
-
-        // ----------------------------
-        // PLASSERES NEDOVER
-        // ----------------------------
         y: currentY
       });
 
       currentY += ROW_GAP;
 
-      // ----------------------------
-      // REKURSIV DFS
-      // ----------------------------
       node.children.forEach(child => {
         dfs(child, depth + 1);
       });
     }
 
     rootsByAspect[aspect.id].forEach(rootNode => {
-      dfs(nodeMap[rootNode.id], 0);
+      const mapped = nodeMap[rootNode.id];
+      if (mapped) dfs(mapped, 0);
     });
 
   });
 
   // ----------------------------
-  // RETURNER RESULTAT
+  // RETURN
   // ----------------------------
   console.log("Final nodes:", nodes);
 
-  
   return {
     nodes,
-    hierarchyEdges: [
-      ...generatedHierarchyEdges,
-      ...hierarchyEdges.filter(e => e.type !== "hierarchy")
-    ]
+    hierarchyEdges,
+    relationEdges
   };
-} 
+}
 
 
 
