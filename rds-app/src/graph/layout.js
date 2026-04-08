@@ -3,7 +3,7 @@ export function layoutTree(graph) {
   // ----------------------------
   // VALIDERING AV INPUT
   // ----------------------------
-  if (!graph || !graph.nodes || !graph.root) {
+  if (!graph || !graph.aspects || !graph.relations) {
     console.log("Ugyldig graph");
     return { nodes: [], hierarchyEdges: [] };
   }
@@ -19,7 +19,7 @@ export function layoutTree(graph) {
   // ROOT NODE
   // ----------------------------
   nodes.push({
-    ...graph.root,
+    ...graph.aspects["<root>"],
     x: 700,
     y: 40,
     type: "root"
@@ -30,12 +30,14 @@ export function layoutTree(graph) {
   // ----------------------------
   let aspects;
 
+  const allAspects = Object.values(graph.aspects || {}).flat();
+
   if (graph.aspectOrder && graph.aspectOrder.length) {
     aspects = graph.aspectOrder
-      .map(id => graph.aspects.find(a => a.id === id))
-      .filter(Boolean);
-  } else if (graph.aspects) {
-    aspects = [...graph.aspects].sort((a, b) => a.order - b.order);
+        .map(id => allAspects.find(a => a.id === id))
+        .filter(Boolean);
+  } else {
+    aspects = allAspects.sort((a, b) => a.order - b.order);
   }
 
   console.log("Aspects:", aspects);
