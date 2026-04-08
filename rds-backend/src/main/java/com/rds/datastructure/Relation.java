@@ -1,8 +1,5 @@
 package com.rds.datastructure;
 
-import java.util.ArrayList;
-import java.util.List;
-
 // TODO: sikre at type kan være null
 
 public class Relation {

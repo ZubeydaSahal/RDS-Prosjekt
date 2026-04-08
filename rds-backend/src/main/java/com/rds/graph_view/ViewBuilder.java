@@ -1,27 +1,38 @@
 package com.rds.graph_view;
 
 
-import com.rds.datastructure.GraphManager;
-import com.rds.datastructure.GraphTest;
-
-import java.rmi.UnexpectedException;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import com.rds.datastructure.Filter;
+import com.rds.datastructure.GraphManager;
 import com.rds.datastructure.Node;
 import com.rds.datastructure.Relation;
 import com.rds.graph_view.DTO.*;
 
+import javax.swing.*;
 
 
 public class ViewBuilder {
-    /* Builds a visualization-friendly view of the graph datastructure, without altering the datastructure */
+    /* Builds a visualization-friendly view of the graph datastructure, without altering the datastructure itself
+    * Contains two attributes:
+    *   - HashMap 'nodesByAspect': map containing a list for each aspect (key) and the sorted nodes in each list (value)
+    *   - HashSet 'crossRelations': A set (unordered list) containing each crossrelation
+    * Frontend receives a JSON object containing these two attributes
+    * */
     private Map<String, List<NodeDTO>> nodesByApsect = new HashMap<>();  // Map<aspect, List<NodeDTO>>)
-    private Set<Relation> crossRelations = new HashSet<>();  // Relations
+    private Set<RelationDTO> crossRelationDTO = new HashSet<>();  // Relations
 
-    private NodeDTO toDTO(Node node) {
-        // Maps a node to nodeDTO class
+    // ==== Getters =====
+    public Map<String, List<NodeDTO>> getNodesByApsect() {
+        return nodesByApsect;
+    }
+
+    public Set<RelationDTO> getCrossRelations() {
+        return crossRelationDTO;
+    }
+
+    // ===== Node mapper =====
+    private NodeDTO nodeToDTO(Node node) {
+        /* Maps a single node (from datastructure type) to nodeDTO type, to avoid transferring revealing data */
         return new NodeDTO(
                 node.getId(),
                 node.getCode(),
@@ -29,21 +40,40 @@ public class ViewBuilder {
         );
     }
 
-    public Map<String, List<NodeDTO>> getNodesByApsect() {
-        return nodesByApsect;
+    // ===== Relation mapper =====
+    /*private RelationDTO relationToDTO(Relation relation){
+        return new RelationDTO(
+                // Convert nodes in relation to NodeDTOs
+                nodeToDTO(relation.getNodeA()),
+                nodeToDTO(relation.getNodeB()),
+                relation.getType()
+        );
+    }*/
+    private RelationDTO relationToDTO(Relation relation){
+        return new RelationDTO(
+                // Convert nodes in relation to NodeDTOs
+                relation.getNodeA().getId(),
+                relation.getNodeB().getId(),
+                relation.getType()
+        );
     }
 
-    public Set<Relation> getCrossRelations() {
-        return crossRelations;
-    }
 
+    // ===== Sets 'nodesByAspect' =====
     public void buildAspectLists(Map<String, Node> nodeMap) {
+        /*  Build Lists for each aspect and put all nodes in corresponding lists
+        * Input: HashMap containing all nodes (extracted from 'graph' – a GraphManager instance)
+        * - Creates a list for each new aspect
+        * - Adds all nodes to their respective lists
+        * - Sorts each list based on the nodes' ids
+        * Output: none, it sets this instance of ViewBuilder's attribute 'nodesByAspect'
+        * */
 
-        // === Group nodes by aspekt ===
-
+        // ––––– Group nodes by aspekt –––––
         // Iterate through each node
         for (Node node : nodeMap.values()) {
-            String aspect = node.getAspect();
+
+            String aspect = node.getAspect(); // Extract aspect
 
             //If its aspect isn't in the hashmap, add it
             if (!nodesByApsect.containsKey(aspect)) {
@@ -51,15 +81,15 @@ public class ViewBuilder {
             }
 
             // Else add to their aspects' list, converted to DTO
-            nodesByApsect.get(aspect).add(toDTO(node));
+            nodesByApsect.get(aspect).add(nodeToDTO(node));
         }
 
-        // === Sort lists based on node ids ===
+        // ––––– Sort each list based on the nodes' ids –––––
         for(List<NodeDTO> aspectList: nodesByApsect.values()){
             aspectList.sort(Comparator.comparing(NodeDTO::getId));
         }
 
-        // ==== TEST print =====
+        // ==== TEST print ===== TO BE REMOVED / TEMP
         for (Map.Entry<String, List<NodeDTO>> entry : nodesByApsect.entrySet()) {
             String aspect = entry.getKey();
             List<NodeDTO> aspectList = entry.getValue();
@@ -72,27 +102,40 @@ public class ViewBuilder {
         }
     }
 
-    public void getRelations(GraphManager graphManager){
-        crossRelations = graphManager.getCrossRelations();
-    }
+    // ===== Orchestrator function =====
+    public GraphViewDTO buildView(GraphManager graph){
+        /* Orchestrator function, which uses a  datastructure as input and calls other functions to convert data to a
+        * view for frontend, containing only requested, formatted data.
+        * Input: graph (GraphManager instance)
+        * - Calls 'buildAspectList': to create a transfer object containing nodes and set 'nodesByAspect'
+        * - Extracts and sets 'crossRelations' from graph (GraphManager instance)
+        * Returns: view (ViewBuilder instance) - filtered and formatted selections of the data
+        * */
 
-    public ViewBuilder buildView(GraphManager graphManager){
+        // Build Lists per aspect and put all nodes in corresponding lists
+        this.buildAspectLists(graph.getNodeList());
 
-        // Filter options …
-
-        // Build Lists for all nodes per aspect
-        this.buildAspectLists(graphManager.getNodeList());
-
-        // Get relation list
-        this.crossRelations = graphManager.getCrossRelations();
-
-        // Debugging missing relations
-        System.out.println("<ViewBuilder> crossrelations: ");
-        for(Relation relation : this.crossRelations){
-            System.out.println(relation.getNodeB());
+        // Extract list of relations from graph and convert to relationDTOs
+        for (Relation relation : graph.getCrossRelations()){
+            this.crossRelationDTO.add(relationToDTO(relation));
+        }
+        // Debug ecrtra array sendt til frontend
+        System.out.println("<Viewbuilder> 'corssrelation' size: " +crossRelationDTO.size());
+        for (RelationDTO relation : this.crossRelationDTO){
+            System.out.println("<>Node A: "+ relation.getNodeA());
         }
 
-        return this;
+
+        /*// Debugging missing relations
+        System.out.println("<ViewBuilder> crossrelations: ");
+        for(Relation relationDTO : this.crossRelation){
+            System.out.println(relationDTO.getNodeB());
+        }*/
+
+        return new GraphViewDTO(
+                this.getNodesByApsect(),
+                this.getCrossRelations()
+        );
     }
 }
 

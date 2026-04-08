@@ -2,11 +2,7 @@ package com.rds.datastructure;
 
 import com.rds.graph_view.*;
 import com.rds.graph_view.DTO.*;
-import com.rds.datastructure.Relation;
 
-import javax.swing.*;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -63,15 +59,15 @@ public class GraphTest {
         graph.finalizeGraph();  // Connects root to aspects
 
         // Create a graphView for frontend (selected data)
-        ViewBuilder graphViewer = new ViewBuilder();
-        graphViewer = graphViewer.buildView(graph);  // builds view
+        ViewBuilder view = new ViewBuilder();
+        GraphViewDTO gv = view.buildView(graph);
 
         //System.out.println("Relations: " +graphView.getCrossRelations());
 
-        GraphViewDTO gv = new GraphViewDTO(
+        /*GraphViewDTO gv = new GraphViewDTO(
                 graphViewer.getNodesByApsect(),
                 graphViewer.getCrossRelations()
-        );
+        );*/
         System.out.println("Created GraphView GraphTest from controller");
 
         for (Map.Entry<String, List<NodeDTO>> entry : gv.aspects.entrySet()) {
@@ -195,15 +191,15 @@ public class GraphTest {
         graph.finalizeGraph();  // Connects root to aspects
 
         // Create a graphView for frontend (selected data)
-        ViewBuilder graphView = new ViewBuilder();
-        graphView = graphView.buildView(graph);  // builds view
+        ViewBuilder graphViewer = new ViewBuilder();
+        GraphViewDTO graphView = graphViewer.buildView(graph);  // builds view
 
         //System.out.println("Relations: " +graphView.getCrossRelations());
 
-        GraphViewDTO gv = new GraphViewDTO(
+        /*GraphViewDTO gv = new GraphViewDTO(
             graphView.getNodesByApsect(),
             graphView.getCrossRelations()
-        );
+        );*/
 
 /*
         // Print object

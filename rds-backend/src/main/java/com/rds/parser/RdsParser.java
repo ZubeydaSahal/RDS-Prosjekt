@@ -2,13 +2,7 @@
 
 package com.rds.parser;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.rds.datastructure.GraphManager;
-import com.rds.datastructure.Relation;
-import com.rds.datastructure.Node;
 
 //the function NodeChecker and RelationChecker are placeholders.
 public class RdsParser {
