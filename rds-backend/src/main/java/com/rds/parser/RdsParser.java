@@ -2,13 +2,13 @@
 
 package com.rds.parser;
 
-import java.util.*;
+import com.rds.datastructure.GraphManager;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.rds.datastructure.GraphManager;
-import com.rds.datastructure.Relation;
-import com.rds.datastructure.Node;
 
 //the function NodeChecker and RelationChecker are placeholders.
 public class RdsParser {
@@ -20,6 +20,7 @@ public class RdsParser {
         System.out.println(script);
         String[] lines = script.split("\\r?\\n");
         int lineNumber = 0;
+        Pattern pattern = Pattern.compile("\\|\\||\\|[^|]+\\|");
 
         // 1. it checks if the topNode is declared or not in the first line
         // 2. checks the line for explicit relation being declared
@@ -28,24 +29,72 @@ public class RdsParser {
         for (String line : lines) {
             lineNumber++;
             String trimmedLine = line.trim();
-
             if (trimmedLine.isEmpty()) continue;
 
             // Check for top node declaration
             try{
             if (!topNodeDeclared) {CheckForTopNode(trimmedLine,graphManager);}
-            // check for explicit relationship
-            else if (trimmedLine.contains("||")) {
-                CheckExplicitRelationForName(trimmedLine, graphManager);
-            }else {
-                // check for aspect and remove aspect symbol
-                String aspect = checkAspect(trimmedLine);
-                trimmedLine = trimmedLine.substring(1).trim();
+            else {
+                // check for relationship
+                Matcher matcher = pattern.matcher(trimmedLine);
+                List<int[]> relationPositions = new ArrayList<>();
+                List<String> relations = new ArrayList<>();
+                boolean foundRelation = false;
 
-                // Normal RDS line
-                CheckNodes(trimmedLine, aspect,graphManager);
-                System.out.println(lineNumber);
+                // goes through the line and find everywhere a relation occurs and stores the position of them
+                while (matcher.find()) {
+                    foundRelation = true;
+                    relationPositions.add(new int[]{matcher.start(), matcher.end()});
+                    relations.add(matcher.group());
+                }
+                //if matcher.find() do find relations it will send data of the two nodes and the relation betwen them for processing.
+                if (!relations.isEmpty()) {
+                    String previousNodePart = null;
 
+                    for (int i = 0; i < relations.size(); i++) {
+                        String relation = relations.get(i);
+
+                        int start = relationPositions.get(i)[0];
+                        int end = relationPositions.get(i)[1];
+
+                        // LEFT SIDE
+                        String leftPart;
+                        if (previousNodePart == null) {
+                            leftPart = trimmedLine.substring(0, start).trim();
+                            System.out.println("When previous node is null: " + leftPart);
+                        } else {
+                            leftPart = previousNodePart;
+                            System.out.println("When previous node is not null " + leftPart);
+                        }
+
+                        // RIGHT SIDE
+                        int nextStart;
+                        if (i + 1 < relations.size()) {
+                            nextStart = relationPositions.get(i + 1)[0];
+                        } else {
+                            nextStart = trimmedLine.length();
+                        }
+
+                        String rightPart = trimmedLine.substring(end, nextStart).trim();
+                        System.out.println("the rightpart of relation:  " + rightPart);
+
+                        // store for next iteration
+                        previousNodePart = rightPart;
+
+                        // PROCESS relation
+                        CheckExplicitRelationForName(leftPart, rightPart, relation, graphManager);
+                    }
+                }
+                if (!foundRelation) {
+                    // check for aspect and remove aspect symbol
+                    String aspect = checkAspect(trimmedLine);
+                    trimmedLine = trimmedLine.substring(1).trim();
+
+                    // Normal RDS line
+                    CheckNodes(trimmedLine, aspect, graphManager);
+                    System.out.println(lineNumber);
+
+                }
             }
         }catch (Exception e){
                 System.out.println("Error  line " + lineNumber + ": " + e.getMessage());
@@ -65,11 +114,9 @@ public class RdsParser {
         String[] nodes = trimmedLine.split("\\.");
         String previousFullId = null; // keeps truck of previous id
         String currentFullId=""; //keeps truck of the id being built 
-        int depth = 0;
 
         // for each node in line, check if it has a name and then check the relationship between them
         for (String node : nodes){
-            depth++;
             String id;
             String name = null;
 
@@ -111,33 +158,33 @@ public class RdsParser {
     }
     
 
-    private void CheckExplicitRelationForName(String trimmedLine, GraphManager graphmanger) {
-        String relationName = checkExplicitRelationName(trimmedLine);
-        String[] parts;
+    private void CheckExplicitRelationForName(String leftSide, String rightSide, String relation, GraphManager graphmanger) {
+        String relationName = null;
 
-        if (relationName != null){
-            parts = trimmedLine.split("\\|\\|" + relationName + "\\|\\|");
-        } else {
-            parts = trimmedLine.split("\\|\\|");
+        if (!relation.equals("||")) {
+            relationName = relation.substring(1, relation.length() - 1);
+            System.out.println(relationName + " is the name of relation");
+        }
+        else {
+            System.out.println("name of relation is null: " + relationName);
         }
 
         //process leftsidde
-        String leftSide = parts[0].trim();
         String leftNodeAspect = checkAspect(leftSide);
-        leftSide=leftSide.substring(1).trim(); // remove aspect symbol
+        leftSide = leftSide.substring(1).trim(); // remove aspect symbol
         CheckNodes(leftSide, leftNodeAspect,graphmanger);
 
-        String rightSide = parts[1].trim();
+        // process rightSide
         String rightNodeAspect = checkAspect(rightSide);
-        rightSide=rightSide.substring(1).trim(); // remove aspect symbol
+        rightSide = rightSide.substring(1).trim(); // remove aspect symbol
         CheckNodes(rightSide, rightNodeAspect, graphmanger);
 
         //gets last node from each side of a explicit relation
-        String leftLastId=leftNodeAspect+leftSide.split("\\.")[leftSide.split("\\.").length-1];
-        String rightLastId=rightNodeAspect+rightSide.split("\\.")[rightSide.split("\\.").length-1];
+        String leftLastId = leftNodeAspect + leftSide.split("\\.")[leftSide.split("\\.").length-1];
+        String rightLastId = rightNodeAspect + rightSide.split("\\.")[rightSide.split("\\.").length-1];
 
         //Creats explicit relation 
-        RelationChecker(leftLastId, null,rightLastId, null,relationName, graphmanger);
+        RelationChecker(leftLastId, leftNodeAspect, rightLastId, rightNodeAspect, relationName, graphmanger);
         
     }
 
@@ -173,7 +220,7 @@ public class RdsParser {
     }    
 
     // check if explicit relationship has a name
-    private String checkExplicitRelationName(String line) {
+    /*private String checkExplicitRelationName(String line) {
         // Named relation has pattern ||NAME||
         int first = line.indexOf("||");
         int second = line.indexOf("||", first + 2);
@@ -189,10 +236,6 @@ public class RdsParser {
 
         return null;
     }
+     */
 
-    // get Last Node from line
-    //TODO: needs to return the last node, but also make sure its from the correct aspect.
-    private String getLastNode(String line){
-        return null;
-    }
 }
