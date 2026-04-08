@@ -1,86 +1,96 @@
 package com.rds.datastructure;
 
-import java.util.*;  // Dårlig praksis, should only import used tools
+// ===== Libraries =====
+import org.springframework.web.bind.MissingRequestValueException;
+
+import java.rmi.UnexpectedException;
+import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-// TODO: Noder skal kunne opprettes implisitt AA.BB||K1, skal opprette alle noder og relasjoner som ikke eksiterer
-//  -> Dette var funksjonen til nodeChecker, må lage ordentlig
-//      - Noder opprettes
-//      - Alle relasjoner opprettes
+
+
 
 public class GraphManager {
-    // Attributes
+    // ===== Attributes =====
     private Map<String, Node> nodes = new HashMap<>();  // nodes 'id' as key
     private Set<Relation> crossRelations = new HashSet<>();  // Relations
     private Node root = null;
 
+    // ===== Logger – if errors in creating datastructure =====
+    private static final Logger LOGGER = Logger.getLogger(GraphManager.class.getName());
 
+    // ===== Setter =====
     public void setRoot(String id) {
         this.root = createOrUpdateNode(id, "<root>", null);
         root.setLevel(0);
         System.out.println("<Root> Setting root.. id: " + id);
     }
 
-    // Node functions
-    public Node createOrUpdateNode(String id, String aspect, String metadata) {
-        Node node = nodes.get(id);  // Fetch this node from hashmap
 
-        // Check if node exits
-        if (node == null) {
-            // if not, create and add to 'nodes' hashmap
-            System.out.println("<+Node+> creating new node: " + id);
-
-            if(aspect != null){
-                node = new Node(id, aspect);
-            }
-            else{
-                node = new Node(id);
-            }
-
-            nodes.put(id, node);
-
-            // find parent and create relation  // TEMP - se TODO øverst
-            int index = id.lastIndexOf(".");  // find index of last '.' – last node reference
-
-            if (index != -1) {  // handles edge case (parent of root doesn't exist)
-                String parentId = id.substring(0, index);  // determine parent's id
-                Node parent = nodes.get(parentId);
-                //System.out.println("Parent/root dont exist, this is parentID: " + parentId);
-
-                if (parent == null) {  // handles non declared parent – to be replaced check TODO
-                    createOrUpdateNode(parentId, node.getAspect(), null);  // parents and children share aspect
-                    System.out.println("<-Node-> Parent doesn't exist, creating parent: " + parentId);
-                }
-
-                createRelation(parentId, aspect, id, aspect, "hierarchy");  // parents and children share aspect
-                // Relation (nodeA, nodeA_aspect, nodeB, nodeB_aspect) –> nodeA = parent, nodeB = child
-                System.out.println("<Relation> create relation: " + id + " and parent " + parentId);
-            }
-        }
-
-        node.updateNode(metadata);  // Update varying fields (metadata is JSON or replaced with relevant fields (name..)
-
-        return node;
-    }
-
-    public Node getNode(String id) {
-        /* Fetches node by id (flyttet fra Node.java)*/
+    // ===== Getter =====
+   /* public Node getNode(String id) {
+         //Fetches node by id (flyttet fra Node.java)
         return nodes.get(id);
-    }
+    }*/
 
-    public Collection<Node> getNodes() {
-        /* Gets all nodes, returns Collection,
+    /*public Collection<Node> getNodes() {
+        *//* Gets all nodes, returns Collection,
         (som er retur verdien fra hashMap's .values())
-        */
+        *//*
         return nodes.values();
-    }
+    }*/
 
     public Map<String, Node> getNodeList(){
         return nodes;
     }
 
+    // ===== Handle 'node' =====
+    public Node createOrUpdateNode(String id, String aspect, String metadata) {
+        Node node = nodes.get(id);  // Fetch input node from hashmap
 
-    // Relation functions
+        // Check if node already exits
+        if (node == null) {
+
+            // ––––– if not, create and add to 'nodes' hashmap –––––
+            System.out.println("<+Node+> creating new node: " + id);
+
+            if(aspect != null){  // Check that aspect has a value
+                node = new Node(id, aspect);
+            }
+            else{  // Else crete a placeholder and log
+                node = new Node(id);
+                LOGGER.warning("<GraphManager> Missing aspect for node id: "+ id + ". Using aspectless constructor");
+            }
+
+            nodes.put(id, node);  // Add node to attribute 'nodes' (HashMap)
+
+            // ––––– find parent and create relation –––––
+            int index = id.lastIndexOf(".");  // find index of last '.' – last node reference
+
+            if (index != -1) {  // avoid edge case (parent of root doesn't exist)
+
+                String parentId = id.substring(0, index);  // determine parent's id
+                Node parent = nodes.get(parentId);  // Try to fetch parent from 'nodes'
+
+                // ––––– If parent doesn't exist, create parent–––––
+                if (parent == null) {  // handles non declared parent – to be replaced check TODO
+                    createOrUpdateNode(parentId, node.getAspect(), null);  // parents and children share aspect
+                }
+
+                // ––––– Create relation to parent, with type: "hierarchy" –––––
+                createRelation(parentId, aspect, id, aspect, "hierarchy");  // parents and children share aspect
+                // nodeA = parent, nodeB = child -> Relation (nodeA, nodeA_aspect, nodeB, nodeB_aspect)
+            }
+        }
+
+        // ––––– Update node ––––– // Temp might be redundant
+        node.updateNode(metadata);  // Update varying fields (metadata is JSON or replaced with relevant fields (name..)
+
+        return node;
+    }
+
+    // ===== Handle 'relation' =====
     public Relation createRelation(String idA, String aspectA, String idB, String aspectB, String type) {
 
         // Fetch nodes A and B (both ends of the relations)
@@ -94,13 +104,11 @@ public class GraphManager {
         // Konrad: midlertidig tatt bort kommentaren med de to første if-testene.
 
         if (nodeA == null) {
-            createOrUpdateNode(idA, aspectA, null);
-            nodeA = nodes.get(idA);  // update nodeA with created node
+            nodeA = createOrUpdateNode(idA, aspectA, null);  // update nodeA with created node
             System.out.println("created node A");
         }
         if (nodeB == null) {
-            createOrUpdateNode(idB, aspectB, null);
-            nodeB = nodes.get(idB);  // update nodeB with created node
+            nodeB = createOrUpdateNode(idB, aspectB, null);;  // update nodeB with created node
             System.out.println("created node B");
         }
 

@@ -3,6 +3,7 @@ package com.rds.graph_view.DTO;
 public class NodeDTO {
     /* Data transfer object for nodes to hide non-required information in backend */
 
+    // ===== Attributes =====
     private String id;
     private String name;
     private int level;

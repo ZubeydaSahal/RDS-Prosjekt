@@ -80,19 +80,19 @@ public class RdsParser {
             }
 
             
-            if(currentFullId.isEmpty()){
+            /*if(currentFullId.isEmpty()){
                 currentFullId = aspect + id;
             } else {
                 currentFullId = currentFullId + "." + id;
-            }
+            }*/
             
             NodeChecker(currentFullId, aspect, name, graphManager); //creats or update node in graph manager
             
-            // implicit relationship between nodes
+            /*// implicit relationship between nodes
             if (previousFullId != null){
                 RelationChecker(previousFullId, aspect, currentFullId, aspect, null, graphManager);
             }
-            previousFullId = currentFullId; //update previousid
+            previousFullId = currentFullId; //update previousid*/
         }
     }
     //creats relation bewteen nodes in graphmanger

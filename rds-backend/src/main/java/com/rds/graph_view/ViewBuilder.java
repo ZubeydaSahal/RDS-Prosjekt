@@ -1,10 +1,13 @@
 package com.rds.graph_view;
 
 
+// ===== Import libraries =====
 import java.util.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+// ===== Import modules =====
 import com.rds.datastructure.GraphManager;
 import com.rds.datastructure.Node;
 import com.rds.datastructure.Relation;
@@ -18,16 +21,18 @@ public class ViewBuilder {
     *   - HashSet 'crossRelations': A set (unordered list) containing each crossrelation
     * Frontend receives a JSON object containing these two attributes
     * */
-    private Map<String, List<NodeDTO>> nodesByApsect = new HashMap<>();  // Map<aspect, List<NodeDTO>>)
-    private Set<RelationDTO> viewerRelationDTO = new HashSet<>();  // Relations
 
-    // ==== Getters =====
+    // ===== Attributes =====
+    private Map<String, List<NodeDTO>> nodesByApsect = new HashMap<>();  // Map<aspect, List<NodeDTO>>)
+    private Set<RelationDTO> crossRelation = new HashSet<>();  // Relations
+
+    // ===== Getters ======
     public Map<String, List<NodeDTO>> getNodesByApsect() {
         return nodesByApsect;
     }
 
-    public Set<RelationDTO> getViewerRelations() {
-        return viewerRelationDTO;
+    public Set<RelationDTO> getCrossRelations() {
+        return crossRelation;
     }
 
     // ===== Node mapper =====
@@ -41,14 +46,6 @@ public class ViewBuilder {
     }
 
     // ===== Relation mapper =====
-    /*private RelationDTO relationToDTO(Relation relation){
-        return new RelationDTO(
-                // Convert nodes in relation to NodeDTOs
-                nodeToDTO(relation.getNodeA()),
-                nodeToDTO(relation.getNodeB()),
-                relation.getType()
-        );
-    }*/
     private RelationDTO relationToDTO(Relation relation){
         return new RelationDTO(
                 // Convert nodes in relation to NodeDTOs
@@ -59,7 +56,7 @@ public class ViewBuilder {
     }
 
 
-    // ===== Sets 'nodesByAspect' =====
+    // ===== Sets 'nodesByAspect' attribute =====
     public void buildAspectLists(Map<String, Node> nodeMap) {
         /*  Build Lists for each aspect and put all nodes in corresponding lists
         * Input: HashMap containing all nodes (extracted from 'graph' – a GraphManager instance)
@@ -112,18 +109,19 @@ public class ViewBuilder {
         * Returns: view (ViewBuilder instance) - filtered and formatted selections of the data
         * */
 
-        // Build Lists per aspect and put all nodes in corresponding lists
-        this.buildAspectLists(graph.getNodeList());
+        // ––––– Set 'viewerRelationDTO' –––––
+        this.buildAspectLists(graph.getNodeList());  // Build Lists per aspect and put all nodes in corresponding lists
 
-        // Extract list of relations from graph and convert to relationDTOs
+        // ––––– Set 'viewerRelation' –––––
         for (Relation relation : graph.getCrossRelations()){
-            this.viewerRelationDTO.add(relationToDTO(relation));
+            this.crossRelation.add(relationToDTO(relation)); // Extract list of relations from graph and convert to relationDTOs
+
         }
-        // Debug ecrtra array sendt til frontend
-        System.out.println("<Viewbuilder> 'corssrelation' size: " + viewerRelationDTO.size());
-        for (RelationDTO relation : this.viewerRelationDTO){
+        /*// Debug ecrtra array sendt til frontend
+        System.out.println("<Viewbuilder> 'corssrelation' size: " + crossRelation.size());
+        for (RelationDTO relation : this.crossRelation){
             System.out.println("<>Node A: "+ relation.getNode1());
-        }
+        }*/
 
 
 
@@ -133,9 +131,10 @@ public class ViewBuilder {
             System.out.println(relationDTO.getNodeB());
         }*/
 
+        // ===== Create data obejct to be transferred  ======
         GraphViewDTO graphViewDTO = new GraphViewDTO(
                 this.nodesByApsect,
-                this.viewerRelationDTO
+                this.crossRelation
         );
         /*ObjectMapper crossRelMapper = new ObjectMapper();
         try {
@@ -146,7 +145,7 @@ public class ViewBuilder {
             e.printStackTrace();
         }*/
 
-        //Debugging
+        /*//Debugging
         System.out.println("+X+X+X Debugging X+X+X+");
         System.out.println("Aspects: "+graphViewDTO.getNodeDTO());
         System.out.println("Relations: "+graphViewDTO.getRelationDTO());
@@ -159,7 +158,7 @@ public class ViewBuilder {
             System.out.println("JSON: "+json);
         }catch (JsonProcessingException e){
             e.printStackTrace();
-        }
+        }*/
 
         /*return new GraphViewDTO(
                 this.getNodesByApsect(),
