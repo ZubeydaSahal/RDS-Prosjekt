@@ -3,12 +3,12 @@ package com.rds.graph_view;
 
 import java.util.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rds.datastructure.GraphManager;
 import com.rds.datastructure.Node;
 import com.rds.datastructure.Relation;
 import com.rds.graph_view.DTO.*;
-
-import javax.swing.*;
 
 
 public class ViewBuilder {
@@ -19,15 +19,15 @@ public class ViewBuilder {
     * Frontend receives a JSON object containing these two attributes
     * */
     private Map<String, List<NodeDTO>> nodesByApsect = new HashMap<>();  // Map<aspect, List<NodeDTO>>)
-    private Set<RelationDTO> crossRelationDTO = new HashSet<>();  // Relations
+    private Set<RelationDTO> viewerRelationDTO = new HashSet<>();  // Relations
 
     // ==== Getters =====
     public Map<String, List<NodeDTO>> getNodesByApsect() {
         return nodesByApsect;
     }
 
-    public Set<RelationDTO> getCrossRelations() {
-        return crossRelationDTO;
+    public Set<RelationDTO> getViewerRelations() {
+        return viewerRelationDTO;
     }
 
     // ===== Node mapper =====
@@ -117,13 +117,14 @@ public class ViewBuilder {
 
         // Extract list of relations from graph and convert to relationDTOs
         for (Relation relation : graph.getCrossRelations()){
-            this.crossRelationDTO.add(relationToDTO(relation));
+            this.viewerRelationDTO.add(relationToDTO(relation));
         }
         // Debug ecrtra array sendt til frontend
-        System.out.println("<Viewbuilder> 'corssrelation' size: " +crossRelationDTO.size());
-        for (RelationDTO relation : this.crossRelationDTO){
-            System.out.println("<>Node A: "+ relation.getNodeA());
+        System.out.println("<Viewbuilder> 'corssrelation' size: " + viewerRelationDTO.size());
+        for (RelationDTO relation : this.viewerRelationDTO){
+            System.out.println("<>Node A: "+ relation.getNode1());
         }
+
 
 
         /*// Debugging missing relations
@@ -132,10 +133,39 @@ public class ViewBuilder {
             System.out.println(relationDTO.getNodeB());
         }*/
 
-        return new GraphViewDTO(
+        GraphViewDTO graphViewDTO = new GraphViewDTO(
+                this.nodesByApsect,
+                this.viewerRelationDTO
+        );
+        /*ObjectMapper crossRelMapper = new ObjectMapper();
+        try {
+            String json = crossRelMapper.writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(getViewerRelations());
+            System.out.println("JSON: "+json);
+        }catch (JsonProcessingException e){
+            e.printStackTrace();
+        }*/
+
+        //Debugging
+        System.out.println("+X+X+X Debugging X+X+X+");
+        System.out.println("Aspects: "+graphViewDTO.getNodeDTO());
+        System.out.println("Relations: "+graphViewDTO.getRelationDTO());
+        //System.out.println("GetRelations: "+graphViewDTO.getRelations());
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String json = mapper.writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(graphViewDTO);
+            System.out.println("JSON: "+json);
+        }catch (JsonProcessingException e){
+            e.printStackTrace();
+        }
+
+        /*return new GraphViewDTO(
                 this.getNodesByApsect(),
                 this.getCrossRelations()
-        );
+        );*/
+        return graphViewDTO;
     }
 }
 

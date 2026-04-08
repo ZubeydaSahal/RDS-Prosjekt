@@ -70,7 +70,7 @@ public class GraphTest {
         );*/
         System.out.println("Created GraphView GraphTest from controller");
 
-        for (Map.Entry<String, List<NodeDTO>> entry : gv.aspects.entrySet()) {
+        for (Map.Entry<String, List<NodeDTO>> entry : gv.getNodeDTO().entrySet()) {
             List<NodeDTO> aspectList = entry.getValue();
             String aspect = entry.getKey();
 
@@ -120,7 +120,7 @@ public class GraphTest {
 
         // --- % aspekt ---
         graph.createOrUpdateNode("PA","%" , null);
-        graph.createOrUpdateNode("PA.BB1","%" , null);
+        /*graph.createOrUpdateNode("PA.BB1","%" , null);
         graph.createOrUpdateNode("PA.BB1.CC1","%" , null);
         graph.createOrUpdateNode("PA.BB2","%" , null);
         graph.createOrUpdateNode("PA.BB2.CC2","%" , null);
@@ -152,7 +152,7 @@ public class GraphTest {
         graph.createOrUpdateNode("SA.HH2","$" , null);
         graph.createOrUpdateNode("SA.HH2.II2","$" , null);
         graph.createOrUpdateNode("SA.HH3","$" , null);
-        graph.createOrUpdateNode("SA.HH4","$" , null);
+        graph.createOrUpdateNode("SA.HH4","$" , null);*/
 
 
         // Test create node with aspect

@@ -1,5 +1,7 @@
 package com.rds;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rds.datastructure.GraphManager;
 import com.rds.graph_view.ViewBuilder;
 import com.rds.parser.RdsParser;
@@ -24,6 +26,22 @@ public class RdsController {
         // Create a view of the data for frontend (selected data)
         ViewBuilder viewBuilder = new ViewBuilder();
         GraphViewDTO graphViewDTO = viewBuilder.buildView(graph);  // builds view and return DTO
+
+        //Debugging
+        System.out.println("+X+X+X Debugging X+X+X+");
+        System.out.println("Aspects: "+graphViewDTO.getNodeDTO());
+        System.out.println("Relations: "+graphViewDTO.getRelationDTO());
+        //System.out.println("GetRelations: "+graphViewDTO.getRelations());
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String json = mapper.writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(graphViewDTO);
+            System.out.println("JSON: "+json);
+        }catch (JsonProcessingException e){
+            e.printStackTrace();
+        }
+
         return graphViewDTO;
 
         /*// Test datastructure SEAN

@@ -5,25 +5,25 @@ public class RelationDTO {
     * Datastructures relations contain extra information about the nodes*/
 
     // Connected nodes
-    private final String nodeA;
-    private final String nodeB;
+    private final String node1;
+    private final String node2;
     private final String type;
 
 
 
     // ===== Constructor =====
     public RelationDTO(String nodeA, String nodeB, String type) {
-        this.nodeA = nodeA;
-        this.nodeB = nodeB;
+        this.node1 = nodeA;
+        this.node2 = nodeB;
         this.type = type;
     }
 
     // ===== Getters =====
-    public String getNodeA() {
-        return nodeA;
+    public String getNode1() {
+        return node1;
     }
-    public String getNodeB() {
-        return nodeB;
+    public String getNode2() {
+        return node2;
     }
     public String getType() {
         return type;
