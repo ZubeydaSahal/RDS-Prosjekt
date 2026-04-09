@@ -65,6 +65,7 @@ public class RdsParser {
 
         // Sean driver og debugger manglende foreldre
 
+
         // for each node in line, check if it has a name and then check the relationship between them
         for (String node : nodes){
             depth++;
@@ -81,15 +82,16 @@ public class RdsParser {
                 id = node;
             }
 
-            
+
+            // Nødvendig!
             if(currentFullId.isEmpty()){
                 currentFullId = aspect + id;
             } else {
                 currentFullId = currentFullId + "." + id;
             }
-            
+
             NodeChecker(currentFullId, aspect, name, graphManager); //creats or update node in graph manager
-            
+
             // implicit relationship between nodes
             if (previousFullId != null){
                 RelationChecker(previousFullId, aspect, currentFullId, aspect, null, graphManager);
