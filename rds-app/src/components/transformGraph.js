@@ -1,17 +1,19 @@
 export function transformGraph(graph) {
     if (!graph || !graph.aspects) return null;
+    console.log("HELE GRAPH FRA BACKEND:", graph);
+
   
     const nodes = [];
     const nodeMap = {};
   
     const root = {
-      id: "root",
-      label: "System",
-      type: "root"
-    };
+        id: "root",
+        label: graph.topNode,
+        type: "root"
+      };
   
     // ----------------------------
-    // NODES (IKKE hardkod rekkefølge!)
+    // NODES 
     // ----------------------------
     Object.entries(graph.aspects).forEach(([aspect, list]) => {
       (list || []).forEach(n => {

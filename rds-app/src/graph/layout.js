@@ -17,7 +17,7 @@ export function layoutTree(graph) {
   // ----------------------------
   const nodes = [];
 
-  // 🔥 BRUK edges fra transformGraph (IKKE bygg på nytt)
+  // BRUK edges fra transformGraph (IKKE bygg på nytt)
   const hierarchyEdges = graph.hierarchyEdges || [];
   const rootEdges = graph.rootEdges || [];
   const crossEdges = graph.crossEdges || [];
@@ -141,11 +141,11 @@ export function layoutTree(graph) {
     // ----------------------------
     let currentY = CONFIG.startY;
 
-    const visited = new Set(); // 🔥 FIX: unngå duplikater
+    const visited = new Set(); //  unngå duplikater
 
     function dfs(node, depth) {
 
-      const visitKey = `${node.aspect}-${node.id}`; // 🔥 viktig
+      const visitKey = `${node.aspect}-${node.id}`;
 
       if (visited.has(visitKey)) return;
       visited.add(visitKey);

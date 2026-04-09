@@ -7,10 +7,10 @@ import Edge from "./Edge";
 
 export default function GraphView({ graph, graphRef }) {
 
-  // 🔥 NY: STATE FOR REKKEFØLGE
+  // STATE FOR REKKEFØLGE
   const [order, setOrder] = useState(["%", "=", "-", "%%"]);
 
-  // 🔥 NY: flytt funksjon
+
   function moveAspect(id, direction) {
 
     const index = order.indexOf(id);
@@ -45,7 +45,7 @@ export default function GraphView({ graph, graphRef }) {
 
     return layoutTree({
       ...transformed,
-      aspectOrder: order // 🔥 viktig
+      aspectOrder: order 
     });
 
   }, [graph, order]);
