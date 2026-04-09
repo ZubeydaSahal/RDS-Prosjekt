@@ -12,8 +12,12 @@ export function layoutTree(graph) {
 
   const nodes = [];
 
-  // Bruk relasjoner direkte fra backend
-  const hierarchyEdges = graph.relations || [];
+  // ----------------------------
+  // KUN BEHOLD NON-HIERARCHY FRA BACKEND
+  // ----------------------------
+  const backendEdges = (graph.relations || []).filter(
+    e => e.type !== "hierarchy"
+  );
 
   // ----------------------------
   // ROOT NODE
@@ -71,30 +75,29 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-// KOBLE FORELDER → BARN (fra ID)
-// ----------------------------
-const generatedHierarchyEdges = [];
+  // KOBLE FORELDER → BARN (fra ID)
+  // ----------------------------
+  const generatedHierarchyEdges = [];
 
-graph.nodes.forEach(n => {
-  const parts = n.id.split(".");
-  parts.pop();
+  graph.nodes.forEach(n => {
+    const parts = n.id.split(".");
+    parts.pop();
 
-  const parentId = parts.join(".");
+    const parentId = parts.join(".");
 
-  if (nodeMap[parentId]) {
+    if (nodeMap[parentId]) {
 
-    // Koble i tre
-    nodeMap[parentId].children.push(nodeMap[n.id]);
+      // Koble i tre
+      nodeMap[parentId].children.push(nodeMap[n.id]);
 
-    // GENERER EDGE
-    generatedHierarchyEdges.push({
-      from: parentId,
-      to: n.id,
-      type: "hierarchy"
-    });
-  }
-});
-
+      // Generer edge
+      generatedHierarchyEdges.push({
+        from: parentId,
+        to: n.id,
+        type: "hierarchy"
+      });
+    }
+  });
 
   // ----------------------------
   // FINN ROOT NODER PER ASPEKT
@@ -103,14 +106,14 @@ graph.nodes.forEach(n => {
 
   aspects.forEach(a => {
     rootsByAspect[a.id] = graph.nodes.filter(n => {
-  
+
       if (n.aspect !== a.id) return false;
-  
-      // node er root hvis INGEN peker til den via hierarchy
-      const hasParent = hierarchyEdges.some(e =>
-        e.to === n.id && e.type === "hierarchy"
+
+      // Bruk GENERATED edges (ikke backend!)
+      const hasParent = generatedHierarchyEdges.some(e =>
+        e.to === n.id
       );
-  
+
       return !hasParent;
     });
   });
@@ -171,17 +174,15 @@ graph.nodes.forEach(n => {
   // ----------------------------
   console.log("Final nodes:", nodes);
 
-  
   return {
     nodes,
+
+    // ----------------------------
+    // COMBINE EDGES
+    // ----------------------------
     hierarchyEdges: [
-      ...generatedHierarchyEdges,
-      ...hierarchyEdges.filter(e => e.type !== "hierarchy")
+      ...generatedHierarchyEdges, // ALT hierarki
+      ...backendEdges             // root + cross
     ]
   };
-} 
-
-
-
-
-
+}
