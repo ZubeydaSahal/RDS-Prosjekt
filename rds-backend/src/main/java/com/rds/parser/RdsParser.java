@@ -15,7 +15,7 @@ public class RdsParser {
     private boolean topNodeDeclared = false;
 
     // receives the whole script as a string, splits it into lines and processes each line according to the RDS syntax rules.
-    public GraphManager parse(String script) {
+    public GraphManager parse(String script){
         GraphManager graphManager = new GraphManager();
         System.out.println("<Parse> Script: \n" + script + "\n");
         String[] lines = script.split("\\r?\\n");
@@ -33,15 +33,14 @@ public class RdsParser {
             if (trimmedLine.isEmpty()) continue;
 
             // Check for top node declaration
-            try {
-                if (!topNodeDeclared) {
-                    CheckForTopNode(trimmedLine, graphManager);
-                } else {
-                    // check for relation
-                    Matcher matcher = pattern.matcher(trimmedLine);
-                    List<int[]> relationPositions = new ArrayList<>();
-                    List<String> relations = new ArrayList<>();  // List of all relations in input-line
-                    boolean foundRelation = false;
+            try{
+            if (!topNodeDeclared) {CheckForTopNode(trimmedLine,graphManager);}
+            else {
+                // check for relationship
+                Matcher matcher = pattern.matcher(trimmedLine);
+                List<int[]> relationPositions = new ArrayList<>();
+                List<String> relations = new ArrayList<>();
+                boolean foundRelation = false;
 
                     // goes through the line and find everywhere a relation occurs and stores the position of them
                     while (matcher.find()) {
@@ -110,12 +109,12 @@ public class RdsParser {
             } catch (Exception e) {
                 System.out.println("<PARSER ERR>Error  line " + lineNumber + ": " + e.getMessage());
             }
-
+        
         }
         //graphManager.finalizeGraph();
         return graphManager;
-
-    }
+        
+        }
 
     
     //processs a RDS line.
@@ -192,6 +191,7 @@ public class RdsParser {
 
     //creats or update node in graphmanger. 
     private void NodeChecker(String fullId, String aspect, String name, GraphManager graphManager) {
+        System.out.println("this is its full id: " + fullId);
         graphManager.createOrUpdateNode(fullId, aspect, name);
     }
     
@@ -244,15 +244,22 @@ public class RdsParser {
     // Check aspect from first symbol
     private String checkAspect(String line) {
 
-        char first = line.charAt(0);
+        if (line.startsWith("%%")) return "%%";
+        else if (line.startsWith("-")) return "-";
+        else if (line.startsWith("=")) return "=";
+        else if (line.startsWith("%")) return "%";
+        else if (line.startsWith("$")) return "$";
+        else throw new IllegalArgumentException("invalid aspect symbol or missing aspect symbol: " + line);
 
-        return switch (first) {
-            case '-' -> "-";
-            case '=' -> "=";
-            case '%' -> "%";
-            case '$' -> "$";
-            default -> throw new RuntimeException("Invalid aspect symbol. " + line );
-        };
+        //char first = line.charAt(0);
+
+//        return switch () {
+//            case '-' -> "-";
+//            case '=' -> "=";
+//            case '%' -> "%";
+//            case '$' -> "$";
+//            default -> throw new RuntimeException("Invalid aspect symbol. " + line );
+//        };
     }    
 
     // check if explicit relationship has a name
