@@ -9,7 +9,7 @@ public class RdsParser {
     private boolean topNodeDeclared = false;
 
     // receives the whole script as a string, splits it into lines and processes each line according to the RDS syntax rules.
-    public GraphManager parse(String script){
+    public GraphManager parse(String script) {
         GraphManager graphManager = new GraphManager();
         System.out.println(script);
         String[] lines = script.split("\\r?\\n");
@@ -27,47 +27,51 @@ public class RdsParser {
 
             System.out.println("<Parser>Trimmed line:" + trimmedLine);// SEan debugger
             // Check for top node declaration
-            try{
-            if (!topNodeDeclared) {CheckForTopNode(trimmedLine,graphManager);}
-            // check for explicit relationship
-            else if (trimmedLine.contains("|")) {
-                System.out.println("<Parser> || detected, check relation?:" + trimmedLine);// SEan debugger
-                CheckExplicitRelationForName(trimmedLine, graphManager);
-            }else {
-                // check for aspect and remove aspect symbol
-                String aspect = checkAspect(trimmedLine);
-                trimmedLine = trimmedLine.substring(1).trim();
+            try {
+                if (!topNodeDeclared) {
+                    CheckForTopNode(trimmedLine, graphManager);
+                }
+                // check for explicit relationship
+                else if (trimmedLine.contains("|")) {
+                    System.out.println("<Parser> || detected, check relation?:" + trimmedLine);// SEan debugger
+                    CheckExplicitRelationForName(trimmedLine, graphManager);
+                } else {
+                    // check for aspect and remove aspect symbol
+                    String aspect = checkAspect(trimmedLine);
+                    trimmedLine = trimmedLine.substring(1).trim();
 
-                // Normal RDS line
-                CheckNodes(trimmedLine, aspect,graphManager);
-                System.out.println(lineNumber);
+                    // Normal RDS line
+                    CheckNodes(trimmedLine, aspect, graphManager);
+                    System.out.println(lineNumber);
 
-            }
-        }catch (Exception e){
+                }
+            } catch (Exception e) {
                 System.out.println("Error  line " + lineNumber + ": " + e.getMessage());
             }
-        
+
         }
         //graphManager.finalizeGraph();
         return graphManager;
-        
-        }
 
-    
+    }
+
+
     //processs a RDS line.
     //build a full id  for each node and creats  relation between them 
 
     private void CheckNodes(String trimmedLine, String aspect, GraphManager graphManager) {
         String[] nodes = trimmedLine.split("\\.");
         String previousFullId = null; // keeps truck of previous id
-        String currentFullId=""; //keeps truck of the id being built 
+        String currentFullId = ""; //keeps truck of the id being built
         int depth = 0;
 
         // Sean driver og debugger manglende foreldre
 
 
+        System.out.println("trimmedline: " + trimmedLine);
+        NodeChecker(trimmedLine, aspect, null, graphManager);
         // for each node in line, check if it has a name and then check the relationship between them
-        for (String node : nodes){
+        /*for (String node : nodes){
             depth++;
             String id;
             String name = null;
@@ -94,10 +98,12 @@ public class RdsParser {
 
             // implicit relationship between nodes
             if (previousFullId != null){
-                RelationChecker(previousFullId, aspect, currentFullId, aspect, null, graphManager);
+                RelationChecker(previousFullId, aspect, currentFullId, aspect, "hierarchy", graphManager);
             }
             previousFullId = currentFullId; //update previousid
-        }
+            }
+            */
+
     }
     //creats relation bewteen nodes in graphmanger
     //creats nodes only when nodes exist

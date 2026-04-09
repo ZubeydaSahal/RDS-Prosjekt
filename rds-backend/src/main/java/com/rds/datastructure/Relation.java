@@ -30,7 +30,6 @@ public class Relation {
     }
 
     public String getType() {
-        System.out.println("<Relation> kaller GetType");  // Sean debugger manglende relasjoner
         return type;
     }
 

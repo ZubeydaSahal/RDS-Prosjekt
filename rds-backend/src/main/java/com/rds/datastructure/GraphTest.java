@@ -120,7 +120,7 @@ public class GraphTest {
 
         // --- % aspekt ---
         graph.createOrUpdateNode("PA","%" , null);
-        /*graph.createOrUpdateNode("PA.BB1","%" , null);
+        graph.createOrUpdateNode("PA.BB1","%" , null);
         graph.createOrUpdateNode("PA.BB1.CC1","%" , null);
         graph.createOrUpdateNode("PA.BB2","%" , null);
         graph.createOrUpdateNode("PA.BB2.CC2","%" , null);
@@ -128,8 +128,8 @@ public class GraphTest {
         graph.createOrUpdateNode("PA.BB4","%" , null);
 
 // --- - aspekt ---
-        graph.createOrUpdateNode("QA","-" , null);
-        graph.createOrUpdateNode("QA.DD1","-" , null);
+        /*graph.createOrUpdateNode("QA","-" , null);
+        graph.createOrUpdateNode("QA.DD1","-" , null);*/
         graph.createOrUpdateNode("QA.DD1.EE1","-" , null);
         graph.createOrUpdateNode("QA.DD2","-" , null);
         graph.createOrUpdateNode("QA.DD2.EE2","-" , null);
@@ -137,30 +137,31 @@ public class GraphTest {
         graph.createOrUpdateNode("QA.DD4","-" , null);
 
 // --- + aspekt ---
-        graph.createOrUpdateNode("RA","+" , null);
-        graph.createOrUpdateNode("RA.FF1","+" , null);
+       /* graph.createOrUpdateNode("RA","+" , null);
+        graph.createOrUpdateNode("RA.FF1","+" , null);*/
         graph.createOrUpdateNode("RA.FF1.GG1","+" , null);
-        graph.createOrUpdateNode("RA.FF2","+" , null);
+        //graph.createOrUpdateNode("RA.FF2","+" , null);
         graph.createOrUpdateNode("RA.FF2.GG2","+" , null);
         graph.createOrUpdateNode("RA.FF3","+" , null);
         graph.createOrUpdateNode("RA.FF4","+" , null);
 
 // --- $ aspekt ---
         graph.createOrUpdateNode("SA","$" , null);
-        graph.createOrUpdateNode("SA.HH1","$" , null);
+        //graph.createOrUpdateNode("SA.HH1","$" , null);
         graph.createOrUpdateNode("SA.HH1.II1","$" , null);
-        graph.createOrUpdateNode("SA.HH2","$" , null);
+        //graph.createOrUpdateNode("SA.HH2","$" , null);
         graph.createOrUpdateNode("SA.HH2.II2","$" , null);
         graph.createOrUpdateNode("SA.HH3","$" , null);
-        graph.createOrUpdateNode("SA.HH4","$" , null);*/
+        graph.createOrUpdateNode("SA.HH4","$" , null);
 
 
         // Test create node with aspect
         graph.createOrUpdateNode("MM","$", "Aspected Node");
 
         // Lag en ekstra relasjon
-        graph.createRelation("XX", "-", "BB.CC", "%", null);
+        graph.createRelation("XX.LL", "-", "BB.CC", "%", null);
         graph.createRelation("BB.CC", "%", "XX.XB", "-", "cross");
+        graph.createRelation("QQ1.re.efsf.fe.sfs.f1.f7.f5.", "%", "KCJ.z1.z2z.z3z.z5.rtw4.egw", "-", "cross");
 /*
 
 
@@ -175,13 +176,13 @@ public class GraphTest {
         //System.out.println("\nGraph structure:");
         //graph.printGraph();
 
-        /*// Print relasjoner
+        // Print relasjoner
         System.out.println("\nRelations:");
         for (Relation rel : graph.getCrossRelations()) {
             System.out.println(rel.getType());
             System.out.println(rel.getNodeA().getId());
             System.out.println(rel.getNodeB().getId()+"\n\n");
-        }*/
+        }
 
 
         // Devugger kobling
