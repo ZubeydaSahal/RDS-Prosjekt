@@ -1,27 +1,42 @@
 import { useMemo, useState } from "react";
 import { layoutTree } from "../graph/layout";
+import { transformGraph } from "./transformGraph";
 
 import Node from "./Node";
 import Edge from "./Edge";
 
 
+
+
 export default function GraphView({ graph, aspectOrder, graphRef }) {
 
   // Beregner layout kun når graph eller rekkefølge endres
-  const layout = useMemo(() => {
+  // Beregner layout kun når graph eller rekkefølge endres
+const layout = useMemo(() => {
 
-    // Hvis ingen data, returner tom struktur
-    if (!graph) {
-      return { nodes: [], hierarchyEdges: [] };
-    }
+  // Hvis ingen data, returner tom struktur
+  if (!graph) {
+    return { nodes: [], hierarchyEdges: [] };
+  }
 
-    // Sender både graph (backend-data) og aspectOrder (frontend-visning)
-    return layoutTree({
-      ...graph,
-      aspectOrder
-    });
+  // ----------------------------
+  // TRANSFORM BACKEND → FRONTEND
+  // ----------------------------
+  const transformed = transformGraph(graph);
 
-  }, [graph, aspectOrder]);
+  if (!transformed) {
+    return { nodes: [], hierarchyEdges: [] };
+  }
+
+  // ----------------------------
+  // SEND TIL LAYOUT
+  // ----------------------------
+  return layoutTree({
+    ...transformed,
+    aspectOrder
+  });
+
+}, [graph, aspectOrder]);
 
 
   // Hent noder og edges fra layout
@@ -191,3 +206,4 @@ export default function GraphView({ graph, aspectOrder, graphRef }) {
     </div>
   );
 }
+
