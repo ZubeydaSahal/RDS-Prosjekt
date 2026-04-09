@@ -40,7 +40,7 @@ public class ViewBuilder {
         /* Maps a single node (from datastructure type) to nodeDTO type, to avoid transferring revealing data */
         return new NodeDTO(
                 node.getId(),
-                node.getCode(),
+                node.getMetadata(), // nodes name, if it exists
                 node.getLevel()
         );
     }
@@ -85,18 +85,6 @@ public class ViewBuilder {
         for(List<NodeDTO> aspectList: nodesByApsect.values()){
             aspectList.sort(Comparator.comparing(NodeDTO::getId));
         }
-
-        // ==== TEST print ===== TO BE REMOVED / TEMP
-        for (Map.Entry<String, List<NodeDTO>> entry : nodesByApsect.entrySet()) {
-            String aspect = entry.getKey();
-            List<NodeDTO> aspectList = entry.getValue();
-
-            System.out.println("==== Aspekt: " + aspect + "===="); //temp komm ut
-            for (NodeDTO node : aspectList){
-                System.out.println(node.getId());  // temp komment ut
-            }
-            System.out.println("\n\n");
-        }
     }
 
     // ===== Orchestrator function =====
@@ -117,25 +105,39 @@ public class ViewBuilder {
             this.crossRelation.add(relationToDTO(relation)); // Extract list of relations from graph and convert to relationDTOs
 
         }
-        /*// Debug ecrtra array sendt til frontend
-        System.out.println("<Viewbuilder> 'corssrelation' size: " + crossRelation.size());
-        for (RelationDTO relation : this.crossRelation){
-            System.out.println("<>Node A: "+ relation.getNode1());
-        }*/;
-
-
-
-        /*// Debugging missing relations
-        System.out.println("<ViewBuilder> crossrelations: ");
-        for(Relation relationDTO : this.crossRelation){
-            System.out.println(relationDTO.getNodeB());
-        }*/
 
         // ===== Create data obejct to be transferred  ======
         GraphViewDTO graphViewDTO = new GraphViewDTO(
                 this.nodesByApsect,
                 this.crossRelation
         );
+
+        // ===== Ikke SLETT enda!! =====
+
+        // Printe antall noder i hver aspekt  // Printe alle noder i hvert aspekt (System.out.println(node.getId());)
+        System.out.println("\n==========================================\nTotal number of nodes by aspect:");
+        int sum = 0;
+        int nameCounter = 0;
+        for (Map.Entry<String, List<NodeDTO>> entry : nodesByApsect.entrySet()) {
+            String aspect = entry.getKey();
+            List<NodeDTO> aspectList = entry.getValue();
+            sum += aspectList.size();
+            System.out.println("'"+aspect + "': "+ aspectList.size()); //temp komm ut
+            for (NodeDTO node : aspectList){
+                //System.out.println(node.getId());  // To print each node
+                if (node.getName()!=null){
+                    nameCounter++;
+                    System.out.println(node.getName());
+                }
+            }
+            //System.out.println("\n\n");
+        }
+        // printe antall relasjoner:
+        System.out.println("named: "+nameCounter+"\ntotal: "+ sum+"\nTotal number of cross-relations: \n'cross': "
+                +crossRelation.size()+"\n==========================================");
+
+
+        // Printe kryssrelasjoner (som objekt som sendes til frontend)
         /*ObjectMapper crossRelMapper = new ObjectMapper();
         try {
             String json = crossRelMapper.writerWithDefaultPrettyPrinter()
@@ -145,8 +147,8 @@ public class ViewBuilder {
             e.printStackTrace();
         }*/
 
-        /*//Debugging
-        System.out.println("+X+X+X Debugging X+X+X+");
+        // printe hele objektet som sendes (GraphViewDTO)
+        /*
         System.out.println("Aspects: "+graphViewDTO.getNodeDTO());
         System.out.println("Relations: "+graphViewDTO.getRelationDTO());
         //System.out.println("GetRelations: "+graphViewDTO.getRelations());
@@ -159,11 +161,8 @@ public class ViewBuilder {
         }catch (JsonProcessingException e){
             e.printStackTrace();
         }*/
+        // ==================================
 
-        /*return new GraphViewDTO(
-                this.getNodesByApsect(),
-                this.getCrossRelations()
-        );*/
         return graphViewDTO;
     }
 }

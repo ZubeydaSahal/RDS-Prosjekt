@@ -15,7 +15,6 @@ public class Relation {
         this.nodeA = nodeA;
         this.nodeB = nodeB;
         this.type = type;
-        if(type==null) {System.out.println("<Relation> Constructor: " + type);}  // Sean debugger manglende relasjoner
     }
 
     // Getters

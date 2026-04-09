@@ -32,20 +32,16 @@ public class RdsController {
         ViewBuilder viewBuilder = new ViewBuilder();
         GraphViewDTO graphViewDTO = viewBuilder.buildView(graph);  // builds view and return DTO
 
-        //Debugging
-        System.out.println("+X+X+X Debugging X+X+X+");
-        System.out.println("Aspects: "+graphViewDTO.getNodeDTO());
-        System.out.println("Relations: "+graphViewDTO.getRelationDTO());
-        //System.out.println("GetRelations: "+graphViewDTO.getRelations());
 
-        ObjectMapper mapper = new ObjectMapper();
+        // printe hele objektet som sendes til frontend
+        /*ObjectMapper mapper = new ObjectMapper();
         try {
             String json = mapper.writerWithDefaultPrettyPrinter()
                     .writeValueAsString(graphViewDTO);
             System.out.println("JSON: "+json);
         }catch (JsonProcessingException e){
             e.printStackTrace();
-        }
+        }*/
 
         return graphViewDTO;
 

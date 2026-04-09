@@ -15,9 +15,9 @@ public class RdsParser {
     private boolean topNodeDeclared = false;
 
     // receives the whole script as a string, splits it into lines and processes each line according to the RDS syntax rules.
-    public GraphManager parse(String script){
+    public GraphManager parse(String script) {
         GraphManager graphManager = new GraphManager();
-        System.out.println(script);
+        System.out.println("<Parse> Script: \n" + script + "\n");
         String[] lines = script.split("\\r?\\n");
         int lineNumber = 0;
         Pattern pattern = Pattern.compile("\\|\\||\\|[^|]+\\|");
@@ -29,82 +29,93 @@ public class RdsParser {
         for (String line : lines) {
             lineNumber++;
             String trimmedLine = line.trim();
+            System.out.print("\n<Parse> Line " + lineNumber + ": ");
             if (trimmedLine.isEmpty()) continue;
 
             // Check for top node declaration
-            try{
-            if (!topNodeDeclared) {CheckForTopNode(trimmedLine,graphManager);}
-            else {
-                // check for relationship
-                Matcher matcher = pattern.matcher(trimmedLine);
-                List<int[]> relationPositions = new ArrayList<>();
-                List<String> relations = new ArrayList<>();
-                boolean foundRelation = false;
+            try {
+                if (!topNodeDeclared) {
+                    CheckForTopNode(trimmedLine, graphManager);
+                } else {
+                    // check for relation
+                    Matcher matcher = pattern.matcher(trimmedLine);
+                    List<int[]> relationPositions = new ArrayList<>();
+                    List<String> relations = new ArrayList<>();  // List of all relations in input-line
+                    boolean foundRelation = false;
 
-                // goes through the line and find everywhere a relation occurs and stores the position of them
-                while (matcher.find()) {
-                    foundRelation = true;
-                    relationPositions.add(new int[]{matcher.start(), matcher.end()});
-                    relations.add(matcher.group());
-                }
-                //if matcher.find() do find relations it will send data of the two nodes and the relation betwen them for processing.
-                if (!relations.isEmpty()) {
-                    String previousNodePart = null;
+                    // goes through the line and find everywhere a relation occurs and stores the position of them
+                    while (matcher.find()) {
+                        foundRelation = true;
+                        relationPositions.add(new int[]{matcher.start(), matcher.end()});
+                        relations.add(matcher.group());
+                    }
+                    //if matcher.find() do find relations it will send data of the two nodes and the relation betwen them for processing.
+                    if (!relations.isEmpty()) {
+                        String previousNodePart = null; // Might be redundant
+                        System.out.print("detected cross relations\n\tInput: " + line + "\n");
 
-                    for (int i = 0; i < relations.size(); i++) {
-                        String relation = relations.get(i);
+                        for (int i = 0; i < relations.size(); i++) {
+                            String relation = relations.get(i);
+                            System.out.print("\n\t•Relation #" + (i + 1) + ": ");
 
-                        int start = relationPositions.get(i)[0];
-                        int end = relationPositions.get(i)[1];
+                            // Get relation start and end postion
+                            int start = relationPositions.get(i)[0];
+                            int end = relationPositions.get(i)[1];
 
-                        // LEFT SIDE
-                        String leftPart;
-                        if (previousNodePart == null) {
-                            leftPart = trimmedLine.substring(0, start).trim();
-                            System.out.println("When previous node is null: " + leftPart);
-                        } else {
-                            leftPart = previousNodePart;
-                            System.out.println("When previous node is not null " + leftPart);
+                            // LEFT SIDE
+                            String leftPart; // Current left node in the relation
+
+                            // if left node is null -> Start from the beginning og the line
+                            if (previousNodePart == null) {
+                                leftPart = trimmedLine.substring(0, start).trim();
+                            } else {
+                                leftPart = previousNodePart;
+                            }
+
+                            // RIGHT SIDE
+                            int nextStart; // Left side of relation next
+
+                            // Check edge case
+                            if (i + 1 < relations.size()) {
+                                nextStart = relationPositions.get(i + 1)[0];
+                            } else {
+                                nextStart = trimmedLine.length();
+                            }
+
+                            String rightPart = trimmedLine.substring(end, nextStart).trim(); // Extract right node
+                            System.out.println(leftPart + "' '" + relation + "' '" + rightPart + "'");
+
+                            // store for next iteration
+                            previousNodePart = rightPart;
+
+                            // PROCESS relation
+                            System.out.println("\t>>'parse' calling 'CheckExplicitRelationForName'...");
+                            CheckExplicitRelationForName(leftPart, rightPart, relation, graphManager);
                         }
+                        System.out.println("––– Line #" + lineNumber + " completed –––\n");
+                    }
 
-                        // RIGHT SIDE
-                        int nextStart;
-                        if (i + 1 < relations.size()) {
-                            nextStart = relationPositions.get(i + 1)[0];
-                        } else {
-                            nextStart = trimmedLine.length();
-                        }
+                    // IF line declares a node, not a relation
+                    if (!foundRelation) {
+                        // check for aspect and remove aspect symbol
+                        String aspect = checkAspect(trimmedLine);
+                        trimmedLine = trimmedLine.substring(1).trim();
 
-                        String rightPart = trimmedLine.substring(end, nextStart).trim();
-                        System.out.println("the rightpart of relation:  " + rightPart);
+                        // Normal RDS line
+                        System.out.println("detected node: " + trimmedLine + "\n\t>>'parse' calling 'CheckNodes'");
+                        CheckNodes(trimmedLine, aspect, graphManager);
 
-                        // store for next iteration
-                        previousNodePart = rightPart;
-
-                        // PROCESS relation
-                        CheckExplicitRelationForName(leftPart, rightPart, relation, graphManager);
                     }
                 }
-                if (!foundRelation) {
-                    // check for aspect and remove aspect symbol
-                    String aspect = checkAspect(trimmedLine);
-                    trimmedLine = trimmedLine.substring(1).trim();
-
-                    // Normal RDS line
-                    CheckNodes(trimmedLine, aspect, graphManager);
-                    System.out.println(lineNumber);
-
-                }
+            } catch (Exception e) {
+                System.out.println("<PARSER ERR>Error  line " + lineNumber + ": " + e.getMessage());
             }
-        }catch (Exception e){
-                System.out.println("Error  line " + lineNumber + ": " + e.getMessage());
-            }
-        
+
         }
         //graphManager.finalizeGraph();
         return graphManager;
-        
-        }
+
+    }
 
     
     //processs a RDS line.
@@ -115,26 +126,45 @@ public class RdsParser {
         String previousFullId = null; // keeps truck of previous id
         String currentFullId=""; //keeps truck of the id being built
 
-        // Sean driver og debugger manglende foreldre
-
-
-        // for each node in line, check if it has a name and then check the relationship between them
+        // for each node in line, check if it has a name // TO BE REMOVED: and then check the relationship between them
         for (String node : nodes){
             String id;
             String name = null;
 
+            // Check node for name
             if (node.contains("(") && node.contains(")")) {
                 int startIndex = node.indexOf("(");
                 int endIndex = node.indexOf(")");
 
-                id = node.substring(0, startIndex);
+                // Extract id and name and update
+                if(!currentFullId.isEmpty()) {
+                    currentFullId = currentFullId + "." + node.substring(0, startIndex);
+                }else {
+                    currentFullId = currentFullId + node.substring(0, startIndex);
+                }
+
                 name = node.substring(startIndex + 1, endIndex);
-            } else {
-                id = node;
+                System.out.println("\n\t✓Name detected: '"+ name+"' for: "+ currentFullId);
             }
+            // Else create node without name
+            else {
+                if(!currentFullId.isEmpty()){
+                    currentFullId = currentFullId + "." + node;
+                } else {
+                    currentFullId = node; //
+                }
+                System.out.println("\n\t×No name detected for: "+currentFullId);
+            }
+            System.out.println("\t>>'CheckNodes' calling 'createOrUpdateNode'("+currentFullId+", "+aspect+", "+name+")");
+            graphManager.createOrUpdateNode(currentFullId, aspect, name);
+        }
+            // ––––––––––––––––
 
 
-            // Nødvendig!
+
+
+/*
+            // -- Sean removed 9.4 12.00 - GraphManager handles non-existing parents
             if(currentFullId.isEmpty()){
                 currentFullId = aspect + id;
             } else {
@@ -146,13 +176,17 @@ public class RdsParser {
             // implicit relationship between nodes
             if (previousFullId != null){
                 RelationChecker(previousFullId, aspect, currentFullId, aspect, "hierarchy", graphManager);
+                System.out.println("1. Implicit create relation child: "+currentFullId + " og parent: "+ previousFullId);
             }
             previousFullId = currentFullId; //update previousid
+            */
         }
-    }
+
     //creats relation bewteen nodes in graphmanger
     //creats nodes only when nodes exist
     private void RelationChecker(String fromId, String aspectFrom, String toId, String aspectTo, String type, GraphManager graphManager) {
+        System.out.println("\t>> 'ReltionChecker' calling 'GraphManager.createRelation': ("+fromId+", "+  aspectFrom+", " +
+                toId+", "+  aspectTo+", "+  type+", graphManager)");
         graphManager.createRelation(fromId, aspectFrom, toId, aspectTo, type);
 }
 
@@ -164,31 +198,29 @@ public class RdsParser {
 
     private void CheckExplicitRelationForName(String leftSide, String rightSide, String relation, GraphManager graphmanger) {
         String relationName = null;
-
         if (!relation.equals("||")) {
             relationName = relation.substring(1, relation.length() - 1);
-            System.out.println(relationName + " is the name of relation");
+            System.out.println("\t✓Relation name detected: "+relationName);
         }
         else {
-            System.out.println("name of relation is null: " + relationName);
+            System.out.println("\t\t×No relation name detected: " + relationName);
         }
-
-        //process leftsidde
+        //process leftsidde (remove aspect)
         String leftNodeAspect = checkAspect(leftSide);
         leftSide = leftSide.substring(1).trim(); // remove aspect symbol
-        CheckNodes(leftSide, leftNodeAspect,graphmanger);
+        //CheckNodes(leftSide, leftNodeAspect,graphmanger);  // Temp, kode: FDFDF
 
         // process rightSide
         String rightNodeAspect = checkAspect(rightSide);
         rightSide = rightSide.substring(1).trim(); // remove aspect symbol
-        CheckNodes(rightSide, rightNodeAspect, graphmanger);
+        //CheckNodes(rightSide, rightNodeAspect, graphmanger); //Temp, kode: FDFDF
 
         //gets last node from each side of a explicit relation
-        String leftLastId = leftNodeAspect + leftSide.split("\\.")[leftSide.split("\\.").length-1];
-        String rightLastId = rightNodeAspect + rightSide.split("\\.")[rightSide.split("\\.").length-1];
+        //String leftLastId = leftNodeAspect + leftSide.split("\\.")[leftSide.split("\\.").length-1];
+        //String rightLastId = rightNodeAspect + rightSide.split("\\.")[rightSide.split("\\.").length-1];
 
         //Creats explicit relation
-        RelationChecker(leftLastId, leftNodeAspect, rightLastId, rightNodeAspect, relationName, graphmanger);
+        RelationChecker(leftSide, leftNodeAspect, rightSide, rightNodeAspect, relationName, graphmanger);
         
     }
 
@@ -196,17 +228,16 @@ public class RdsParser {
         if (trimmedLine.startsWith("<") && trimmedLine.endsWith(">")) {
             String topNodeName = trimmedLine.substring(1, trimmedLine.length() - 1);
             CreateTopNode(topNodeName, graphManager);
-            System.out.println("<Parser> Creating toppnode "); // Sean debugger
             topNodeDeclared = true;
         } else {
-            throw new IllegalArgumentException("Top node declaration is missing or malformed: " + trimmedLine);
+            throw new IllegalArgumentException("Top node declaration is missing or malformed: " + trimmedLine+"\n");
         }
     }
     // Midlertidig test av parser
 
     // printer ut navn av toppnode.
     private void CreateTopNode(String topNodeName, GraphManager graphManager) {
-        System.out.println("Creating top node " + topNodeName);
+        System.out.print("detected root: " + topNodeName+"\n");
         graphManager.setRoot(topNodeName);
     }
 

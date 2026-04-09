@@ -23,7 +23,7 @@ public class GraphManager {
     public void setRoot(String id) {
         this.root = createOrUpdateNode(id, "<root>", null);
         root.setLevel(0);
-        System.out.println("<Root> Setting root.. id: " + id);
+        System.out.println("\t<Graphmanager> Setting root.. id: " + id);
     }
 
     // ===== Getter =====
@@ -43,7 +43,7 @@ public class GraphManager {
         if (node == null) {
 
             // ––––– if not, create and add to 'nodes' hashmap –––––
-            System.out.println("<+Node+> creating new node: " + id);
+            System.out.print("\t<Node> creating node: " + id+"\n");
 
             if (aspect != null) {  // Check that aspect has a value
                 node = new Node(id, aspect);
@@ -64,17 +64,20 @@ public class GraphManager {
 
                 // ––––– If parent doesn't exist, create parent–––––
                 if (parent == null) {  // handles non declared parent – to be replaced check TODO
+                    System.out.print("\t");
                     createOrUpdateNode(parentId, node.getAspect(), null);  // parents and children share aspect
                 }
 
                 // ––––– Create relation to parent, with type: "hierarchy" –––––
+                System.out.println("\t\t<GraphManager> Creating parent relation.. '"+ parentId+"' –– '"+id+"'");
                 createRelation(parentId, aspect, id, aspect, "hierarchy");  // parents and children share aspect
                 // nodeA = parent, nodeB = child -> Relation (nodeA, nodeA_aspect, nodeB, nodeB_aspect)
             }
         }
-
-        // ––––– Update node ––––– // Temp might be redundant
-        node.updateNode(metadata);  // Update varying fields (metadata is JSON or replaced with relevant fields (name..)
+        // ––––– Update node ––––– // Currently only for name
+        if(metadata!=null){
+            node.updateNode(metadata);  // Update varying fields (metadata is JSON or replaced with relevant fields (name..)
+        }
 
         return node;
     }
@@ -89,23 +92,29 @@ public class GraphManager {
 
         //Check if they don't exist –> create them (recursively handles parents)
         if (nodeA == null) {
+            System.out.print("\t");
             nodeA = createOrUpdateNode(idA, aspectA, null);  // update nodeA with new created node
         }
         if (nodeB == null) {
+            System.out.print("\t");
             nodeB = createOrUpdateNode(idB, aspectB, null);  // update nodeB with new created node
         }
 
         // ––––– Create relation –––––
+
         Relation relation = new Relation(nodeA, nodeB, type);  // TODO: Sikre at relasjonen ikke eksisterer invers
+
 
         // ––––– Store relations –––––
 
         // ––– If it's a cross relation –––
         if (type != null && !type.equals("hierarchy")) {  // if defined relation type isn't 'hierarchy'
             crossRelations.add(relation);  // add to GraphManagers 'crossRelations'
+            System.out.println("\t\t<Relation> creating cross relation: "+ nodeA.getId()+" – "+ nodeB.getId());
         }
         if (type == null) { //if no relation type is defined
             crossRelations.add(relation);  // add to GraphManagers 'crossRelations'
+            System.out.println("\t\t<Relation> creating cross relation: "+ nodeA.getId()+" – "+ nodeB.getId());
         }
 
         // ––– If it's a hierarchy relation –––
