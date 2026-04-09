@@ -2,11 +2,7 @@ package com.rds.datastructure;
 
 import com.rds.graph_view.*;
 import com.rds.graph_view.DTO.*;
-import com.rds.datastructure.Relation;
 
-import javax.swing.*;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -63,18 +59,18 @@ public class GraphTest {
         graph.finalizeGraph();  // Connects root to aspects
 
         // Create a graphView for frontend (selected data)
-        ViewBuilder graphViewer = new ViewBuilder();
-        graphViewer = graphViewer.buildView(graph);  // builds view
+        ViewBuilder view = new ViewBuilder();
+        GraphViewDTO gv = view.buildView(graph);
 
         //System.out.println("Relations: " +graphView.getCrossRelations());
 
-        GraphViewDTO gv = new GraphViewDTO(
+        /*GraphViewDTO gv = new GraphViewDTO(
                 graphViewer.getNodesByApsect(),
                 graphViewer.getCrossRelations()
-        );
+        );*/
         System.out.println("Created GraphView GraphTest from controller");
 
-        for (Map.Entry<String, List<NodeDTO>> entry : gv.aspects.entrySet()) {
+        for (Map.Entry<String, List<NodeDTO>> entry : gv.getNodeDTO().entrySet()) {
             List<NodeDTO> aspectList = entry.getValue();
             String aspect = entry.getKey();
 
@@ -124,7 +120,7 @@ public class GraphTest {
 
         // --- % aspekt ---
         graph.createOrUpdateNode("PA","%" , null);
-        graph.createOrUpdateNode("PA.BB1","%" , null);
+        /*graph.createOrUpdateNode("PA.BB1","%" , null);
         graph.createOrUpdateNode("PA.BB1.CC1","%" , null);
         graph.createOrUpdateNode("PA.BB2","%" , null);
         graph.createOrUpdateNode("PA.BB2.CC2","%" , null);
@@ -156,7 +152,7 @@ public class GraphTest {
         graph.createOrUpdateNode("SA.HH2","$" , null);
         graph.createOrUpdateNode("SA.HH2.II2","$" , null);
         graph.createOrUpdateNode("SA.HH3","$" , null);
-        graph.createOrUpdateNode("SA.HH4","$" , null);
+        graph.createOrUpdateNode("SA.HH4","$" , null);*/
 
 
         // Test create node with aspect
@@ -195,15 +191,15 @@ public class GraphTest {
         graph.finalizeGraph();  // Connects root to aspects
 
         // Create a graphView for frontend (selected data)
-        ViewBuilder graphView = new ViewBuilder();
-        graphView = graphView.buildView(graph);  // builds view
+        ViewBuilder graphViewer = new ViewBuilder();
+        GraphViewDTO graphView = graphViewer.buildView(graph);  // builds view
 
         //System.out.println("Relations: " +graphView.getCrossRelations());
 
-        GraphViewDTO gv = new GraphViewDTO(
+        /*GraphViewDTO gv = new GraphViewDTO(
             graphView.getNodesByApsect(),
             graphView.getCrossRelations()
-        );
+        );*/
 
 /*
         // Print object

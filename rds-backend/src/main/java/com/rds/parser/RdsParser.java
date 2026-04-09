@@ -101,7 +101,7 @@ public class RdsParser {
             }
         
         }
-        graphManager.finalizeGraph();
+        //graphManager.finalizeGraph();
         return graphManager;
         
         }
@@ -113,7 +113,10 @@ public class RdsParser {
     private void CheckNodes(String trimmedLine, String aspect, GraphManager graphManager) {
         String[] nodes = trimmedLine.split("\\.");
         String previousFullId = null; // keeps truck of previous id
-        String currentFullId=""; //keeps truck of the id being built 
+        String currentFullId=""; //keeps truck of the id being built
+
+        // Sean driver og debugger manglende foreldre
+
 
         // for each node in line, check if it has a name and then check the relationship between them
         for (String node : nodes){
@@ -130,15 +133,16 @@ public class RdsParser {
                 id = node;
             }
 
-            
+
+            // Nødvendig!
             if(currentFullId.isEmpty()){
                 currentFullId = aspect + id;
             } else {
                 currentFullId = currentFullId + "." + id;
             }
-            
+
             NodeChecker(currentFullId, aspect, name, graphManager); //creats or update node in graph manager
-            
+
             // implicit relationship between nodes
             if (previousFullId != null){
                 RelationChecker(previousFullId, aspect, currentFullId, aspect, null, graphManager);
@@ -183,7 +187,7 @@ public class RdsParser {
         String leftLastId = leftNodeAspect + leftSide.split("\\.")[leftSide.split("\\.").length-1];
         String rightLastId = rightNodeAspect + rightSide.split("\\.")[rightSide.split("\\.").length-1];
 
-        //Creats explicit relation 
+        //Creats explicit relation
         RelationChecker(leftLastId, leftNodeAspect, rightLastId, rightNodeAspect, relationName, graphmanger);
         
     }
@@ -192,6 +196,7 @@ public class RdsParser {
         if (trimmedLine.startsWith("<") && trimmedLine.endsWith(">")) {
             String topNodeName = trimmedLine.substring(1, trimmedLine.length() - 1);
             CreateTopNode(topNodeName, graphManager);
+            System.out.println("<Parser> Creating toppnode "); // Sean debugger
             topNodeDeclared = true;
         } else {
             throw new IllegalArgumentException("Top node declaration is missing or malformed: " + trimmedLine);

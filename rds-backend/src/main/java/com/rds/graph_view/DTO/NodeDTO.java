@@ -1,17 +1,22 @@
 package com.rds.graph_view.DTO;
 
 public class NodeDTO {
-    String id;
-    String name;
-    int level;
+    /* Data transfer object for nodes to hide non-required information in backend */
 
+    // ===== Attributes =====
+    private String id;
+    private String name;
+    private int level;
+
+    // ===== Constuctor =====
     public NodeDTO(String id, String name, int level) {
-        //node data transfer objects
         this.id = id;
         this.name = name;
         this.level = level;
+        // aspect?
     }
 
+    // ===== Getters =====
     public String getId() { return id; }
     public String getName() { return name; }
     public int getLevel() { return level; }

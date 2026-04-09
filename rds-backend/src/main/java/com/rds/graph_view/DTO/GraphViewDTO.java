@@ -1,28 +1,33 @@
 package com.rds.graph_view.DTO;
 
-import com.rds.datastructure.Relation;
-
-import java.util.List;
-import java.util.Map;
+// ===== Libraries =====
+import java.util.HashSet;
 import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+
+
 
 public class GraphViewDTO {
-    /*
-    * Class to format the data for frontend, as well as hide unused data-information
-    * */
-    public Map<String, List<NodeDTO>> aspects;
-    public Set<Relation> relations;
+    /* Data transfer object for dataset (view) to hide non-required information in backend */
 
-    public GraphViewDTO(Map<String, List<NodeDTO>> aspectLists, Set<Relation> relations) {
-        this.aspects = aspectLists;
-        this.relations = relations;
+    // ===== Attributes =====
+    private Map<String, List<NodeDTO>> nodeDTO = new HashMap<>();
+    private Set<RelationDTO> relationDTOS = new HashSet<>();
+
+    // ===== Constructor =====
+    public GraphViewDTO(Map<String, List<NodeDTO>> aspectLists, Set<RelationDTO> relationDTOS) {
+        this.nodeDTO = aspectLists;
+        this.relationDTOS = relationDTOS;
     }
 
-    public Map<String, List<NodeDTO>> getAspects() {
-        return aspects;
+    // ===== Getters =====
+    public Map<String, List<NodeDTO>> getNodeDTO() {
+        return nodeDTO;
     }
 
-    public Set<Relation> getRelations() {
-        return relations;
+    public Set<RelationDTO> getRelationDTO() {
+        return relationDTOS;
     }
 }
