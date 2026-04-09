@@ -1,73 +1,89 @@
-export function transformGraph(graph) {
-    if (!graph || !graph.aspects) return null;
-    console.log("HELE GRAPH FRA BACKEND:", graph);
+// ----------------------------
+// TRANSFORM BACKEND → FRONTEND FORMAT
+// ----------------------------
+export function transformGraph(raw) {
 
+    if (!raw || !raw.aspects) {
+      console.log("Ugyldig graph input");
+      return null;
+    }
   
     const nodes = [];
-    const nodeMap = {};
+    const aspects = [];
   
+    // ----------------------------
+    // ROOT
+    // ----------------------------
     const root = {
-        id: "root",
-        label: graph.topNode,
-        type: "root"
-      };
+      id: "ROOT",
+      label: "System"
+    };
   
     // ----------------------------
-    // NODES 
+    // ASPEKTER + NODER
     // ----------------------------
-    Object.entries(graph.aspects).forEach(([aspect, list]) => {
-      (list || []).forEach(n => {
-        const node = {
-          id: n.id,
-          aspect,
-          metadata: n.metadata || n.name,
-          name: n.name,
-          type: "node"
-        };
+    Object.entries(raw.aspects).forEach(([aspectKey, list], index) => {
   
-        nodes.push(node);
-        nodeMap[n.id] = node;
+      aspects.push({
+        id: aspectKey,
+        label: aspectKey,
+        order: index
+      });
+  
+      if (!Array.isArray(list)) return;
+  
+      list.forEach(item => {
+  
+        nodes.push({
+            id: item.id,
+            name: item.name,
+            aspect: aspectKey
+          });
       });
     });
   
     // ----------------------------
-    // HIERARCHY
+    // RELATIONS
     // ----------------------------
-    const hierarchyEdges = [];
+    const relations = (raw.relations || []).map(r => {
   
-    nodes.forEach(node => {
-      const parentId = node.id.split(".").slice(0, -1).join(".");
+      const from = normalizeId(r.from, raw.aspects);
+      const to = normalizeId(r.to, raw.aspects);
   
-      if (nodeMap[parentId]) {
-        hierarchyEdges.push({
-          from: parentId,
-          to: node.id,
-          type: "hierarchy"
-        });
-      }
+      return {
+        from,
+        to,
+        type: r.type || "cross"
+      };
     });
-  
-    // ----------------------------
-    // ROOT EDGES (genereres senere i layout)
-    // ----------------------------
-    const rootEdges = [];
-  
-    // ----------------------------
-    // CROSS RELATIONS
-    // ----------------------------
-    const crossEdges = (graph.relations || [])
-      .filter(r => r.from !== r.to)
-      .map(r => ({
-        from: r.from,
-        to: r.to,
-        type: "cross"
-      }));
   
     return {
       root,
       nodes,
-      hierarchyEdges,
-      rootEdges,
-      crossEdges
+      aspects,
+      relations
     };
+  }
+  
+  
+  // ----------------------------
+  // HJELPEFUNKSJON
+  // ----------------------------
+  function normalizeId(id, aspects) {
+  
+    if (!id) return id;
+  
+    if (id.startsWith("%") || id.startsWith("=") || id.startsWith("-") || id.startsWith("%%")) {
+      return id;
+    }
+  
+    for (const key in aspects) {
+      const list = aspects[key];
+  
+      if (Array.isArray(list) && list.some(n => n.id === id)) {
+        return key + id;
+      }
+    }
+  
+    return id;
   }

@@ -49,7 +49,6 @@ export default function InputPanel({ setGraph, graphRef }) {
       console.log("Aspekter: " + graph.aspects)
       console.log("Keys for list:\n")
       console.log(Object.keys(graph.aspects))
-      console.log("BACKEND:", response);
       setGraph(graph);
 
 

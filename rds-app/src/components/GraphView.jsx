@@ -5,92 +5,111 @@ import { transformGraph } from "./transformGraph";
 import Node from "./Node";
 import Edge from "./Edge";
 
-export default function GraphView({ graph, graphRef }) {
-
-  // STATE FOR REKKEFØLGE
-  const [order, setOrder] = useState(["%", "=", "-", "%%"]);
 
 
-  function moveAspect(id, direction) {
 
-    const index = order.indexOf(id);
-    if (index === -1) return;
+export default function GraphView({ graph, aspectOrder, graphRef }) {
 
-    const newOrder = [...order];
+  // Beregner layout kun når graph eller rekkefølge endres
+  // Beregner layout kun når graph eller rekkefølge endres
+const layout = useMemo(() => {
 
-    const swapIndex =
-      direction === "left" ? index - 1 : index + 1;
-
-    if (swapIndex < 0 || swapIndex >= order.length) return;
-
-    [newOrder[index], newOrder[swapIndex]] =
-      [newOrder[swapIndex], newOrder[index]];
-
-    setOrder(newOrder);
+  // Hvis ingen data, returner tom struktur
+  if (!graph) {
+    return { nodes: [], hierarchyEdges: [] };
   }
 
   // ----------------------------
-  // LAYOUT
+  // TRANSFORM BACKEND → FRONTEND
   // ----------------------------
-  const layout = useMemo(() => {
+  const transformed = transformGraph(graph);
 
-    if (!graph) {
-      return { nodes: [], hierarchyEdges: [], rootEdges: [], crossEdges: [] };
-    }
+  if (!transformed) {
+    return { nodes: [], hierarchyEdges: [] };
+  }
 
-    const transformed = transformGraph(graph);
-    if (!transformed) {
-      return { nodes: [], hierarchyEdges: [], rootEdges: [], crossEdges: [] };
-    }
+  // ----------------------------
+  // SEND TIL LAYOUT
+  // ----------------------------
+  return layoutTree({
+    ...transformed,
+    aspectOrder
+  });
 
-    return layoutTree({
-      ...transformed,
-      aspectOrder: order 
-    });
+}, [graph, aspectOrder]);
 
-  }, [graph, order]);
 
-  const {
-    nodes = [],
-    hierarchyEdges = [],
-    rootEdges = [],
-    crossEdges = []
-  } = layout;
+  // Hent noder og edges fra layout
+  const nodes = layout.nodes || [];
+  const relations = layout.hierarchyEdges || [];
+  const groups = layout.groups || [];
 
+
+  // Lager oppslagskart for rask tilgang til noder via id
   const nodeMap = Object.fromEntries(
-    nodes.map(n => [n.id, n])
+    nodes.map(node => [node.id, node])
   );
 
+
+  // ----------------------------
+  // SPLITT ROOT OG ANDRE EDGES
+  // ----------------------------
+  const rootEdges = relations.filter(e => e.type === "root");
+  const otherEdges = relations.filter(e => e.type !== "root");
+
+
+  // State for visning (fit vs scroll)
   const [fitView, setFitView] = useState(true);
 
-  const padding = 100;
 
+  // Finn ytterpunkter i grafen (brukes til zoom/fit)
   const minX = Math.min(...nodes.map(n => n.x || 0), 0);
   const maxX = Math.max(...nodes.map(n => n.x || 0), 1400);
+
   const minY = Math.min(...nodes.map(n => n.y || 0), 0);
   const maxY = Math.max(...nodes.map(n => n.y || 0), 800);
+
+
+  // Padding rundt grafen
+  const padding = 100;
 
   const width = maxX - minX + padding * 2;
   const height = maxY - minY + padding * 2;
 
+
+  // ----------------------------
+  // FINN ROOT NODE (for topp-linje)
+  // ----------------------------
+  const rootNode = nodes.find(n => n.type === "root");
+
+  // Y-posisjon for "bus line"
+  const busY = rootNode ? rootNode.y + 40 : 80;
+
+
+  // ----------------------------
+  // MAPPE EDGE-TYPER
+  // ----------------------------
+  function mapEdgeType(type) {
+    if (type === "hierarchy") return "hierarchy";
+    if (type === "root") return "root";
+    return "cross";
+  }
+
+
   return (
-    <div ref={graphRef} className="graph-container">
+    <div
+      id="graph-wrapper"
+      ref={graphRef} // ref koblet til grafen
+      className="graph-container"
+    >
 
-      {/* 🔥 KNAPPER */}
-      <div style={{ marginBottom: 10 }}>
-        {order.map(a => (
-          <span key={a} style={{ marginRight: 10 }}>
-            {a}
-            <button onClick={() => moveAspect(a, "left")}>←</button>
-            <button onClick={() => moveAspect(a, "right")}>→</button>
-          </span>
-        ))}
-      </div>
-
+      {/* Knapp for å bytte visning */}
       <button onClick={() => setFitView(!fitView)}>
         {fitView ? "Scroll mode" : "Fit to screen"}
       </button>
 
+
+      {/* SVG som tegner grafen */}
       <svg
         width={fitView ? "100%" : width}
         height={fitView ? 600 : height}
@@ -99,45 +118,92 @@ export default function GraphView({ graph, graphRef }) {
             ? `${minX - padding} ${minY - padding} ${width} ${height}`
             : undefined
         }
+        preserveAspectRatio="xMidYMid meet"
       >
 
-        {/* ROOT */}
-        {rootEdges.map(edge => (
-          <Edge
-            key={`root-${edge.to}`}
-            from={nodeMap[edge.from]}
-            to={nodeMap[edge.to]}
-            type="root"
-            allNodes={nodes}
-          />
-        ))}
+        {/* ----------------------------
+            ROOT BUS LINE (toppnode → aspekter)
+        ---------------------------- */}
+        {rootEdges.length > 0 && (() => {
 
-        {/* HIERARCHY */}
-        {hierarchyEdges.map(edge => (
-          <Edge
-            key={`h-${edge.from}-${edge.to}`}
-            from={nodeMap[edge.from]}
-            to={nodeMap[edge.to]}
-            type="hierarchy"
-          />
-        ))}
+          // Henter x-posisjonene til alle aspekt-noder
+          const xValues = rootEdges
+            .map(e => nodeMap[e.to]?.x)
+            .filter(Boolean);
 
-        {/* CROSS */}
-        {crossEdges.map(edge => (
-          <Edge
-            key={`c-${edge.from}-${edge.to}`}
-            from={nodeMap[edge.from]}
-            to={nodeMap[edge.to]}
-            type="cross"
-          />
-        ))}
+          if (xValues.length === 0) return null;
 
-        {/* NODES */}
-        {nodes.map(node => (
-          <Node key={node.id} node={node} />
+          const minX = Math.min(...xValues);
+          const maxX = Math.max(...xValues);
+
+          return (
+            <>
+              {/* Horisontal topp-linje */}
+              <line
+                x1={minX}
+                y1={busY}
+                x2={maxX}
+                y2={busY}
+                stroke="#999"
+                strokeWidth={2}
+              />
+
+              {/* Vertikale linjer ned til hver aspekt-node */}
+              {rootEdges.map((edge, index) => {
+
+                const target = nodeMap[edge.to];
+                if (!target) return null;
+
+                return (
+                  <line
+                    key={index}
+                    x1={target.x}
+                    y1={busY}
+                    x2={target.x}
+                    y2={target.y - 20}
+                    stroke="#999"
+                    strokeWidth={2}
+                  />
+                );
+              })}
+            </>
+          );
+        })()}
+
+
+        {/* Tegner edges først (bak nodene) */}
+        {otherEdges.map((edge, index) => {
+
+          // Hvis edge mangler data, hopp over
+          if (!edge.from || !edge.to) return null;
+
+          const from = nodeMap[edge.from];
+          const to = nodeMap[edge.to];
+
+          // Hvis node ikke finnes, ikke tegn edge
+          if (!from || !to) return null;
+
+          return (
+            <Edge
+              key={`${edge.from}-${edge.to}-${index}`}
+              from={from}
+              to={to}
+              type={mapEdgeType(edge.type)}
+            />
+          );
+        })}
+
+
+        {/* Tegner noder */}
+        {nodes.map((node, index) => (
+          <Node
+            key={`${node.id}-${index}`}
+            node={node}
+          />
         ))}
 
       </svg>
     </div>
   );
 }
+
