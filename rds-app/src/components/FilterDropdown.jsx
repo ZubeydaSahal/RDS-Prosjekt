@@ -8,7 +8,6 @@ const ASPECTS = [
 ];
 
 const RELATIONS = [
-  { type: "hierarchy", label: "Hierarki" },
   { type: "cross",     label: "Kryssrelasjon" },
 ];
 
