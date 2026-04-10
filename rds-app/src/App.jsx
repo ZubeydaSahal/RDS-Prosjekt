@@ -6,7 +6,7 @@ import Navbar from "./components/Navbar";
 import FilterDropdown from "./components/FilterDropdown";          
 import { mockGraph } from "./components/MockGraph"; // slett når mockgraph slettes
 // Importerer React hooks
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 function App() {
   // ----------------------------
@@ -19,8 +19,34 @@ function App() {
   // ----------------------------
   const [activeAspect,   setActiveAspect]   = useState(["=", "%", "-", "%%"]); // ENDRING: $→%%
   const [activeRelation, setActiveRelation] = useState(["cross", "hierarchy"]);
+  const [rdsText, setRdsText] = useState("");
 
   const graphRef = useRef(null);
+
+   // ---------------------------------
+  //  AUTO-OPPDATER GRAF NÅR FILTER ENDRES
+  // ---------------------------------
+
+   useEffect(() => {
+    if (!rdsText.trim()) return;
+ 
+    const allAspects = ["=", "%", "-", "%%"];
+    const paramParts = allAspects.map(a =>
+      `aspect_${a}=${activeAspect.includes(a) ? "true" : "false"}`
+    );
+    activeRelation.forEach(r => paramParts.push(`rel_${r}=true`));
+    const paramString = paramParts.join("&");
+ 
+    fetch(`http://localhost:8080/parse?${paramString}`, {
+      method: "POST",
+      headers: { "content-type": "text/plain" },
+      body: rdsText
+    })
+    .then(r => r.json())
+    .then(graph => setBackendGraph(graph))
+    .catch(err => console.error("Filter error:", err));
+ 
+  }, [activeAspect, activeRelation]);
 
   // ---------------------------------
   // GIR BRUKER MULIGHET TIL Å FLYTTE ASPEKTER I VILKÅRLIG REKKEFØLGE
@@ -72,6 +98,7 @@ function App() {
             setActiveAspect={setActiveAspect}
             activeRelation={activeRelation}
             setActiveRelation={setActiveRelation}
+            setRdsText={setRdsText}
           />
 
         </div>

@@ -139,9 +139,9 @@ public class RdsParser {
                 // Extract id and name and update
                 // endring: lagt til aspect + på første node
                 if(!currentFullId.isEmpty()) {
-                    currentFullId = currentFullId + "." + node.substring(0, startIndex);
+                    currentFullId = currentFullId + "." + node.substring(0, startIndex).trim();
                 }else {
-                    currentFullId = aspect + node.substring(0, startIndex);
+                    currentFullId = aspect + node.substring(0, startIndex).trim();
                 }
 
                 name = node.substring(startIndex + 1, endIndex);
@@ -150,7 +150,7 @@ public class RdsParser {
             // Else create node without name
             else {
                 if(!currentFullId.isEmpty()){
-                    currentFullId = currentFullId + "." + node;
+                    currentFullId = currentFullId + "." + node.trim();
                 } else {
                     //endring: lagt til aspect + på første node
                     currentFullId = aspect + node;
@@ -225,7 +225,7 @@ public class RdsParser {
         //String rightLastId = rightNodeAspect + rightSide.split("\\.")[rightSide.split("\\.").length-1];
 
         //Creats explicit relation
-        RelationChecker(leftSide, leftNodeAspect, rightSide, rightNodeAspect, relationName, graphmanger);
+        RelationChecker(leftNodeAspect + leftSide, leftNodeAspect, rightNodeAspect + rightSide, rightNodeAspect, relationName, graphmanger);
         
     }
 
