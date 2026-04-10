@@ -3,65 +3,73 @@
 // ----------------------------
 export function transformGraph(raw) {
 
-    if (!raw || !raw.aspects) {
+    if (!raw || !raw.nodeDTO) {
       console.log("Ugyldig graph input");
       return null;
     }
   
     const nodes = [];
     const aspects = [];
-  
-    // ----------------------------
-    // ROOT
-    // ----------------------------
-    const root = {
-      id: "ROOT",
-      label: "System"
+    var root = {
+        id: "ROOT-TEMP",
+        name: "ROOT-TEMP"
     };
+
   
     // ----------------------------
-    // ASPEKTER + NODER
+    // Process nodeDTO – Liste med par av aspekt og nodelster, ** inkludert root **
     // ----------------------------
-    Object.entries(raw.aspects).forEach(([aspectKey, list], index) => {
-  
-      aspects.push({
-        id: aspectKey,
-        label: aspectKey,
-        order: index
-      });
-  
-      if (!Array.isArray(list)) return;
-  
-      list.forEach(item => {
-  
-        nodes.push({
-            id: item.id,
-            name: item.name,
-            aspect: aspectKey
-          });
-      });
+    Object.entries(raw.nodeDTO).forEach(([aspectKey, list], index) => {
+
+        // Create list of aspects
+        aspects.push({
+            id: aspectKey,
+            label: aspectKey,
+            order: index
+        });
+
+        if (!Array.isArray(list)) return; // Avoid edge case, check that list is indeed an array
+
+
+        //process each node in list
+        list.forEach(item => {
+            // Extract root
+            try {
+                if (item.level == 0) {
+                    console.log("Root sset to: "+item.id)
+                    root = {
+                        id: item.id,
+                        name: item.name
+                    };
+                }
+            }
+            catch (err){
+                console.log("++SEAN++ 'transformGraph' klarte ikke å finne item.level == 0 \n" + err)
+            }
+
+            nodes.push({
+                id: item.id,
+                name: item.name,
+                aspect: aspectKey // kunne heller sendt fra backend
+            });
+        });
     });
   
     // ----------------------------
     // RELATIONS
     // ----------------------------
-    const relations = (raw.relations || []).map(r => {
-  
-      const from = normalizeId(r.from, raw.aspects);
-      const to = normalizeId(r.to, raw.aspects);
-  
-      return {
-        from,
-        to,
-        type: r.type || "cross"
-      };
-    });
-  
+    // Convert each relation and put in list 'relations'
+    const relations = (raw.relationDTO || []).map(r=> ({
+        from : r.node1,
+        to: r.node2,
+        r: r.type || "cross" // Catch hvis JS ikke tåler nullverdier
+    }));
+
     return {
-      root,
-      nodes,
-      aspects,
-      relations
+        root,
+        nodes,
+        aspects,
+        relations
     };
   }
   

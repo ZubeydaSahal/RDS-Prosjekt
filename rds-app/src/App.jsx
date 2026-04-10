@@ -7,12 +7,13 @@ import FilterDropdown from "./components/FilterDropdown";
 import { mockGraph } from "./components/MockGraph"; // slett når mockgraph slettes
 // Importerer React hooks
 import { useState, useRef } from "react";
+import {layoutTree} from "./graph/layout.js"
 
 function App() {
   // ----------------------------
   // STATE FOR REKKEFØLGE AV ASPEKTER
   // ----------------------------
-  const [aspectOrder, setAspectOrder] = useState(["=", "%", "-", "%%"]);
+  const [aspectOrder, setAspectOrder] = useState(["=", "%", "-", "$"]);
 
   // ----------------------------
   // STATE FOR FILTER                                              
@@ -44,6 +45,10 @@ function App() {
   // ----------------------------
   const [backendGraph, setBackendGraph] = useState(null);
   const graph = backendGraph || mockGraph;
+
+  const layedoutNodes = graph
+  ? layoutTree(graph)
+  : [];
 
   return (
     <div>
@@ -91,9 +96,9 @@ function App() {
 
           {graph ? (
             <GraphView
-              graph={graph}
-              aspectOrder={aspectOrder}
-              graphRef={graphRef}
+                nodes={layedoutNodes}
+                graph={graph}
+                graphRef={graphRef}
             />
           ) : (
             <p>Ingen graf lastet</p>

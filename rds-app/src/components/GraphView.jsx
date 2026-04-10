@@ -1,16 +1,10 @@
 import { useMemo, useState } from "react";
-import { layoutTree } from "../graph/layout";
-import { transformGraph } from "./transformGraph";
-
-import Node from "./Node";
-import Edge from "./Edge";
+import {layoutTree} from "../graph/layout.js"
 
 
 
+export default function GraphView({ nodes, graph, graphRef }) {
 
-export default function GraphView({ graph, aspectOrder, graphRef }) {
-
-  // Beregner layout kun når graph eller rekkefølge endres
   // Beregner layout kun når graph eller rekkefølge endres
 const layout = useMemo(() => {
 
@@ -19,30 +13,30 @@ const layout = useMemo(() => {
     return { nodes: [], hierarchyEdges: [] };
   }
 
-  // ----------------------------
-  // TRANSFORM BACKEND → FRONTEND
-  // ----------------------------
-  const transformed = transformGraph(graph);
+  //==== parse and layout ======
 
-  if (!transformed) {
-    return { nodes: [], hierarchyEdges: [] };
-  }
-
-  // ----------------------------
-  // SEND TIL LAYOUT
-  // ----------------------------
-  return layoutTree({
-    ...transformed,
-    aspectOrder
+  let placedNodes = [];
+  placedNodes = layoutTree({
+    graph
   });
+  return placedNodes.map(n => ({
+    id: n.id,
+    data: { label: n.label },
+    position: n.position,
+    type: n.type
+  }));
 
-}, [graph, aspectOrder]);
+
+
+
+
+}, [graph]);
 
 
   // Hent noder og edges fra layout
-  const nodes = layout.nodes || [];
+  //const nodes = layout.nodes || [];
   const relations = layout.hierarchyEdges || [];
-  const groups = layout.groups || [];
+  //const groups = layout.groups || [];
 
 
   // Lager oppslagskart for rask tilgang til noder via id
@@ -54,8 +48,14 @@ const layout = useMemo(() => {
   // ----------------------------
   // SPLITT ROOT OG ANDRE EDGES
   // ----------------------------
-  const rootEdges = relations.filter(e => e.type === "root");
-  const otherEdges = relations.filter(e => e.type !== "root");
+  const rootEdges = nodes
+      .filter(n => n.type === "aspect")
+      .map(n => ({
+        from: "root",
+        to: n.id
+      }));
+
+  const otherEdges = graph.relations || [];
 
 
   // State for visning (fit vs scroll)
@@ -80,10 +80,10 @@ const layout = useMemo(() => {
   // ----------------------------
   // FINN ROOT NODE (for topp-linje)
   // ----------------------------
-  const rootNode = nodes.find(n => n.type === "root");
+  //const rootNode = nodes.find(n => n.type === "root");
 
   // Y-posisjon for "bus line"
-  const busY = rootNode ? rootNode.y + 40 : 80;
+  //const busY = rootNode ? rootNode.y + 40 : 80;
 
 
   // ----------------------------
