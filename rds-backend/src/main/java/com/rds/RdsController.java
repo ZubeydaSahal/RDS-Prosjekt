@@ -59,16 +59,16 @@ public class RdsController {
     }
 
     private Map<String, Boolean> buildFilter(Map<String, String> params, String prefix) {
-        if (params == null) return null;
+    if (params == null) return null;
 
-        Map<String, Boolean> filter = new HashMap<>();
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-            if (entry.getKey().startsWith(prefix)) {
-                String key = entry.getKey().substring(prefix.length());
-                filter.put(key, Boolean.parseBoolean(entry.getValue()));
-            }
+    Map<String, Boolean> filter = new HashMap<>();
+    for (Map.Entry<String, String> entry : params.entrySet()) {
+        if (entry.getKey().startsWith(prefix)) {
+            String key = entry.getKey().substring(prefix.length());
+            filter.put(key, Boolean.parseBoolean(entry.getValue()));
         }
-        return filter.isEmpty() ? null : filter;
     }
+    return filter.isEmpty() ? null : filter;
+}
 
 }

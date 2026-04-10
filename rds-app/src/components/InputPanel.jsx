@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toPng } from "html-to-image";
 
-export default function InputPanel({ setGraph, graphRef }) {
+export default function InputPanel({ setGraph, graphRef, activeAspect, activeRelation }) {
 
   const [text, setText] = useState("");
   const [error, setError] = useState("");
@@ -20,7 +20,15 @@ export default function InputPanel({ setGraph, graphRef }) {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/parse", {
+      const params = new URLSearchParams();
+      const allAspects = ["=", "%", "-", "%%"];
+        allAspects.forEach(a => {
+            params.append(`aspect_${a}`, activeAspect.includes(a) ? "true" : "false");
+        });
+      activeRelation.forEach(r => params.append(`rel_${r}`, "true"));
+
+      // ENDRE URL:
+      const response = await fetch(`http://localhost:8080/parse?${params}`, {
         method: "POST",
         headers: {
           "content-type": "text/plain",
