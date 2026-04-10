@@ -1,49 +1,23 @@
 export function layoutTree(graph) {
 
   // ----------------------------
-  // VALIDATION
+  // VALIDERING AV INPUT
   // ----------------------------
   if (!graph || !graph.nodes || !graph.root) {
-    return {
-      nodes: [],
-      hierarchyEdges: [],
-      rootEdges: [],
-      crossEdges: []
-    };
+    console.log("Ugyldig graph");
+    return { nodes: [], hierarchyEdges: [] };
   }
 
-  // ----------------------------
-  // OUTPUT
-  // ----------------------------
+  console.log("Graph input:", graph);
+
   const nodes = [];
 
-  // BRUK edges fra transformGraph (IKKE bygg på nytt)
-  const hierarchyEdges = graph.hierarchyEdges || [];
-  const rootEdges = graph.rootEdges || [];
-  const crossEdges = graph.crossEdges || [];
-
   // ----------------------------
-  // CONFIG (layout spacing)
+  // KUN BEHOLD NON-HIERARCHY FRA BACKEND
   // ----------------------------
-  const CONFIG = {
-    startX: 200,
-    columnWidth: 300,
-    indent: 40,
-    rowGap: 70,
-    startY: 180
-  };
-
-  // ----------------------------
-  // ASPECT ORDER (fra frontend)
-  // ----------------------------
-  const ORDER = graph.aspectOrder || ["%", "=", "-", "%%"];
-
-  const ASPECT_LABELS = {
-    "%": "Typeaspekt",
-    "=": "Funksjonsaspekt",
-    "-": "Produktaspekt",
-    "%%": "Typeaspekt (produkt)"
-  };
+  const backendEdges = (graph.relations || []).filter(
+    e => e.type !== "hierarchy"
+  );
 
   // ----------------------------
   // ROOT NODE
@@ -56,25 +30,31 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-  // ASPECT COLUMNS
+  // ASPEKTER (rekkefølge fra frontend)
   // ----------------------------
-  const aspects = ORDER.map(id => ({
-    id,
-    label: ASPECT_LABELS[id]
-  }));
+  let aspects;
+
+  if (graph.aspectOrder && graph.aspectOrder.length) {
+    aspects = graph.aspectOrder
+      .map(id => graph.aspects.find(a => a.id === id))
+      .filter(Boolean);
+  } else if (graph.aspects) {
+    aspects = [...graph.aspects].sort((a, b) => a.order - b.order);
+  }
+
+  console.log("Aspects:", aspects);
 
   // ----------------------------
-  // X POSITION PER ASPECT
+  // KOLONNEPOSISJON
   // ----------------------------
   const COLUMN_X = {};
 
   aspects.forEach((aspect, index) => {
-    COLUMN_X[aspect.id] =
-      CONFIG.startX + index * CONFIG.columnWidth;
+    COLUMN_X[aspect.id] = 150 + index * 350;
   });
 
   // ----------------------------
-  // ASPECT HEADERS
+  // ASPEKT HEADERS
   // ----------------------------
   aspects.forEach((aspect) => {
     nodes.push({
@@ -87,114 +67,122 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-  // GROUP NODES PER ASPECT
+  // BYGG NODE-MAP (for DFS)
   // ----------------------------
-  const nodesByAspect = {};
-
-  aspects.forEach(a => {
-    nodesByAspect[a.id] = graph.nodes.filter(
-      n => n.aspect === a.id
-    );
+  const nodeMap = {};
+  graph.nodes.forEach(n => {
+    nodeMap[n.id] = { ...n, children: [] };
   });
 
   // ----------------------------
-  // LAYOUT PER ASPECT (TREE)
+  // KOBLE FORELDER → BARN (fra ID)
   // ----------------------------
+  const generatedHierarchyEdges = [];
+
+  graph.nodes.forEach(n => {
+    const parts = n.id.split(".");
+    parts.pop();
+
+    const parentId = parts.join(".");
+
+    if (nodeMap[parentId]) {
+
+      // Koble i tre
+      nodeMap[parentId].children.push(nodeMap[n.id]);
+
+      // Generer edge
+      generatedHierarchyEdges.push({
+        from: parentId,
+        to: n.id,
+        type: "hierarchy"
+      });
+    }
+  });
+
+  // ----------------------------
+  // FINN ROOT NODER PER ASPEKT
+  // ----------------------------
+  const rootsByAspect = {};
+
+  aspects.forEach(a => {
+    rootsByAspect[a.id] = graph.nodes.filter(n => {
+
+      if (n.aspect !== a.id) return false;
+
+      // Bruk GENERATED edges (ikke backend!)
+      const hasParent = generatedHierarchyEdges.some(e =>
+        e.to === n.id
+      );
+
+      return !hasParent;
+    });
+  });
+
+  // ----------------------------
+  // TRE LAYOUT (DFS)
+  // ----------------------------
+  const ROW_GAP = 70;
+  const INDENT = 40;
+
   aspects.forEach((aspect) => {
 
-    const aspectNodes = nodesByAspect[aspect.id];
-    if (!aspectNodes.length) return;
-
-    // ----------------------------
-    // NODE MAP + CHILDREN
-    // ----------------------------
-    const nodeMap = {};
-
-    aspectNodes.forEach(n => {
-      nodeMap[n.id] = {
-        ...n,
-        children: []
-      };
-    });
-
-    // ----------------------------
-    // BUILD TREE STRUCTURE
-    // ----------------------------
-    aspectNodes.forEach(n => {
-      const parentId = n.id.split(".").slice(0, -1).join(".");
-
-      if (nodeMap[parentId]) {
-        nodeMap[parentId].children.push(nodeMap[n.id]);
-      }
-    });
-
-    // ----------------------------
-    // ROOT NODES (no parent)
-    // ----------------------------
-    const roots = aspectNodes.filter(n => {
-      const parentId = n.id.split(".").slice(0, -1).join(".");
-      return !nodeMap[parentId];
-    });
-
-    // ----------------------------
-    // DFS LAYOUT
-    // ----------------------------
-    let currentY = CONFIG.startY;
-
-    const visited = new Set(); //  unngå duplikater
+    let currentY = 180;
 
     function dfs(node, depth) {
 
-      const visitKey = `${node.aspect}-${node.id}`;
+      const name = node.name || node.label || "";
 
-      if (visited.has(visitKey)) return;
-      visited.add(visitKey);
+      const label = node.id
+        ? node.description
+          ? `${node.id} ${name} (${node.description})`
+          : `${node.id} ${name}`
+        : "";
 
-      // ----------------------------
-      // LABEL
-      // ----------------------------
-      const label = node.metadata
-        ? `${node.id} (${node.metadata})`
-        : node.name
-          ? `${node.id} (${node.name})`
-          : node.id;
-
-      // ----------------------------
-      // ADD NODE WITH POSITION
-      // ----------------------------
       nodes.push({
         ...node,
         label,
-        x: COLUMN_X[aspect.id] + depth * CONFIG.indent,
+
+        // ----------------------------
+        // INDENT BASERT PÅ NIVÅ
+        // ----------------------------
+        x: COLUMN_X[aspect.id] + depth * INDENT,
+
+        // ----------------------------
+        // PLASSERES NEDOVER
+        // ----------------------------
         y: currentY
       });
 
-      currentY += CONFIG.rowGap;
+      currentY += ROW_GAP;
 
       // ----------------------------
-      // CHILDREN
+      // REKURSIV DFS
       // ----------------------------
-      node.children.forEach(child =>
-        dfs(child, depth + 1)
-      );
+      node.children.forEach(child => {
+        dfs(child, depth + 1);
+      });
     }
 
-    // ----------------------------
-    // START DFS
-    // ----------------------------
-    roots.forEach(root =>
-      dfs(nodeMap[root.id], 0)
-    );
+    rootsByAspect[aspect.id].forEach(rootNode => {
+      dfs(nodeMap[rootNode.id], 0);
+    });
 
   });
 
   // ----------------------------
-  // RETURN EVERYTHING
+  // RETURNER RESULTAT
   // ----------------------------
+  console.log("Final nodes:", nodes);
+
   return {
     nodes,
-    hierarchyEdges, // fra transformGraph
-    rootEdges,      // fra transformGraph
-    crossEdges      // fra backend
+
+    // ----------------------------
+    // COMBINE EDGES
+    // ----------------------------
+    hierarchyEdges: [
+      ...generatedHierarchyEdges, // ALT hierarki
+      ...backendEdges             // root + cross
+    ]
   };
 }

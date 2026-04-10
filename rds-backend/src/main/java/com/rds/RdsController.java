@@ -13,6 +13,8 @@ import java.util.Set;
 import com.rds.graph_view.DTO.*;
 import com.rds.datastructure.GraphTest;
 
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -21,21 +23,26 @@ import org.springframework.web.bind.annotation.*;
 public class RdsController {
 
     @PostMapping(value = "/parse", consumes = "text/plain", produces = "application/json")
-    public GraphViewDTO parseRds(@RequestBody String rdsScript) {
+    public GraphViewDTO parseRds(@RequestBody String rdsScript,
+                                  @RequestParam(required = false) Map<String, String> allParams) {
 
         // Parse script and create datastructure 'GraphManager' instance
         RdsParser parser = new RdsParser();
         GraphManager graph = parser.parse(rdsScript);
         graph.finalizeGraph();  // Connects root to aspects
 
+
+        // Bygg filter-maps fra query params
+        Map<String, Boolean> aspectFilters = buildFilter(allParams, "aspect_");
+        Map<String, Boolean> relationFilters = buildFilter(allParams, "rel_");
+
         // Create a view of the data for frontend (selected data)
         ViewBuilder viewBuilder = new ViewBuilder();
-        GraphViewDTO graphViewDTO = viewBuilder.buildView(graph);  // builds view and return DTO
+        GraphViewDTO graphViewDTO = viewBuilder.buildView(graph, aspectFilters, relationFilters);
 
-
-        // printe hele objektet som sendes til frontend
-        /*ObjectMapper mapper = new ObjectMapper();
-        try {
+        // Debugging
+        //Debugging
+        /*try {
             String json = mapper.writerWithDefaultPrettyPrinter()
                     .writeValueAsString(graphViewDTO);
             System.out.println("JSON: "+json);
@@ -50,4 +57,18 @@ public class RdsController {
         GraphViewDTO gv = graphTest.testController();
         return gv;*/
     }
+
+    private Map<String, Boolean> buildFilter(Map<String, String> params, String prefix) {
+        if (params == null) return null;
+
+        Map<String, Boolean> filter = new HashMap<>();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (entry.getKey().startsWith(prefix)) {
+                String key = entry.getKey().substring(prefix.length());
+                filter.put(key, Boolean.parseBoolean(entry.getValue()));
+            }
+        }
+        return filter.isEmpty() ? null : filter;
+    }
+
 }

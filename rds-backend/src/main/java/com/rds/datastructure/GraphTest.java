@@ -60,7 +60,7 @@ public class GraphTest {
 
         // Create a graphView for frontend (selected data)
         ViewBuilder view = new ViewBuilder();
-        GraphViewDTO gv = view.buildView(graph);
+        GraphViewDTO gv = view.buildView(graph, null, null);  // builds view
 
         //System.out.println("Relations: " +graphView.getCrossRelations());
 
@@ -193,7 +193,7 @@ public class GraphTest {
 
         // Create a graphView for frontend (selected data)
         ViewBuilder graphViewer = new ViewBuilder();
-        GraphViewDTO graphView = graphViewer.buildView(graph);  // builds view
+        GraphViewDTO graphView = graphViewer.buildView(graph, null, null);  // builds view
 
         //System.out.println("Relations: " +graphView.getCrossRelations());
 

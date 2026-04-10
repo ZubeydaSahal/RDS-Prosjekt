@@ -88,7 +88,8 @@ public class ViewBuilder {
     }
 
     // ===== Orchestrator function =====
-    public GraphViewDTO buildView(GraphManager graph){
+    public GraphViewDTO buildView(GraphManager graph,   Map<String, Boolean> aspectFilters,
+                               Map<String, Boolean> relationFilters){
         /* Orchestrator function, which uses a  datastructure as input and calls other functions to convert data to a
         * view for frontend, containing only requested, formatted data.
         * Input: graph (GraphManager instance)
@@ -97,12 +98,21 @@ public class ViewBuilder {
         * Returns: view (ViewBuilder instance) - filtered and formatted selections of the data
         * */
 
-        // ––––– Set 'viewerRelationDTO' –––––
-        this.buildAspectLists(graph.getNodeList());  // Build Lists per aspect and put all nodes in corresponding lists
+        // Filtrer noder etter aspect
+        Map<String, Node> filteredNodes = graph.getFilteredNodesByAspect(aspectFilters);
+        //----Set 'viewerRelationDTO' ----
+        this.buildAspectLists(filteredNodes);  // Build Lists per aspect and put all nodes in corresponding lists
 
+       
         // ––––– Set 'viewerRelation' –––––
-        for (Relation relation : graph.getCrossRelations()){
-            this.crossRelation.add(relationToDTO(relation)); // Extract list of relations from graph and convert to relationDTOs
+        Set<String> visibleNodeIds = filteredNodes.keySet();
+        for (Relation relation : graph.getFilteredCrossRelations(relationFilters)){
+            String fromId = relation.getNodeA().getId();
+            String toId = relation.getNodeB().getId();
+
+            if (visibleNodeIds.contains(fromId) && visibleNodeIds.contains(toId)) {
+                this.crossRelation.add(relationToDTO(relation));
+            }
 
         }
 
