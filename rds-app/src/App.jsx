@@ -1,99 +1,75 @@
-// Importerer komponenter som brukes i hovedlayouten
 import GraphView from "./components/GraphView";
 import InputPanel from "./components/InputPanel.jsx";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import FilterDropdown from "./components/FilterDropdown";          
-import { mockGraph } from "./components/MockGraph"; // slett når mockgraph slettes
-// Importerer React hooks
-import { useState, useRef, useEffect } from "react";
+import { mockGraph } from "./components/MockGraph";
+
+import { useState, useRef } from "react";
 
 function App() {
+
   // ----------------------------
-  // STATE FOR REKKEFØLGE AV ASPEKTER
+  // ASPEKT-REKKEFØLGE (MASTER STATE)
   // ----------------------------
   const [aspectOrder, setAspectOrder] = useState(["=", "%", "-", "%%"]);
 
   // ----------------------------
-  // STATE FOR FILTER                                                 
+  // FILTER
   // ----------------------------
-  const [activeAspect,   setActiveAspect]   = useState(["=", "%", "-", "%%"]); // ENDRING: $→%%
+  const [activeAspect, setActiveAspect] = useState(["=", "%", "-", "%%"]);
   const [activeRelation, setActiveRelation] = useState(["cross", "hierarchy"]);
   const [rdsText, setRdsText] = useState("");
 
   const graphRef = useRef(null);
 
-   // ---------------------------------
-  //  AUTO-OPPDATER GRAF NÅR FILTER ENDRES
-  // ---------------------------------
-
-   useEffect(() => {
-    if (!rdsText.trim()) return;
- 
-    const allAspects = ["=", "%", "-", "%%"];
-    const paramParts = allAspects.map(a =>
-      `aspect_${a}=${activeAspect.includes(a) ? "true" : "false"}`
-    );
-    activeRelation.forEach(r => paramParts.push(`rel_${r}=true`));
-    const paramString = paramParts.join("&");
- 
-    fetch(`http://localhost:8080/parse?${paramString}`, {
-      method: "POST",
-      headers: { "content-type": "text/plain" },
-      body: rdsText
-    })
-    .then(r => r.json())
-    .then(graph => setBackendGraph(graph))
-    .catch(err => console.error("Filter error:", err));
- 
-  }, [activeAspect, activeRelation]);
-
-  // ---------------------------------
-  // GIR BRUKER MULIGHET TIL Å FLYTTE ASPEKTER I VILKÅRLIG REKKEFØLGE
-  // ---------------------------------
+  // ----------------------------
+  // FLYTT ASPEKTER
+  // ----------------------------
   function moveLeft(index) {
     if (index === 0) return;
+
     const newOrder = [...aspectOrder];
-    [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
+    [newOrder[index - 1], newOrder[index]] =
+      [newOrder[index], newOrder[index - 1]];
+
     setAspectOrder(newOrder);
   }
 
   function moveRight(index) {
     if (index === aspectOrder.length - 1) return;
+
     const newOrder = [...aspectOrder];
-    [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
+    [newOrder[index], newOrder[index + 1]] =
+      [newOrder[index + 1], newOrder[index]];
+
     setAspectOrder(newOrder);
   }
 
   // ----------------------------
-  // STATE FOR GRAFDATA
+  // GRAFDATA
   // ----------------------------
   const [backendGraph, setBackendGraph] = useState(null);
-  // ENDRING: fjernet filterGraph(raw) → bruker backendGraph eller mockGraph direkte
   const graph = backendGraph || mockGraph;
 
   return (
     <div>
 
-      {/* Toppmeny */}
       <Navbar />
 
-      {/* Hovedlayout med input til venstre og graf til høyre */}
       <div className="layout">
 
-        {/* Venstre panel */}
-        <div className="input-section">                            
+        {/* VENSTRE PANEL */}
+        <div className="input-section">
 
-          {/* InputPanel sender tekst til backend og oppdaterer graph */}
           <InputPanel
             setGraph={setBackendGraph}
             graphRef={graphRef}
-            activeAspect={activeAspect}                            
-            activeRelation={activeRelation}                         
+            activeAspect={activeAspect}
+            activeRelation={activeRelation}
           />
 
-          {/* Filter dropdown — under inputfeltet */}
-          <FilterDropdown                                           
+          <FilterDropdown
             activeAspect={activeAspect}
             setActiveAspect={setActiveAspect}
             activeRelation={activeRelation}
@@ -103,10 +79,11 @@ function App() {
 
         </div>
 
-        {/* Seksjon for visualisering */}
+        {/* HØYRE SIDE */}
         <div className="tree-section">
           <h2>Trestruktur</h2>
 
+          {/* ENESTE STED MED KNAPPER */}
           <div className="aspect-controls">
             {aspectOrder.map((aspect, index) => (
               <div key={aspect} className="aspect-item">
@@ -120,7 +97,7 @@ function App() {
           {graph ? (
             <GraphView
               graph={graph}
-              aspectOrder={aspectOrder}
+              aspectOrder={aspectOrder}  
               graphRef={graphRef}
             />
           ) : (
@@ -131,7 +108,6 @@ function App() {
 
       </div>
 
-      {/* Footer nederst */}
       <Footer />
     </div>
   );
