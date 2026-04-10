@@ -35,62 +35,49 @@ export default function Edge({ from, to, type, busY, index = 0 }) {
   }
 
   // ----------------------------
-  // 🔥 SMART CROSS AUTO-ROUTING
+  // SMART CROSS AUTO-ROUTING
   // ----------------------------
-  const dx = Math.abs(x2 - x1);
-  const curve = 0.6;
+  // ENDRING: lagt til sjekk på busY før cross-relasjon tegnes
+  if (!busY) return null;
 
-    if (!busY) return null;
+  const direction = x2 > x1 ? 1 : -1;
+  const distance = Math.abs(x2 - x1);
+  const baseOffset = Math.max(10, 60 - distance * 0.1);
+  const laneSpacing = 10;
+  const lane = index % 6;
+  const yLane = busY - baseOffset - lane * laneSpacing;
 
-    // retning (kan brukes senere hvis du vil utvide)
-    const direction = x2 > x1 ? 1 : -1;
+  return (
+    <>
+      {/* opp */}
+      <line
+        x1={x1}
+        y1={y1}
+        x2={x1}
+        y2={yLane}
+        stroke="#1e3a8a"
+        strokeWidth={2}
+      />
 
-    const distance = Math.abs(x2 - x1);
+      {/* bort */}
+      <line
+        x1={x1}
+        y1={yLane}
+        x2={x2}
+        y2={yLane}
+        stroke="#1e3a8a"
+        strokeWidth={2}
+      />
 
-    //  dynamisk offset (nære linjer får mer plass)
-    const baseOffset = Math.max(10, 60 - distance * 0.1);
-
-    const laneSpacing = 10;
-
-    // maks 6 lanes før reset
-    const lane = index % 6;
-
-    const yLane = busY - baseOffset - lane * laneSpacing;
-
-    return (
-      <>
-        {/* opp */}
-        <line
-          x1={x1}
-          y1={y1}
-          x2={x1}
-          y2={yLane}
-          stroke="#1e3a8a"
-          strokeWidth={2}
-        />
-
-        {/* bort */}
-        <line
-          x1={x1}
-          y1={yLane}
-          x2={x2}
-          y2={yLane}
-          stroke="#1e3a8a"
-          strokeWidth={2}
-        />
-
-        {/* ned */}
-        <line
-          x1={x2}
-          y1={yLane}
-          x2={x2}
-          y2={y2}
-          stroke="#1e3a8a"
-          strokeWidth={2}
-        />
-      </>
-    );
-  }
-
-  return null;
+      {/* ned */}
+      <line
+        x1={x2}
+        y1={yLane}
+        x2={x2}
+        y2={y2}
+        stroke="#1e3a8a"
+        strokeWidth={2}
+      />
+    </>
+  );
 }

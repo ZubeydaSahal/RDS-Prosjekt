@@ -15,9 +15,9 @@ function App() {
   const [aspectOrder, setAspectOrder] = useState(["=", "%", "-", "%%"]);
 
   // ----------------------------
-  // STATE FOR FILTER                                              
+  // STATE FOR FILTER                                                 
   // ----------------------------
-  const [activeAspect,   setActiveAspect]   = useState(["=", "%", "-", "$"]);
+  const [activeAspect,   setActiveAspect]   = useState(["=", "%", "-", "%%"]); // ENDRING: $→%%
   const [activeRelation, setActiveRelation] = useState(["cross", "hierarchy"]);
 
   const graphRef = useRef(null);
@@ -43,39 +43,8 @@ function App() {
   // STATE FOR GRAFDATA
   // ----------------------------
   const [backendGraph, setBackendGraph] = useState(null);
-
-  function filterGraph(source) {
-  if (!source) return null;
-
-  // Filtrer aspects — behold bare aktive
-  const filteredAspects = {};
-  for (const [aspect, nodes] of Object.entries(source.aspects)) {
-    if (activeAspect.includes(aspect)) {
-      filteredAspects[aspect] = nodes;
-    }
-  }
-
-  // Samle alle synlige node-IDer
-  const visibleIds = new Set();
-  for (const nodes of Object.values(filteredAspects)) {
-    nodes.forEach(n => visibleIds.add(n.id));
-  }
-
-  // Filtrer relasjoner — sjekk type og at begge noder er synlige
-  const filteredRelations = source.relations.filter(r => {
-    if (!activeRelation.includes("cross")) return false;
-    return visibleIds.has(r.from) && visibleIds.has(r.to);
-  });
-
-  return {
-    ...source,
-    aspects: filteredAspects,
-    relations: filteredRelations,
-  };
-}
-
-const raw = backendGraph || mockGraph;
-const graph = filterGraph(raw);
+  // ENDRING: fjernet filterGraph(raw) → bruker backendGraph eller mockGraph direkte
+  const graph = backendGraph || mockGraph;
 
   return (
     <div>
@@ -87,18 +56,18 @@ const graph = filterGraph(raw);
       <div className="layout">
 
         {/* Venstre panel */}
-        <div className="input-section">                           
+        <div className="input-section">                            
 
           {/* InputPanel sender tekst til backend og oppdaterer graph */}
           <InputPanel
             setGraph={setBackendGraph}
             graphRef={graphRef}
-            activeAspect={activeAspect}                         
-            activeRelation={activeRelation}                        
+            activeAspect={activeAspect}                            
+            activeRelation={activeRelation}                         
           />
 
           {/* Filter dropdown — under inputfeltet */}
-          <FilterDropdown                                         
+          <FilterDropdown                                           
             activeAspect={activeAspect}
             setActiveAspect={setActiveAspect}
             activeRelation={activeRelation}

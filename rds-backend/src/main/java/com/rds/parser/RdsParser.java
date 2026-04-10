@@ -98,7 +98,8 @@ public class RdsParser {
                     if (!foundRelation) {
                         // check for aspect and remove aspect symbol
                         String aspect = checkAspect(trimmedLine);
-                        trimmedLine = trimmedLine.substring(1).trim();
+                        // endring: fjerner aspect.length() tegn i stedet for alltid 1
+                        trimmedLine = trimmedLine.substring(aspect.length()).trim();
 
                         // Normal RDS line
                         System.out.println("detected node: " + trimmedLine + "\n\t>>'parse' calling 'CheckNodes'");
@@ -111,7 +112,7 @@ public class RdsParser {
             }
         
         }
-        //graphManager.finalizeGraph();
+      
         return graphManager;
         
         }
@@ -136,10 +137,11 @@ public class RdsParser {
                 int endIndex = node.indexOf(")");
 
                 // Extract id and name and update
+                // endring: lagt til aspect + på første node
                 if(!currentFullId.isEmpty()) {
                     currentFullId = currentFullId + "." + node.substring(0, startIndex);
                 }else {
-                    currentFullId = currentFullId + node.substring(0, startIndex);
+                    currentFullId = aspect + node.substring(0, startIndex);
                 }
 
                 name = node.substring(startIndex + 1, endIndex);
@@ -150,7 +152,8 @@ public class RdsParser {
                 if(!currentFullId.isEmpty()){
                     currentFullId = currentFullId + "." + node;
                 } else {
-                    currentFullId = node; //
+                    //endring: lagt til aspect + på første node
+                    currentFullId = aspect + node;
                 }
                 System.out.println("\n\t×No name detected for: "+currentFullId);
             }
@@ -207,12 +210,14 @@ public class RdsParser {
         }
         //process leftsidde (remove aspect)
         String leftNodeAspect = checkAspect(leftSide);
-        leftSide = leftSide.substring(1).trim(); // remove aspect symbol
+        // endring: fjerner aspect.length() tegn i stedet for alltid 1
+        leftSide = leftSide.substring(leftNodeAspect.length()).trim();
         //CheckNodes(leftSide, leftNodeAspect,graphmanger);  // Temp, kode: FDFDF
 
         // process rightSide
         String rightNodeAspect = checkAspect(rightSide);
-        rightSide = rightSide.substring(1).trim(); // remove aspect symbol
+        // endring: fjerner aspect.length() tegn i stedet for alltid 1
+        rightSide = rightSide.substring(rightNodeAspect.length()).trim();
         //CheckNodes(rightSide, rightNodeAspect, graphmanger); //Temp, kode: FDFDF
 
         //gets last node from each side of a explicit relation

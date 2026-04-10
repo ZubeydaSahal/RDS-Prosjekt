@@ -3,87 +3,71 @@
 // ----------------------------
 export function transformGraph(raw) {
 
-    if (!raw || !raw.aspects) {
-      console.log("Ugyldig graph input");
-      return null;
+    // Backend sender: { nodeDTO: {...}, relationDTO: [...] }
+    if (!raw || !raw.nodeDTO) {
+        console.log("Ugyldig graph input:", raw);
+        return null;
     }
-  
+
+    console.log("HELE GRAPH FRA BACKEND:", raw);
+
     const nodes = [];
     const aspects = [];
-  
+
     // ----------------------------
-    // ROOT
+    // ROOT — hent fra nodeDTO["<root>"]
     // ----------------------------
+    const rootList = raw.nodeDTO["<root>"] || [];
+    const rootNode = rootList[0];
+
     const root = {
-      id: "ROOT",
-      label: "System"
+        id: rootNode ? rootNode.id : "ROOT",
+        label: rootNode ? rootNode.id : "System",
+        type: "root"
     };
-  
+
     // ----------------------------
-    // ASPEKTER + NODER
+    // ASPEKTER + NODER — hopp over <root>
     // ----------------------------
-    Object.entries(raw.aspects).forEach(([aspectKey, list], index) => {
-  
-      aspects.push({
-        id: aspectKey,
-        label: aspectKey,
-        order: index
-      });
-  
-      if (!Array.isArray(list)) return;
-  
-      list.forEach(item => {
-  
-        nodes.push({
-            id: item.id,
-            name: item.name,
-            aspect: aspectKey
-          });
-      });
+    Object.entries(raw.nodeDTO).forEach(([aspectKey, list], index) => {
+
+        // Ikke inkluder <root> som aspekt
+        if (aspectKey === "<root>") return;
+
+        aspects.push({
+            id: aspectKey,
+            label: aspectKey,
+            order: index
+        });
+
+        if (!Array.isArray(list)) return;
+
+        list.forEach(item => {
+            nodes.push({
+                id: item.id,
+                name: item.name || item.metadata,
+                aspect: aspectKey
+            });
+        });
     });
-  
+
     // ----------------------------
-    // RELATIONS
+    // RELATIONS — bruker node1/node2 fra RelationDTO
     // ----------------------------
-    const relations = (raw.relations || []).map(r => {
-  
-      const from = normalizeId(r.from, raw.aspects);
-      const to = normalizeId(r.to, raw.aspects);
-  
-      return {
-        from,
-        to,
+    const relationArray = Array.isArray(raw.relationDTO)
+        ? raw.relationDTO
+        : Array.from(raw.relationDTO || []);
+
+    const relations = relationArray.map(r => ({
+        from: r.node1,
+        to: r.node2,
         type: r.type || "cross"
-      };
-    });
-  
+    }));
+
     return {
-      root,
-      nodes,
-      aspects,
-      relations
+        root,
+        nodes,
+        aspects,
+        relations
     };
-  }
-  
-  
-  // ----------------------------
-  // HJELPEFUNKSJON
-  // ----------------------------
-  function normalizeId(id, aspects) {
-  
-    if (!id) return id;
-  
-    if (id.startsWith("%") || id.startsWith("=") || id.startsWith("-") || id.startsWith("%%")) {
-      return id;
-    }
-  
-    for (const key in aspects) {
-      const list = aspects[key];
-  
-      if (Array.isArray(list) && list.some(n => n.id === id)) {
-        return key + id;
-      }
-    }
-  
-    return id;
-  }
+}

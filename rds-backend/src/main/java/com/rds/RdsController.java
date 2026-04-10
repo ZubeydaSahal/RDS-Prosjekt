@@ -42,13 +42,13 @@ public class RdsController {
 
         // Debugging
         //Debugging
-        try {
+        /*try {
             String json = mapper.writerWithDefaultPrettyPrinter()
                     .writeValueAsString(graphViewDTO);
             System.out.println("JSON: "+json);
         }catch (JsonProcessingException e){
             e.printStackTrace();
-        }
+        }*/
 
         return graphViewDTO;
 
