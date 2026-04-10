@@ -1,49 +1,37 @@
 export default function Node({ node }) {
 
   // ----------------------------
-  // SPLITTER TEKST I FLERE LINJER
+  // TEKST
   // ----------------------------
-  // Hindrer at tekst går utenfor boksen
-  function splitText(text, maxLength = 18) {
-    if (!text) return [];
+  const text = node.label || "";
 
-    const words = text.split(" ");
-    const lines = [];
-    let currentLine = "";
+  const MAX_TEXT_LENGTH = 25;
 
-    words.forEach(word => {
-      if ((currentLine + word).length > maxLength) {
-        lines.push(currentLine.trim());
-        currentLine = word + " ";
-      } else {
-        currentLine += word + " ";
-      }
-    });
-
-    if (currentLine) lines.push(currentLine.trim());
-
-    return lines;
-  }
-
+  const displayText =
+    text.length > MAX_TEXT_LENGTH
+      ? text.slice(0, MAX_TEXT_LENGTH) + "..."
+      : text;
 
   // ----------------------------
-  // GENERER LINJER FRA LABEL
+  // BOKS STØRRELSE
   // ----------------------------
-  const lines = splitText(node.label);
+  const CHAR_WIDTH = 7;
+  const BOX_PADDING_X = 16;
+  const BOX_HEIGHT = 30;
 
+  const MIN_WIDTH = 120;
+  const MAX_WIDTH = 220;
+
+  const boxWidth = Math.min(
+    MAX_WIDTH,
+    Math.max(
+      MIN_WIDTH,
+      displayText.length * CHAR_WIDTH + BOX_PADDING_X * 2
+    )
+  );
 
   // ----------------------------
-  // DYNAMISK BOKS-STØRRELSE
-  // ----------------------------
-  const BOX_WIDTH = 140;
-  const LINE_HEIGHT = 14;
-  const PADDING = 10;
-
-  const boxHeight = lines.length * LINE_HEIGHT + PADDING * 2;
-
-
-  // ----------------------------
-  // FINN ASPEKT FRA ID
+  // ASPEKT
   // ----------------------------
   const getAspect = (id) => {
     if (!id) return null;
@@ -57,7 +45,6 @@ export default function Node({ node }) {
   };
 
   const aspect = getAspect(node.id);
-
 
   // ----------------------------
   // FARGER
@@ -78,29 +65,23 @@ export default function Node({ node }) {
 
   const strokeColor = aspectColors[aspect] || "#888";
 
-
-  // ----------------------------
-  // TYPE NODER
-  // ----------------------------
   const isAspect = node.id?.startsWith("aspect_");
   const isRoot = node.type === "root";
 
-  const aspectKey = isAspect ? node.id.replace("aspect_", "") : null;
-
+  const aspectKey = isAspect
+    ? node.id.replace("aspect_", "")
+    : null;
 
   return (
     <g>
 
-      {/* ----------------------------
-          BOKS
-      ---------------------------- */}
+      {/* BOKS */}
       <rect
-        x={node.x - BOX_WIDTH / 2}
-        y={node.y - boxHeight / 2}
-        width={BOX_WIDTH}
-        height={boxHeight}
+        x={node.x - boxWidth / 2}
+        y={node.y - BOX_HEIGHT / 2}
+        width={boxWidth}
+        height={BOX_HEIGHT}
         rx={8}
-
         fill={
           isRoot
             ? "#1e3a8a"
@@ -108,7 +89,6 @@ export default function Node({ node }) {
             ? aspectHeaderColors[aspectKey] || "#eee"
             : "#ffffff"
         }
-
         stroke={
           isRoot
             ? "#1e3a8a"
@@ -116,31 +96,19 @@ export default function Node({ node }) {
             ? "#999"
             : strokeColor
         }
-
         strokeWidth={isAspect ? 1 : 2}
       />
 
-
-      {/* ----------------------------
-          MULTILINE TEKST (SVG)
-      ---------------------------- */}
+      {/* TEKST */}
       <text
         x={node.x}
-        y={node.y - (lines.length - 1) * (LINE_HEIGHT / 2)}
+        y={node.y + 4}
         textAnchor="middle"
         fontSize="12"
         fill={isRoot ? "#ffffff" : "#333"}
         fontWeight={isAspect || isRoot ? "bold" : "normal"}
       >
-        {lines.map((line, index) => (
-          <tspan
-            key={index}
-            x={node.x}
-            dy={index === 0 ? 0 : LINE_HEIGHT}
-          >
-            {line}
-          </tspan>
-        ))}
+        {displayText}
       </text>
 
     </g>
