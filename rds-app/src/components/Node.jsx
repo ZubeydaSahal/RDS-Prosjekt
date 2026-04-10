@@ -1,20 +1,15 @@
 export default function Node({ node }) {
 
-  console.log(node.id, node.aspect);
-
   // ----------------------------
   // TRUNCATE TEKST (…)
   // ----------------------------
-  function truncateText(text, maxLength = 26) {
+  function truncateText(text, maxLength = 28) {
     if (!text) return "";
-
     if (text.length <= maxLength) return text;
-
     return text.slice(0, maxLength) + "...";
   }
 
   const truncatedLabel = truncateText(node.label);
-
 
   // ----------------------------
   // SPLITT PREFIX + REST
@@ -23,12 +18,11 @@ export default function Node({ node }) {
     if (!label) return { prefix: "", rest: "" };
 
     const parts = label.split(" ");
-
     if (parts.length === 1) {
       return { prefix: parts[0], rest: "" };
     }
 
-    const prefix = parts.shift(); // f.eks "=R1"
+    const prefix = parts.shift();
     const rest = parts.join(" ");
 
     return { prefix, rest };
@@ -36,64 +30,48 @@ export default function Node({ node }) {
 
   const { prefix, rest } = splitLabel(truncatedLabel);
 
-
   // ----------------------------
-  // FIXED BOKS-STØRRELSE
+  // DESIGN SETTINGS 
   // ----------------------------
   const BOX_WIDTH = 190;
-  const BOX_HEIGHT = 42;
+  const BOX_HEIGHT = 32;
 
+  const STRIPE_WIDTH = 6;
+  const TEXT_PADDING = 8;
 
-  // ----------------------------
-  // FINN ASPEKT FRA ID
-  // ----------------------------
-  const getAspect = (id) => {
-    if (!id) return null;
-
-    if (id.startsWith("%%")) return "%%";
-    if (id.startsWith("%")) return "%";
-    if (id.startsWith("=")) return "=";
-    if (id.startsWith("-")) return "-";
-
-    return null;
-  };
-
-  const aspect = getAspect(node.id);
-
+  const FONT_SIZE = 11;
 
   // ----------------------------
   // FARGER
   // ----------------------------
   const aspectColors = {
     "%": "#4da3ff",
-    "=": "#ff9f6e",
-    "-": "#7ed957",
-    "%%": "#a78bfa"
+    "=": "#ff8c5a",
+    "-": "#6ccf4f",
+    "%%": "#9b8cff"
   };
 
   const aspectHeaderColors = {
     "%": "#cfe8ff",
     "=": "#ffd6bf",
-    "-": "#d4f5d0",
-    "%%": "#e4d7ff"
+    "-": "#dff5dc",
+    "%%": "#e6ddff"
   };
 
-  const strokeColor = aspectColors[aspect] || "#888";
-
+  const aspect = node.aspect;
+  const strokeColor = aspectColors[aspect] || "#999";
 
   // ----------------------------
   // TYPE NODER
   // ----------------------------
   const isAspect = node.id?.startsWith("aspect_");
   const isRoot = node.type === "root";
-
   const aspectKey = isAspect ? node.id.replace("aspect_", "") : null;
-
 
   return (
     <g>
 
-      {/* TOOLTIP (viser full tekst) */}
+      {/* TOOLTIP */}
       <title>{node.label}</title>
 
       {/* ----------------------------
@@ -104,25 +82,25 @@ export default function Node({ node }) {
         y={node.y - BOX_HEIGHT / 2}
         width={BOX_WIDTH}
         height={BOX_HEIGHT}
-        rx={4}
+        rx={2}
 
         fill={
           isRoot
-            ? "#1e3a8a"
+            ? "#2b448c"
             : isAspect
             ? aspectHeaderColors[aspectKey] || "#eee"
-            : "#ffffff"
+            : "#f8f8f8"
         }
 
         stroke={
           isRoot
-            ? "#1e3a8a"
+            ? "#2b448c"
             : isAspect
-            ? "#999"
+            ? "#bbb"
             : strokeColor
         }
 
-        strokeWidth={isAspect ? 1 : 2}
+        strokeWidth={isAspect ? 1 : 1.5}
       />
 
       {/* ----------------------------
@@ -132,35 +110,45 @@ export default function Node({ node }) {
         <rect
           x={node.x - BOX_WIDTH / 2}
           y={node.y - BOX_HEIGHT / 2}
-          width={6}
+          width={STRIPE_WIDTH}
           height={BOX_HEIGHT}
           fill={strokeColor}
         />
       )}
 
       {/* ----------------------------
-          TEKST (PREFIX BOLD)
+          TEKST
       ---------------------------- */}
       <text
-        x={node.x}
-        y={node.y}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontSize="12"
-        fill={isRoot ? "#ffffff" : "#333"}
-      >
-        {/* PREFIX */}
-        <tspan fontWeight="bold">
-          {prefix}
-        </tspan>
+  x={
+    isAspect || isRoot
+      ? node.x                              // sentrert
+      : node.x - BOX_WIDTH / 2 + STRIPE_WIDTH + TEXT_PADDING // venstre
+  }
+  y={node.y}
+  textAnchor={isAspect || isRoot ? "middle" : "start"}
+  dominantBaseline="middle"
+  fontSize={FONT_SIZE}
+  fontFamily="Roboto, Segoe UI, Arial, sans-serif"
+  fill={isRoot ? "#ffffff" : "#333"}
+>
+  {/* orskjellig rendering */}
+  {isAspect || isRoot ? (
+    node.label   // vanlig tekst (ingen split)
+  ) : (
+    <>
+      <tspan fontWeight="600">
+        {prefix}
+      </tspan>
 
-        {/* AVSTAND */}
-        {rest && (
-          <tspan dx="6" fontWeight="normal">
-            {rest}
-          </tspan>
-        )}
-      </text>
+      {rest && (
+        <tspan dx="6" fontWeight="400">
+          {rest}
+        </tspan>
+      )}
+    </>
+  )}
+</text>
 
     </g>
   );
