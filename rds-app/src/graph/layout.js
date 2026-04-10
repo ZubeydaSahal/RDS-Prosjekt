@@ -1,26 +1,18 @@
 export function layoutTree(graph) {
 
-  // ----------------------------
-  // VALIDERING AV INPUT
-  // ----------------------------
   if (!graph || !graph.nodes || !graph.root) {
     console.log("Ugyldig graph");
     return { nodes: [], hierarchyEdges: [] };
   }
 
-  console.log("Graph input:", graph);
-
   const nodes = [];
 
-  // ----------------------------
-  // KUN BEHOLD NON-HIERARCHY FRA BACKEND
-  // ----------------------------
   const backendEdges = (graph.relations || []).filter(
     e => e.type !== "hierarchy"
   );
 
   // ----------------------------
-  // ROOT NODE
+  // ROOT
   // ----------------------------
   nodes.push({
     ...graph.root,
@@ -30,7 +22,7 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-  // ASPEKTER (rekkefølge fra frontend)
+  // ASPEKTER
   // ----------------------------
   let aspects;
 
@@ -38,15 +30,10 @@ export function layoutTree(graph) {
     aspects = graph.aspectOrder
       .map(id => graph.aspects.find(a => a.id === id))
       .filter(Boolean);
-  } else if (graph.aspects) {
+  } else {
     aspects = [...graph.aspects].sort((a, b) => a.order - b.order);
   }
 
-  console.log("Aspects:", aspects);
-
-  // ----------------------------
-  // KOLONNEPOSISJON
-  // ----------------------------
   const COLUMN_X = {};
 
   aspects.forEach((aspect, index) => {
@@ -67,7 +54,7 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-  // BYGG NODE-MAP (for DFS)
+  // NODE MAP
   // ----------------------------
   const nodeMap = {};
   graph.nodes.forEach(n => {
@@ -75,32 +62,33 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-  // KOBLE FORELDER → BARN (fra ID)
+  // RIKTIG PARENT LOGIKK
   // ----------------------------
   const generatedHierarchyEdges = [];
 
   graph.nodes.forEach(n => {
-    const parts = n.id.split(".");
-    parts.pop();
 
-    const parentId = parts.join(".");
+    // 👇 behold prefix – kutt kun siste nivå
+    const lastDotIndex = n.id.lastIndexOf(".");
 
-    if (nodeMap[parentId]) {
+    if (lastDotIndex === -1) return; // ingen parent
 
-      // Koble i tre
-      nodeMap[parentId].children.push(nodeMap[n.id]);
+    const parentId = n.id.substring(0, lastDotIndex);
 
-      // Generer edge
-      generatedHierarchyEdges.push({
-        from: parentId,
-        to: n.id,
-        type: "hierarchy"
-      });
-    }
+    // KUN hvis parent faktisk finnes
+    if (!nodeMap[parentId]) return;
+
+    nodeMap[parentId].children.push(nodeMap[n.id]);
+
+    generatedHierarchyEdges.push({
+      from: parentId,
+      to: n.id,
+      type: "hierarchy"
+    });
   });
 
   // ----------------------------
-  // FINN ROOT NODER PER ASPEKT
+  // ROOT NODER PER ASPEKT
   // ----------------------------
   const rootsByAspect = {};
 
@@ -109,7 +97,6 @@ export function layoutTree(graph) {
 
       if (n.aspect !== a.id) return false;
 
-      // Bruk GENERATED edges (ikke backend!)
       const hasParent = generatedHierarchyEdges.some(e =>
         e.to === n.id
       );
@@ -119,7 +106,7 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-  // TRE LAYOUT (DFS)
+  // LAYOUT
   // ----------------------------
   const ROW_GAP = 70;
   const INDENT = 40;
@@ -141,23 +128,12 @@ export function layoutTree(graph) {
       nodes.push({
         ...node,
         label,
-
-        // ----------------------------
-        // INDENT BASERT PÅ NIVÅ
-        // ----------------------------
         x: COLUMN_X[aspect.id] + depth * INDENT,
-
-        // ----------------------------
-        // PLASSERES NEDOVER
-        // ----------------------------
         y: currentY
       });
 
       currentY += ROW_GAP;
 
-      // ----------------------------
-      // REKURSIV DFS
-      // ----------------------------
       node.children.forEach(child => {
         dfs(child, depth + 1);
       });
@@ -170,19 +146,13 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-  // RETURNER RESULTAT
+  // RETURN
   // ----------------------------
-  console.log("Final nodes:", nodes);
-
   return {
     nodes,
-
-    // ----------------------------
-    // COMBINE EDGES
-    // ----------------------------
     hierarchyEdges: [
-      ...generatedHierarchyEdges, // ALT hierarki
-      ...backendEdges             // root + cross
+      ...generatedHierarchyEdges,
+      ...backendEdges
     ]
   };
 }

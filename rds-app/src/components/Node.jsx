@@ -1,45 +1,47 @@
 export default function Node({ node }) {
 
+  console.log(node.id, node.aspect);
+
   // ----------------------------
-  // SPLITTER TEKST I FLERE LINJER
+  // TRUNCATE TEKST (…)
   // ----------------------------
-  // Hindrer at tekst går utenfor boksen
-  function splitText(text, maxLength = 18) {
-    if (!text) return [];
+  function truncateText(text, maxLength = 26) {
+    if (!text) return "";
 
-    const words = text.split(" ");
-    const lines = [];
-    let currentLine = "";
+    if (text.length <= maxLength) return text;
 
-    words.forEach(word => {
-      if ((currentLine + word).length > maxLength) {
-        lines.push(currentLine.trim());
-        currentLine = word + " ";
-      } else {
-        currentLine += word + " ";
-      }
-    });
-
-    if (currentLine) lines.push(currentLine.trim());
-
-    return lines;
+    return text.slice(0, maxLength) + "...";
   }
 
-
-  // ----------------------------
-  // GENERER LINJER FRA LABEL
-  // ----------------------------
-  const lines = splitText(node.label);
+  const truncatedLabel = truncateText(node.label);
 
 
   // ----------------------------
-  // DYNAMISK BOKS-STØRRELSE
+  // SPLITT PREFIX + REST
   // ----------------------------
-  const BOX_WIDTH = 140;
-  const LINE_HEIGHT = 14;
-  const PADDING = 10;
+  function splitLabel(label) {
+    if (!label) return { prefix: "", rest: "" };
 
-  const boxHeight = lines.length * LINE_HEIGHT + PADDING * 2;
+    const parts = label.split(" ");
+
+    if (parts.length === 1) {
+      return { prefix: parts[0], rest: "" };
+    }
+
+    const prefix = parts.shift(); // f.eks "=R1"
+    const rest = parts.join(" ");
+
+    return { prefix, rest };
+  }
+
+  const { prefix, rest } = splitLabel(truncatedLabel);
+
+
+  // ----------------------------
+  // FIXED BOKS-STØRRELSE
+  // ----------------------------
+  const BOX_WIDTH = 190;
+  const BOX_HEIGHT = 42;
 
 
   // ----------------------------
@@ -91,15 +93,18 @@ export default function Node({ node }) {
   return (
     <g>
 
+      {/* TOOLTIP (viser full tekst) */}
+      <title>{node.label}</title>
+
       {/* ----------------------------
           BOKS
       ---------------------------- */}
       <rect
         x={node.x - BOX_WIDTH / 2}
-        y={node.y - boxHeight / 2}
+        y={node.y - BOX_HEIGHT / 2}
         width={BOX_WIDTH}
-        height={boxHeight}
-        rx={8}
+        height={BOX_HEIGHT}
+        rx={4}
 
         fill={
           isRoot
@@ -120,27 +125,41 @@ export default function Node({ node }) {
         strokeWidth={isAspect ? 1 : 2}
       />
 
+      {/* ----------------------------
+          FARGESTRIPE
+      ---------------------------- */}
+      {!isAspect && !isRoot && (
+        <rect
+          x={node.x - BOX_WIDTH / 2}
+          y={node.y - BOX_HEIGHT / 2}
+          width={6}
+          height={BOX_HEIGHT}
+          fill={strokeColor}
+        />
+      )}
 
       {/* ----------------------------
-          MULTILINE TEKST (SVG)
+          TEKST (PREFIX BOLD)
       ---------------------------- */}
       <text
         x={node.x}
-        y={node.y - (lines.length - 1) * (LINE_HEIGHT / 2)}
+        y={node.y}
         textAnchor="middle"
+        dominantBaseline="middle"
         fontSize="12"
         fill={isRoot ? "#ffffff" : "#333"}
-        fontWeight={isAspect || isRoot ? "bold" : "normal"}
       >
-        {lines.map((line, index) => (
-          <tspan
-            key={index}
-            x={node.x}
-            dy={index === 0 ? 0 : LINE_HEIGHT}
-          >
-            {line}
+        {/* PREFIX */}
+        <tspan fontWeight="bold">
+          {prefix}
+        </tspan>
+
+        {/* AVSTAND */}
+        {rest && (
+          <tspan dx="6" fontWeight="normal">
+            {rest}
           </tspan>
-        ))}
+        )}
       </text>
 
     </g>
