@@ -76,19 +76,19 @@ export default function Edge({ from, to, type, allNodes }) {
   // ----------------------------
   if (type === "hierarchy") {
 
-    const midY = (y1 + y2) / 2;
-
+    const verticalY = y1 + 10;
+  
     return (
       <path
         d={`
           M ${x1} ${y1}
-          L ${x1} ${midY}
-          L ${x2} ${midY}
+          L ${x1} ${verticalY}
+          L ${x2} ${verticalY}
           L ${x2} ${y2}
         `}
         fill="none"
         stroke="#999"
-        strokeWidth={1.5}
+        strokeWidth={1.2}
       />
     );
   }

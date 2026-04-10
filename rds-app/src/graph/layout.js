@@ -41,12 +41,22 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
+  // 🆕 NAVN PÅ ASPEKTER
+  // ----------------------------
+  const ASPECT_NAMES = {
+    "%": "Typeaspekt",
+    "=": "Funksjonsaspekt",
+    "-": "Produktaspekt",
+    "%%": "Typeaspekt (produkt)"
+  };
+
+  // ----------------------------
   // ASPEKT HEADERS
   // ----------------------------
   aspects.forEach((aspect) => {
     nodes.push({
       id: "aspect_" + aspect.id,
-      label: aspect.label,
+      label: ASPECT_NAMES[aspect.id] || aspect.label, 
       x: COLUMN_X[aspect.id],
       y: 120,
       type: "aspect"
@@ -68,7 +78,6 @@ export function layoutTree(graph) {
 
   graph.nodes.forEach(n => {
 
-    // 👇 behold prefix – kutt kun siste nivå
     const lastDotIndex = n.id.lastIndexOf(".");
 
     if (lastDotIndex === -1) return; // ingen parent
@@ -108,7 +117,7 @@ export function layoutTree(graph) {
   // ----------------------------
   // LAYOUT
   // ----------------------------
-  const ROW_GAP = 70;
+  const ROW_GAP = 45;
   const INDENT = 40;
 
   aspects.forEach((aspect) => {

@@ -122,19 +122,19 @@ export default function Node({ node }) {
       <text
   x={
     isAspect || isRoot
-      ? node.x                              // sentrert
-      : node.x - BOX_WIDTH / 2 + STRIPE_WIDTH + TEXT_PADDING // venstre
+      ? node.x
+      : node.x - BOX_WIDTH / 2 + STRIPE_WIDTH + TEXT_PADDING
   }
   y={node.y}
   textAnchor={isAspect || isRoot ? "middle" : "start"}
   dominantBaseline="middle"
-  fontSize={FONT_SIZE}
+  fontSize={isAspect ? 13 : FONT_SIZE}   
   fontFamily="Roboto, Segoe UI, Arial, sans-serif"
   fill={isRoot ? "#ffffff" : "#333"}
+  fontWeight={isAspect ? "700" : "400"}  
 >
-  {/* orskjellig rendering */}
   {isAspect || isRoot ? (
-    node.label   // vanlig tekst (ingen split)
+    node.label
   ) : (
     <>
       <tspan fontWeight="600">
