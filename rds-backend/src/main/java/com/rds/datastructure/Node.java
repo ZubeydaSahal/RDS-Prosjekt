@@ -12,7 +12,7 @@ public class Node {
     private final String code;  // c
     private String aspect;
     private int level;    // node's hierarchical depth
-    private String metadata;    // Extra data in JSON (name, ..)
+    private String metadata = null;    // Extra data in JSON (name, ..)
     // TODO: metadata is a placeholder for extra data (name, documentation etc.)
 
     @JsonIgnore

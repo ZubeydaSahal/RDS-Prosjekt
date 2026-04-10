@@ -5,7 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rds.datastructure.GraphManager;
 import com.rds.graph_view.ViewBuilder;
 import com.rds.parser.RdsParser;
+import com.rds.datastructure.Relation;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import com.rds.graph_view.DTO.*;
+import com.rds.datastructure.GraphTest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,12 +42,6 @@ public class RdsController {
 
         // Debugging
         //Debugging
-        System.out.println("+X+X+X Debugging X+X+X+");
-        System.out.println("Aspects: "+graphViewDTO.getNodeDTO());
-        System.out.println("Relations: "+graphViewDTO.getRelationDTO());
-        //System.out.println("GetRelations: "+graphViewDTO.getRelations());
-
-        ObjectMapper mapper = new ObjectMapper();
         try {
             String json = mapper.writerWithDefaultPrettyPrinter()
                     .writeValueAsString(graphViewDTO);
