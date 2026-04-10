@@ -5,10 +5,13 @@ import { transformGraph } from "./transformGraph";
 import Node from "./Node";
 import Edge from "./Edge";
 
+export default function GraphView({ graph, graphRef }) {
 
+  const [order, setOrder] = useState(["%", "=", "-", "%%"]);
 
-
-export default function GraphView({ graph, aspectOrder, graphRef }) {
+  function moveAspect(id, direction) {
+    const index = order.indexOf(id);
+    if (index === -1) return;
 
   // Beregner layout kun når graph eller rekkefølge endres
   // Beregner layout kun når graph eller rekkefølge endres
@@ -76,32 +79,26 @@ const layout = useMemo(() => {
   const width = maxX - minX + padding * 2;
   const height = maxY - minY + padding * 2;
 
-
-  // ----------------------------
-  // FINN ROOT NODE (for topp-linje)
-  // ----------------------------
+  // 🔥 NYTT: hent root + aspekter
   const rootNode = nodes.find(n => n.type === "root");
+  const aspectNodes = nodes.filter(n => n.type === "aspect");
 
-  // Y-posisjon for "bus line"
-  const busY = rootNode ? rootNode.y + 40 : 80;
-
-
-  // ----------------------------
-  // MAPPE EDGE-TYPER
-  // ----------------------------
-  function mapEdgeType(type) {
-    if (type === "hierarchy") return "hierarchy";
-    if (type === "root") return "root";
-    return "cross";
-  }
-
+  // 🔥 NYTT: bus posisjon
+  const busY = rootNode ? rootNode.y + 50 : 100;
 
   return (
-    <div
-      id="graph-wrapper"
-      ref={graphRef} // ref koblet til grafen
-      className="graph-container"
-    >
+    <div ref={graphRef} className="graph-container">
+
+      {/* KNAPPER */}
+      <div style={{ marginBottom: 10 }}>
+        {order.map(a => (
+          <span key={a} style={{ marginRight: 10 }}>
+            {a}
+            <button onClick={() => moveAspect(a, "left")}>←</button>
+            <button onClick={() => moveAspect(a, "right")}>→</button>
+          </span>
+        ))}
+      </div>
 
       {/* Knapp for å bytte visning */}
       <button onClick={() => setFitView(!fitView)}>
@@ -121,10 +118,65 @@ const layout = useMemo(() => {
         preserveAspectRatio="xMidYMid meet"
       >
 
-        {/* ----------------------------
-            ROOT BUS LINE (toppnode → aspekter)
-        ---------------------------- */}
-        {rootEdges.length > 0 && (() => {
+        {/* ============================
+            🔥 BUS LINE (NYTT)
+        ============================ */}
+        {aspectNodes.length > 0 && (() => {
+
+          const xValues = aspectNodes.map(n => n.x);
+          const minX = Math.min(...xValues);
+          const maxX = Math.max(...xValues);
+
+          return (
+            <>
+              {/* ROOT → BUS */}
+              {rootNode && (
+                <line
+                  x1={rootNode.x}
+                  y1={rootNode.y + 30}
+                  x2={rootNode.x}
+                  y2={busY}
+                  stroke="#999"
+                  strokeWidth={2}
+                />
+              )}
+
+              {/* HORISONTAL BUS */}
+              <line
+                x1={minX}
+                y1={busY}
+                x2={maxX}
+                y2={busY}
+                stroke="#999"
+                strokeWidth={2}
+              />
+
+              {/* BUS → ASPEKTER */}
+              {aspectNodes.map(node => (
+                <line
+                  key={`bus-${node.id}`}
+                  x1={node.x}
+                  y1={busY}
+                  x2={node.x}
+                  y2={node.y - 20}
+                  stroke="#999"
+                  strokeWidth={2}
+                />
+              ))}
+            </>
+          );
+        })()}
+
+        {/* ROOT EDGES */}
+        {rootEdges.map(edge => (
+          <Edge
+            key={`root-${edge.to}`}
+            from={nodeMap[edge.from]}
+            to={nodeMap[edge.to]}
+            type="root"
+            allNodes={nodes}
+          />
+        ))}
 
           // Henter x-posisjonene til alle aspekt-noder
           const xValues = rootEdges

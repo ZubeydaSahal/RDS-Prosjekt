@@ -1,32 +1,17 @@
-export default function Edge({ from, to, type }) {
+export default function Edge({ from, to, type, busY, index = 0 }) {
 
   if (!from || !to) return null;
 
+  const NODE_OFFSET = 20;
+
   const x1 = from.x;
-  const y1 = from.y + 20;
+  const y1 = from.y + NODE_OFFSET;
 
   const x2 = to.x;
-  const y2 = to.y - 20;
+  const y2 = to.y - NODE_OFFSET;
 
   // ----------------------------
-  // ROOT EDGES (rette, nesten flate)
-  // ----------------------------
-  if (type === "root") {
-
-    return (
-      <line
-        x1={x1}
-        y1={y1}
-        x2={x2}
-        y2={y2}
-        stroke="#999"
-        strokeWidth={2}
-      />
-    );
-  }
-
-  // ----------------------------
-  // HIERARCHY (L-shape / tree)
+  // HIERARCHY
   // ----------------------------
   if (type === "hierarchy") {
 
@@ -50,24 +35,62 @@ export default function Edge({ from, to, type }) {
   }
 
   // ----------------------------
-  // CROSS RELATIONS (curvy)
+  // 🔥 SMART CROSS AUTO-ROUTING
   // ----------------------------
   const dx = Math.abs(x2 - x1);
   const curve = 0.6;
 
-  const path = `
-    M ${x1} ${y1}
-    C ${x1 + dx * curve} ${y1},
-      ${x2 - dx * curve} ${y2},
-      ${x2} ${y2}
-  `;
+    if (!busY) return null;
 
-  return (
-    <path
-      d={path}
-      fill="none"
-      stroke="#1e3a8a"  // mulig å endre fargen på kryssrelasjonen 
-      strokeWidth={2}
-    />
-  );
+    // retning (kan brukes senere hvis du vil utvide)
+    const direction = x2 > x1 ? 1 : -1;
+
+    const distance = Math.abs(x2 - x1);
+
+    //  dynamisk offset (nære linjer får mer plass)
+    const baseOffset = Math.max(10, 60 - distance * 0.1);
+
+    const laneSpacing = 10;
+
+    // maks 6 lanes før reset
+    const lane = index % 6;
+
+    const yLane = busY - baseOffset - lane * laneSpacing;
+
+    return (
+      <>
+        {/* opp */}
+        <line
+          x1={x1}
+          y1={y1}
+          x2={x1}
+          y2={yLane}
+          stroke="#1e3a8a"
+          strokeWidth={2}
+        />
+
+        {/* bort */}
+        <line
+          x1={x1}
+          y1={yLane}
+          x2={x2}
+          y2={yLane}
+          stroke="#1e3a8a"
+          strokeWidth={2}
+        />
+
+        {/* ned */}
+        <line
+          x1={x2}
+          y1={yLane}
+          x2={x2}
+          y2={y2}
+          stroke="#1e3a8a"
+          strokeWidth={2}
+        />
+      </>
+    );
+  }
+
+  return null;
 }
