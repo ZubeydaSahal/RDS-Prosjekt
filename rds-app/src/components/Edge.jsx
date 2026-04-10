@@ -1,70 +1,17 @@
-export default function Edge({ from, to, type, allNodes }) {
+export default function Edge({ from, to, type, busY, index = 0 }) {
 
   if (!from || !to) return null;
 
+  const NODE_OFFSET = 20;
+
   const x1 = from.x;
-  const y1 = from.y + 20;
+  const y1 = from.y + NODE_OFFSET;
 
   const x2 = to.x;
-  const y2 = to.y - 20;
+  const y2 = to.y - NODE_OFFSET;
 
   // ----------------------------
-  // ROOT → BUS SYSTEM
-  // ----------------------------
-  if (type === "root") {
-
-    const root = from;
-
-    const aspectNodes = allNodes?.filter(n => n.type === "aspect") || [];
-
-    if (!aspectNodes.length) return null;
-
-    const busY = root.y + 50;
-
-    const xs = aspectNodes.map(n => n.x);
-    const minX = Math.min(...xs);
-    const maxX = Math.max(...xs);
-
-    return (
-      <>
-        {/* root → bus */}
-        <line
-          x1={root.x}
-          y1={root.y + 30}
-          x2={root.x}
-          y2={busY}
-          stroke="#999"
-          strokeWidth={2}
-        />
-
-        {/* horisontal bus */}
-        <line
-          x1={minX}
-          y1={busY}
-          x2={maxX}
-          y2={busY}
-          stroke="#999"
-          strokeWidth={2}
-        />
-
-        {/* ned til hvert aspekt */}
-        {aspectNodes.map(node => (
-          <line
-            key={node.id}
-            x1={node.x}
-            y1={busY}
-            x2={node.x}
-            y2={node.y - 20}
-            stroke="#999"
-            strokeWidth={2}
-          />
-        ))}
-      </>
-    );
-  }
-
-  // ----------------------------
-  // HIERARCHY (TREE)
+  // HIERARCHY
   // ----------------------------
   if (type === "hierarchy") {
 
@@ -86,25 +33,59 @@ export default function Edge({ from, to, type, allNodes }) {
   }
 
   // ----------------------------
-  // CROSS RELATIONS (CURVE)
+  // 🔥 SMART CROSS AUTO-ROUTING
   // ----------------------------
   if (type === "cross") {
 
-    const dx = Math.abs(x2 - x1);
-    const curve = 0.6;
+    if (!busY) return null;
+
+    // retning (kan brukes senere hvis du vil utvide)
+    const direction = x2 > x1 ? 1 : -1;
+
+    const distance = Math.abs(x2 - x1);
+
+    // 🔥 dynamisk offset (nære linjer får mer plass)
+    const baseOffset = Math.max(10, 60 - distance * 0.1);
+
+    const laneSpacing = 10;
+
+    // maks 6 lanes før reset
+    const lane = index % 6;
+
+    const yLane = busY - baseOffset - lane * laneSpacing;
 
     return (
-      <path
-        d={`
-          M ${x1} ${y1}
-          C ${x1 + dx * curve} ${y1},
-            ${x2 - dx * curve} ${y2},
-            ${x2} ${y2}
-        `}
-        fill="none"
-        stroke="#1e3a8a"
-        strokeWidth={2}
-      />
+      <>
+        {/* opp */}
+        <line
+          x1={x1}
+          y1={y1}
+          x2={x1}
+          y2={yLane}
+          stroke="#1e3a8a"
+          strokeWidth={2}
+        />
+
+        {/* bort */}
+        <line
+          x1={x1}
+          y1={yLane}
+          x2={x2}
+          y2={yLane}
+          stroke="#1e3a8a"
+          strokeWidth={2}
+        />
+
+        {/* ned */}
+        <line
+          x1={x2}
+          y1={yLane}
+          x2={x2}
+          y2={y2}
+          stroke="#1e3a8a"
+          strokeWidth={2}
+        />
+      </>
     );
   }
 

@@ -7,12 +7,9 @@ import Edge from "./Edge";
 
 export default function GraphView({ graph, graphRef }) {
 
-  // STATE FOR REKKEFØLGE
   const [order, setOrder] = useState(["%", "=", "-", "%%"]);
 
-
   function moveAspect(id, direction) {
-
     const index = order.indexOf(id);
     if (index === -1) return;
 
@@ -73,10 +70,17 @@ export default function GraphView({ graph, graphRef }) {
   const width = maxX - minX + padding * 2;
   const height = maxY - minY + padding * 2;
 
+  // 🔥 NYTT: hent root + aspekter
+  const rootNode = nodes.find(n => n.type === "root");
+  const aspectNodes = nodes.filter(n => n.type === "aspect");
+
+  // 🔥 NYTT: bus posisjon
+  const busY = rootNode ? rootNode.y + 50 : 100;
+
   return (
     <div ref={graphRef} className="graph-container">
 
-      {/* 🔥 KNAPPER */}
+      {/* KNAPPER */}
       <div style={{ marginBottom: 10 }}>
         {order.map(a => (
           <span key={a} style={{ marginRight: 10 }}>
@@ -101,7 +105,56 @@ export default function GraphView({ graph, graphRef }) {
         }
       >
 
-        {/* ROOT */}
+        {/* ============================
+            🔥 BUS LINE (NYTT)
+        ============================ */}
+        {aspectNodes.length > 0 && (() => {
+
+          const xValues = aspectNodes.map(n => n.x);
+          const minX = Math.min(...xValues);
+          const maxX = Math.max(...xValues);
+
+          return (
+            <>
+              {/* ROOT → BUS */}
+              {rootNode && (
+                <line
+                  x1={rootNode.x}
+                  y1={rootNode.y + 30}
+                  x2={rootNode.x}
+                  y2={busY}
+                  stroke="#999"
+                  strokeWidth={2}
+                />
+              )}
+
+              {/* HORISONTAL BUS */}
+              <line
+                x1={minX}
+                y1={busY}
+                x2={maxX}
+                y2={busY}
+                stroke="#999"
+                strokeWidth={2}
+              />
+
+              {/* BUS → ASPEKTER */}
+              {aspectNodes.map(node => (
+                <line
+                  key={`bus-${node.id}`}
+                  x1={node.x}
+                  y1={busY}
+                  x2={node.x}
+                  y2={node.y - 20}
+                  stroke="#999"
+                  strokeWidth={2}
+                />
+              ))}
+            </>
+          );
+        })()}
+
+        {/* ROOT EDGES */}
         {rootEdges.map(edge => (
           <Edge
             key={`root-${edge.to}`}
