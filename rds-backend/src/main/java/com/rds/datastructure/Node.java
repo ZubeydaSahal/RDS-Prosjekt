@@ -5,27 +5,16 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
-// TODO:
-//  - sikre at alle parametere ikke må fylles
-//   .
-//   **
-//  - Noder skal kunne deklareres iumplisitt: AA.BB, hvis AA ikke eksisterer, skap AA, BB or relasjonen(A,B)
-//   **
-//   .
-//  - Assumes each node will be declared with full path e.g: AA.BB.CC, so CC can not be declared BB.CC, if AA is BB's
-//  parent
-//
-
-public class
-Node {
+public class Node {
 
     // Assumes that id, code and level will never change
     private final String id;    // a.b.c (unique)
     private final String code;  // c
     private String aspect;
     private int level;    // node's hierarchical depth
-    private String metadata;    // Extra data in JSON (name, ..)
+    private String metadata = null;    // Extra data in JSON (name, ..)
     // TODO: metadata is a placeholder for extra data (name, documentation etc.)
+
     @JsonIgnore
     private Set<Relation> hierarchyRelations = new HashSet<>();   // Nodes relations
     // ^^ Changed to Set, instead of List because: don't need index, no duplicates allowed
@@ -64,7 +53,6 @@ Node {
     }
 
     // Getters
-
     public String getId() {
         return id;
     }

@@ -1,8 +1,5 @@
 package com.rds.datastructure;
 
-import java.util.ArrayList;
-import java.util.List;
-
 // TODO: sikre at type kan være null
 
 public class Relation {
@@ -18,7 +15,6 @@ public class Relation {
         this.nodeA = nodeA;
         this.nodeB = nodeB;
         this.type = type;
-        if(type==null) {System.out.println("<Relation> Constructor: " + type);}  // Sean debugger manglende relasjoner
     }
 
     // Getters
@@ -33,7 +29,6 @@ public class Relation {
     }
 
     public String getType() {
-        System.out.println("<Relation> kaller GetType");  // Sean debugger manglende relasjoner
         return type;
     }
 
