@@ -137,7 +137,7 @@ export function layoutTree(graph) {
       nodes.push({
         ...node,
         label,
-        x: COLUMN_X[aspect.id],
+        x: COLUMN_X[aspect.id] + depth * 20,
         y: currentY
       });
 

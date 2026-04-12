@@ -22,7 +22,7 @@ export default function GraphView({ graph, graphRef, aspectOrder }) {
 
     return layoutTree({
       ...transformed,
-      aspectOrder: aspectOrder   // bruker fra App
+      aspectOrder: aspectOrder
     });
 
   }, [graph, aspectOrder]);
@@ -37,12 +37,9 @@ export default function GraphView({ graph, graphRef, aspectOrder }) {
   const rootNode = nodes.find(n => n.type === "root");
   const aspectNodes = nodes.filter(n => n.type === "aspect");
 
-  // ----------------------------
-  // BUS POSISJON
-  // ----------------------------
   const busY = aspectNodes.length > 0
-    ? Math.min(...aspectNodes.map(n => n.y)) - 30
-    : 100;
+    ? Math.max(...aspectNodes.map(n => n.y)) + 30
+    : 160;
 
   const minX = Math.min(...nodes.map(n => n.x || 0), 0);
   const maxX = Math.max(...nodes.map(n => n.x || 0), 1400);
@@ -72,7 +69,6 @@ export default function GraphView({ graph, graphRef, aspectOrder }) {
 
         {/* BUS */}
         {aspectNodes.length > 0 && (() => {
-
           const xs = aspectNodes.map(n => n.x);
           const minBusX = Math.min(...xs);
           const maxBusX = Math.max(...xs);
@@ -84,26 +80,17 @@ export default function GraphView({ graph, graphRef, aspectOrder }) {
                   x1={rootNode.x}
                   y1={rootNode.y + 20}
                   x2={rootNode.x}
-                  y2={busY}
+                  y2={busY - 60}
                   stroke="#999"
                   strokeWidth={2}
                 />
               )}
-
-              <line
-                x1={minBusX}
-                y1={busY}
-                x2={maxBusX}
-                y2={busY}
-                stroke="#999"
-                strokeWidth={2}
-              />
-
+              <line x1={minBusX} y1={busY - 60} x2={maxBusX} y2={busY - 60} stroke="#999" strokeWidth={2} />
               {aspectNodes.map(node => (
                 <line
                   key={node.id}
                   x1={node.x}
-                  y1={busY}
+                  y1={busY - 60}
                   x2={node.x}
                   y2={node.y - 20}
                   stroke="#999"
@@ -116,11 +103,8 @@ export default function GraphView({ graph, graphRef, aspectOrder }) {
 
         {/* EDGES */}
         {relations.map((edge, index) => {
-
           const from = nodeMap[edge.from];
           const to = nodeMap[edge.to];
-            console.log("Edge:", edge.from, "→", edge.to, "from:", from, "to:", to);
-
 
           if (!from || !to) return null;
 
@@ -132,7 +116,6 @@ export default function GraphView({ graph, graphRef, aspectOrder }) {
               type={edge.type}
               busY={busY}
               allNodes={nodes}
-
             />
           );
         })}

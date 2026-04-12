@@ -1,3 +1,10 @@
+const ASPECT_COLORS = {
+  "=": "#f97316",
+  "%": "#3b82f6",
+  "-": "#22c55e",
+  "%%": "#a855f7",
+};
+
 export default function Edge({ from, to, type, allNodes }) {
 
   if (!from || !to) return null;
@@ -25,74 +32,44 @@ export default function Edge({ from, to, type, allNodes }) {
   // ROOT → BUS SYSTEM
   // ----------------------------
   if (type === "root") {
-
     const root = from;
-
     return (
       <>
-        {/* root → bus */}
-        <line
-          x1={root.x}
-          y1={root.y + OFFSET}
-          x2={root.x}
-          y2={busY}
-          stroke="#999"
-          strokeWidth={2}
-        />
-
-        {/* horisontal bus */}
-        <line
-          x1={minX}
-          y1={busY}
-          x2={maxX}
-          y2={busY}
-          stroke="#999"
-          strokeWidth={2}
-        />
-
-        {/* bus → aspekter */}
+        <line x1={root.x} y1={root.y + OFFSET} x2={root.x} y2={busY} stroke="#999" strokeWidth={2} />
+        <line x1={minX} y1={busY} x2={maxX} y2={busY} stroke="#999" strokeWidth={2} />
         {aspectNodes.map(node => (
-          <line
-            key={node.id}
-            x1={node.x}
-            y1={busY}
-            x2={node.x}
-            y2={node.y - OFFSET}
-            stroke="#999"
-            strokeWidth={2}
-          />
+          <line key={node.id} x1={node.x} y1={busY} x2={node.x} y2={node.y - OFFSET} stroke="#999" strokeWidth={2} />
         ))}
       </>
     );
   }
 
   // ----------------------------
-  // HIERARCHY — fra bunn til topp med midtpunkt
+  // HIERARCHY
   // ----------------------------
- if (type === "hierarchy") {
-  const hy1 = from.y + 20;
-  const hy2 = to.y - 20;
-  const midY = (hy1 + hy2) / 2;
+  if (type === "hierarchy") {
+    const aspect = from.aspect;
+    const color = ASPECT_COLORS[aspect] || "#999";
+    const lineX = from.x - NODE_WIDTH / 2 - 10;
+    const hy1 = from.y;
+    const hy2 = to.y;
 
-  return (
-    <path
-      d={`M ${from.x} ${hy1} L ${from.x} ${midY} L ${to.x} ${midY} L ${to.x} ${hy2}`}
-      fill="none"
-      stroke="#999"
-      strokeWidth={1.5}
-    />
-  );
-}
+    return (
+      <>
+        <line x1={lineX} y1={hy1} x2={lineX} y2={hy2} stroke={color} strokeWidth={2} />
+        <line x1={lineX} y1={hy2} x2={to.x - NODE_WIDTH / 2} y2={hy2} stroke={color} strokeWidth={2} />
+      </>
+    );
+  }
+
   // ----------------------------
-  // CROSS — fra høyre midten til venstre midten
-  // ENDRING: separate koordinater for cross
+  // CROSS — diagonal linje
   // ----------------------------
   if (type !== "hierarchy" && type !== "root") {
-
-    const cx1 = from.x + NODE_WIDTH / 2;  // høyre side av from-node
-    const cy1 = from.y;                    // midten av from-node
-    const cx2 = to.x - NODE_WIDTH / 2;    // venstre side av to-node
-    const cy2 = to.y;                      // midten av to-node
+    const cx1 = from.x + NODE_WIDTH / 2;
+    const cy1 = from.y;
+    const cx2 = to.x - NODE_WIDTH / 2;
+    const cy2 = to.y;
 
     return (
       <line
