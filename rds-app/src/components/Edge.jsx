@@ -66,22 +66,23 @@ export default function Edge({ from, to, type, allNodes }) {
   // CROSS — diagonal linje
   // ----------------------------
   if (type !== "hierarchy" && type !== "root") {
-    const cx1 = from.x + NODE_WIDTH / 2;
-    const cy1 = from.y;
-    const cx2 = to.x - NODE_WIDTH / 2;
-    const cy2 = to.y;
+  const cx1 = from.x + NODE_WIDTH / 2;
+  const cy1 = from.y;
+  const cx2 = to.x - NODE_WIDTH / 2;
+  const cy2 = to.y;
 
-    return (
-      <line
-        x1={cx1}
-        y1={cy1}
-        x2={cx2}
-        y2={cy2}
-        stroke="orange"
-        strokeWidth={1.5}
-      />
-    );
-  }
+  // Kontrollpunkter for kurven
+  const cpx1 = cx1 + (cx2 - cx1) * 0.5;
+  const cpx2 = cx2 - (cx2 - cx1) * 0.5;
 
+  return (
+    <path
+      d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
+      fill="none"
+      stroke="orange"
+      strokeWidth={1.5}
+    />
+  );
+}
   return null;
 }

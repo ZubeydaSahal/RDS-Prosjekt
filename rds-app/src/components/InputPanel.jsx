@@ -20,16 +20,19 @@ export default function InputPanel({ setGraph, graphRef, activeAspect, activeRel
     }
 
     try {
-      const params = new URLSearchParams();
+      const paramParts = [];
       const allAspects = ["=", "%", "-", "%%"];
-        allAspects.forEach(a => {
-            params.append(`aspect_${a}`, activeAspect.includes(a) ? "true" : "false");
-        });
-      activeRelation.forEach(r => params.append(`rel_${r}`, "true"));
-
-      // ENDRE URL:
-      const response = await fetch(`http://localhost:8080/parse?${params}`, {
-        method: "POST",
+      allAspects.forEach(a => {
+          paramParts.push(`aspect_${a}=${activeAspect.includes(a) ? "true" : "false"}`);
+      });
+      const allRelations = ["cross"];
+      allRelations.forEach(r => {
+          paramParts.push(`rel_${r}=${activeRelation.includes(r) ? "true" : "false"}`);
+      });
+      const paramString = paramParts.join("&");
+      console.log("URL params:", paramString);
+      const response = await fetch(`http://localhost:8080/parse?${paramString}`, {
+              method: "POST",
         headers: {
           "content-type": "text/plain",
           "Accept": "application/json"  // Sean Tester
