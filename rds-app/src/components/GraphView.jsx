@@ -119,6 +119,8 @@ export default function GraphView({ graph, graphRef, aspectOrder }) {
 
           const from = nodeMap[edge.from];
           const to = nodeMap[edge.to];
+            console.log("Edge:", edge.from, "→", edge.to, "from:", from, "to:", to);
+
 
           if (!from || !to) return null;
 
@@ -129,6 +131,8 @@ export default function GraphView({ graph, graphRef, aspectOrder }) {
               to={to}
               type={edge.type}
               busY={busY}
+              allNodes={nodes}
+
             />
           );
         })}

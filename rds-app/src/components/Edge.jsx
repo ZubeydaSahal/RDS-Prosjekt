@@ -3,13 +3,8 @@ export default function Edge({ from, to, type, allNodes }) {
   if (!from || !to) return null;
 
   const NODE_HEIGHT = 40;
+  const NODE_WIDTH = 160;
   const OFFSET = NODE_HEIGHT / 2;
-
-  const x1 = from.x;
-  const y1 = from.y + OFFSET;
-
-  const x2 = to.x;
-  const y2 = to.y - OFFSET;
 
   // ----------------------------
   // FINN ASPEKTER + BUS
@@ -72,64 +67,42 @@ export default function Edge({ from, to, type, allNodes }) {
   }
 
   // ----------------------------
-  // HIERARCHY
+  // HIERARCHY — fra bunn til topp med midtpunkt
   // ----------------------------
-  if (type === "hierarchy") {
+ if (type === "hierarchy") {
+  const hy1 = from.y + 20;
+  const hy2 = to.y - 20;
+  const midY = (hy1 + hy2) / 2;
 
-    const verticalY = y1 + 10;
-  
+  return (
+    <path
+      d={`M ${from.x} ${hy1} L ${from.x} ${midY} L ${to.x} ${midY} L ${to.x} ${hy2}`}
+      fill="none"
+      stroke="#999"
+      strokeWidth={1.5}
+    />
+  );
+}
+  // ----------------------------
+  // CROSS — fra høyre midten til venstre midten
+  // ENDRING: separate koordinater for cross
+  // ----------------------------
+  if (type !== "hierarchy" && type !== "root") {
+
+    const cx1 = from.x + NODE_WIDTH / 2;  // høyre side av from-node
+    const cy1 = from.y;                    // midten av from-node
+    const cx2 = to.x - NODE_WIDTH / 2;    // venstre side av to-node
+    const cy2 = to.y;                      // midten av to-node
+
     return (
-      <path
-        d={`
-          M ${x1} ${y1}
-          L ${x1} ${verticalY}
-          L ${x2} ${verticalY}
-          L ${x2} ${y2}
-        `}
-        fill="none"
-        stroke="#999"
-        strokeWidth={1.2}
+      <line
+        x1={cx1}
+        y1={cy1}
+        x2={cx2}
+        y2={cy2}
+        stroke="orange"
+        strokeWidth={1.5}
       />
-    );
-  }
-
-  // ----------------------------
-  // CROSS (GRÅ + VIA BUS)
-  // ----------------------------
-  if (type === "cross") {
-
-    return (
-      <>
-        {/* opp */}
-        <line
-          x1={x1}
-          y1={y1}
-          x2={x1}
-          y2={busY}
-          stroke="#999"
-          strokeWidth={2}
-        />
-
-        {/* bort (samme bus) */}
-        <line
-          x1={x1}
-          y1={busY}
-          x2={x2}
-          y2={busY}
-          stroke="#999"
-          strokeWidth={2}
-        />
-
-        {/* ned */}
-        <line
-          x1={x2}
-          y1={busY}
-          x2={x2}
-          y2={y2}
-          stroke="#999"
-          strokeWidth={2}
-        />
-      </>
     );
   }
 
