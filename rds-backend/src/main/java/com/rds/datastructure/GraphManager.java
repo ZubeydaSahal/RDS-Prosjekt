@@ -164,7 +164,7 @@ public class GraphManager {
         }
     }
 
-
+    
     public Set<Relation> getFilteredCrossRelations(Map<String, Boolean> filters) {
     if (filters == null) return crossRelations;
 

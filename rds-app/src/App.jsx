@@ -5,7 +5,7 @@ import Navbar from "./components/Navbar";
 import FilterDropdown from "./components/FilterDropdown";          
 import { mockGraph } from "./components/MockGraph";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 function App() {
 
@@ -22,6 +22,7 @@ function App() {
   const [rdsText, setRdsText] = useState("");
 
   const graphRef = useRef(null);
+  const inputPanelRef = useRef(null);
 
   // ----------------------------
   // FLYTT ASPEKTER
@@ -52,6 +53,13 @@ function App() {
   const [backendGraph, setBackendGraph] = useState(null);
   const graph = backendGraph || mockGraph;
 
+  // Re-hent grafen automatisk når filter endres (kun hvis en graf allerede er lastet)
+  useEffect(() => {
+    if (backendGraph && inputPanelRef.current) {
+      inputPanelRef.current.buildGraph();
+    }
+  }, [activeAspect, activeRelation]);
+
   return (
     <div>
 
@@ -63,6 +71,7 @@ function App() {
         <div className="input-section">
 
           <InputPanel
+            ref={inputPanelRef}
             setGraph={setBackendGraph}
             graphRef={graphRef}
             activeAspect={activeAspect}

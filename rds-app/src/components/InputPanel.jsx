@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, forwardRef, useImperativeHandle } from "react";
 import { toPng } from "html-to-image";
 
-export default function InputPanel({ setGraph, graphRef, activeAspect, activeRelation }) {
+const InputPanel = forwardRef(function InputPanel({ setGraph, graphRef, activeAspect, activeRelation }, ref) {
 
   const [text, setText] = useState("");
   const [error, setError] = useState("");
@@ -71,6 +71,10 @@ export default function InputPanel({ setGraph, graphRef, activeAspect, activeRel
     }
   };
 
+  // Eksponerer buildGraph til App.jsx via ref (for auto-oppdatering ved filterendring)
+  useImperativeHandle(ref, () => ({
+    buildGraph: () => handleBuild()
+  }));
 
   // ----------------------------
   // DOWNLOAD IMAGE
@@ -181,4 +185,6 @@ export default function InputPanel({ setGraph, graphRef, activeAspect, activeRel
 
     </div>
   );
-}
+});
+
+export default InputPanel;
