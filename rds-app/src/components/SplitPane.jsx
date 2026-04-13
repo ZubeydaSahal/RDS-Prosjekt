@@ -35,18 +35,41 @@ function SplitPane({
             </div>
 
             {/*// Slider*/}
+
             <div
-                style={{width: "2px", cursor: "col-resize", background: "gray"}}
+                className={"slider"}
                 onMouseDown={() => {
                     window.addEventListener("mousemove", handleDrag);
                     window.addEventListener("mouseup", () => {
                         window.removeEventListener("mousemove", handleDrag);
                     }, {once: true});
                 }}
-            />
+            >
 
-            {/*Right side*/}
-            <div style={{flex: 1}}>
+
+                <div className="slider-icon">
+                    <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <circle cx="9" cy="12" r="1"/>
+                        <circle cx="9" cy="5" r="1"/>
+                        <circle cx="9" cy="19" r="1"/>
+                        <circle cx="15" cy="12" r="1"/>
+                        <circle cx="15" cy="5" r="1"/>
+                        <circle cx="15" cy="19" r="1"/>
+                    </svg>
+                </div>
+            </div>
+
+                {/*Right side*/}
+            <div style={{flex: 1, minWidth: 0, minHeight: 0}}>
                 <GraphView
                     graph={graph}
                     graphRef={graphRef}

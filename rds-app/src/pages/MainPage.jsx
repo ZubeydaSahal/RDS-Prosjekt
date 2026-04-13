@@ -206,7 +206,7 @@ function MainPage() {
     };
 
     return (
-        <div>
+        <div className={"MainPage"}>
             <Navbar/>
             <Menu
                 activeAspect={activeAspect}

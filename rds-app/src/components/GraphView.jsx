@@ -5,6 +5,7 @@ import { transformGraph } from "./transformGraph";
 import Node from "./Node";
 import Edge from "./Edge";
 
+
 export default function GraphView({ graph, graphRef, aspectOrder }) {
 
   const [fitView, setFitView] = useState(true);
@@ -46,20 +47,20 @@ export default function GraphView({ graph, graphRef, aspectOrder }) {
   const minY = Math.min(...nodes.map(n => n.y || 0), 0);
   const maxY = Math.max(...nodes.map(n => n.y || 0), 800);
 
-  const padding = 100;
+  const padding = 50;
   const width = maxX - minX + padding * 2;
   const height = maxY - minY + padding * 2;
 
   return (
     <div ref={graphRef} className="graph-container">
 
-      <button onClick={() => setFitView(!fitView)}>
+      <button className={"scroll-mode"} onClick={() => setFitView(!fitView)}>
         {fitView ? "Scroll mode" : "Fit to screen"}
       </button>
 
       <svg
         width={fitView ? "100%" : width}
-        height={fitView ? 600 : height}
+        height={fitView ? "100%" : height}
         viewBox={
           fitView
             ? `${minX - padding} ${minY - padding} ${width} ${height}`

@@ -19,7 +19,6 @@ function Menu({
                 activeRelation={activeRelation}
                 setActiveRelation={setActiveRelation}
             />
-            <button onClick={onBuild}>Bygg tre</button>
 
             <button onClick={onDownloadImage}>
                 Last ned bilde
@@ -29,7 +28,11 @@ function Menu({
                 Last ned tekst
             </button>
 
-            <input type="file" onChange={onUploadFile}/>
+            <label className="file-button">
+                Last opp fil
+                <input type="file" onChange={onUploadFile}/>
+            </label>
+            <button className="primary" onClick={onBuild}>Bygg tre</button>
         </div>
     );
 }
