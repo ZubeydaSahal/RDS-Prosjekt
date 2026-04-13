@@ -2,8 +2,7 @@ import GraphView from "./components/GraphView";
 import InputPanel from "./components/InputPanel.jsx";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
-import FilterDropdown from "./components/FilterDropdown";          
-import { mockGraph } from "./components/MockGraph";
+import FilterDropdown from "./components/FilterDropdown";
 
 import { useState, useRef, useEffect } from "react";
 
@@ -51,7 +50,8 @@ function App() {
   // GRAFDATA
   // ----------------------------
   const [backendGraph, setBackendGraph] = useState(null);
-  const graph = backendGraph || mockGraph;
+  // ENDRING: fjernet mockGraph — viser bare backend-data
+  const graph = backendGraph;
 
   // Re-hent grafen automatisk når filter endres (kun hvis en graf allerede er lastet)
   useEffect(() => {
@@ -92,7 +92,6 @@ function App() {
         <div className="tree-section">
           <h2>Trestruktur</h2>
 
-          {/* ENESTE STED MED KNAPPER */}
           <div className="aspect-controls">
             {aspectOrder.map((aspect, index) => (
               <div key={aspect} className="aspect-item">
@@ -106,11 +105,12 @@ function App() {
           {graph ? (
             <GraphView
               graph={graph}
-              aspectOrder={aspectOrder}  
+              aspectOrder={aspectOrder}
               graphRef={graphRef}
             />
           ) : (
-            <p>Ingen graf lastet</p>
+            // ENDRING: tom hvit boks i stedet for "Ingen graf lastet"
+            <div className="graph-container" />
           )}
 
         </div>
