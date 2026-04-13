@@ -5,6 +5,9 @@ export function layoutTree(graph) {
     return { nodes: [], hierarchyEdges: [] };
   }
 
+  // ENDRING: hent collapsedNodes fra graph
+  const collapsedNodes = graph.collapsedNodes || new Set();
+
   const nodes = [];
 
   const backendEdges = (graph.relations || []).filter(
@@ -41,22 +44,12 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-  // 🆕 NAVN PÅ ASPEKTER
-  // ----------------------------
-  const ASPECT_NAMES = {
-    "%": "Typeaspekt",
-    "=": "Funksjonsaspekt",
-    "-": "Produktaspekt",
-    "%%": "Typeaspekt (produkt)"
-  };
-
-  // ----------------------------
   // ASPEKT HEADERS
   // ----------------------------
   aspects.forEach((aspect) => {
     nodes.push({
       id: "aspect_" + aspect.id,
-      label: ASPECT_NAMES[aspect.id] || aspect.label, 
+      label: aspect.label,
       x: COLUMN_X[aspect.id],
       y: 120,
       type: "aspect"
@@ -72,19 +65,15 @@ export function layoutTree(graph) {
   });
 
   // ----------------------------
-  // RIKTIG PARENT LOGIKK
+  // PARENT LOGIKK
   // ----------------------------
   const generatedHierarchyEdges = [];
 
   graph.nodes.forEach(n => {
-
     const lastDotIndex = n.id.lastIndexOf(".");
-
-    if (lastDotIndex === -1) return; // ingen parent
+    if (lastDotIndex === -1) return;
 
     const parentId = n.id.substring(0, lastDotIndex);
-
-    // KUN hvis parent faktisk finnes
     if (!nodeMap[parentId]) return;
 
     nodeMap[parentId].children.push(nodeMap[n.id]);
@@ -103,22 +92,20 @@ export function layoutTree(graph) {
 
   aspects.forEach(a => {
     rootsByAspect[a.id] = graph.nodes.filter(n => {
-
       if (n.aspect !== a.id) return false;
-
-      const hasParent = generatedHierarchyEdges.some(e =>
-        e.to === n.id
-      );
-
+      const hasParent = generatedHierarchyEdges.some(e => e.to === n.id);
       return !hasParent;
     });
   });
 
   // ----------------------------
-  // LAYOUT
+  // LAYOUT MED COLLAPSE-STØTTE
   // ----------------------------
-  const ROW_GAP = 45;
+  const ROW_GAP = 70;
   const INDENT = 40;
+
+  // Samle alle synlige kanter
+  const visibleHierarchyEdges = [];
 
   aspects.forEach((aspect) => {
 
@@ -127,25 +114,38 @@ export function layoutTree(graph) {
     function dfs(node, depth) {
 
       const name = node.name || node.label || "";
-
       const label = node.id
         ? node.description
           ? `${node.id} ${name} (${node.description})`
           : `${node.id} ${name}`
         : "";
 
+      const isCollapsed = collapsedNodes.has(node.id);
+
       nodes.push({
         ...node,
         label,
-        x: COLUMN_X[aspect.id] + depth * 20,
-        y: currentY
+        x: COLUMN_X[aspect.id] + depth * INDENT,
+        y: currentY,
+        // ENDRING: send med children og collapsed-state til Node.jsx
+        children: node.children,
+        collapsed: isCollapsed
       });
 
       currentY += ROW_GAP;
 
-      node.children.forEach(child => {
-        dfs(child, depth + 1);
-      });
+      // ENDRING: ikke tegn barn hvis node er kollapset
+      if (!isCollapsed) {
+        node.children.forEach(child => {
+          // legg til kant kun hvis ikke kollapset
+          visibleHierarchyEdges.push({
+            from: node.id,
+            to: child.id,
+            type: "hierarchy"
+          });
+          dfs(child, depth + 1);
+        });
+      }
     }
 
     rootsByAspect[aspect.id].forEach(rootNode => {
@@ -160,7 +160,7 @@ export function layoutTree(graph) {
   return {
     nodes,
     hierarchyEdges: [
-      ...generatedHierarchyEdges,
+      ...visibleHierarchyEdges,
       ...backendEdges
     ]
   };

@@ -1,14 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 
 const ASPECTS = [
-  { symbol: "=", label: "Funksjon aspektet" },
-  { symbol: "%", label: "Type aspekt for funksjon aspekt" },
-  { symbol: "-", label: "produktapektet" },
-  { symbol: "%%", label: "Type aspekt for produktaspekt "},
+  { symbol: "=",  label: "Funksjon aspektet" },
+  { symbol: "%",  label: "Type aspekt for funksjon aspekt" },
+  { symbol: "-",  label: "Produktaspektet" },
+  { symbol: "%%", label: "Type aspekt for produktaspekt" },
 ];
 
 const RELATIONS = [
-  { type: "cross",     label: "Kryssrelasjon" },
+  { type: "cross", label: "Kryssrelasjon" },
 ];
 
 export default function FilterDropdown({
@@ -16,11 +16,6 @@ export default function FilterDropdown({
   activeRelation = [], setActiveRelation,
 }) {
   const [open, setOpen] = useState(false);
-
-  // Lokale kopier mens dropdown er åpen
-  const [pendingAspect,   setPendingAspect]   = useState(activeAspect);
-  const [pendingRelation, setPendingRelation] = useState(activeRelation);
-
   const ref = useRef(null);
 
   // Lukk når man klikker utenfor
@@ -28,36 +23,25 @@ export default function FilterDropdown({
     function handleClickOutside(e) {
       if (ref.current && !ref.current.contains(e.target)) {
         setOpen(false);
-        setPendingAspect(activeAspect);
-        setPendingRelation(activeRelation);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [activeAspect, activeRelation]);
+  }, []);
 
+  // ENDRING: oppdater state direkte når checkbox endres
   function toggleAspect(symbol) {
-    setPendingAspect(prev =>
-      prev.includes(symbol) ? prev.filter(a => a !== symbol) : [...prev, symbol]
-    );
+    const next = activeAspect.includes(symbol)
+      ? activeAspect.filter(a => a !== symbol)
+      : [...activeAspect, symbol];
+    setActiveAspect(next);
   }
 
   function toggleRelation(type) {
-    setPendingRelation(prev =>
-      prev.includes(type) ? prev.filter(r => r !== type) : [...prev, type]
-    );
-  }
-
-  function handleApply() {
-    setActiveAspect(pendingAspect);
-    setActiveRelation(pendingRelation);
-    setOpen(false);
-  }
-
-  function handleOpen() {
-    setPendingAspect(activeAspect);
-    setPendingRelation(activeRelation);
-    setOpen(o => !o);
+    const next = activeRelation.includes(type)
+      ? activeRelation.filter(r => r !== type)
+      : [...activeRelation, type];
+    setActiveRelation(next);
   }
 
   // Tell hvor mange filtre som er skrudd av
@@ -69,7 +53,7 @@ export default function FilterDropdown({
     <div className="fd-wrapper" ref={ref}>
 
       {/* Trigger */}
-      <button className="fd-trigger" onClick={handleOpen}>
+      <button className="fd-trigger" onClick={() => setOpen(o => !o)}>
         <span>Filter</span>
         {hasFilter && (
           <span className="fd-badge">{totalActive}/{totalAll}</span>
@@ -82,14 +66,14 @@ export default function FilterDropdown({
         <div className="fd-dropdown">
 
           {/* Aspekter */}
-          <p className="fd-section-title">Aspekter</p>
+          <p className="fd-section-title">ASPEKTER</p>
           <ul className="fd-list">
             {ASPECTS.map(({ symbol, label }) => (
               <li key={symbol}>
                 <label className="fd-item">
                   <input
                     type="checkbox"
-                    checked={pendingAspect.includes(symbol)}
+                    checked={activeAspect.includes(symbol)}
                     onChange={() => toggleAspect(symbol)}
                   />
                   <span className="fd-symbol">{symbol}</span>
@@ -102,14 +86,14 @@ export default function FilterDropdown({
           <div className="fd-divider" />
 
           {/* Relasjoner */}
-          <p className="fd-section-title">Relasjoner</p>
+          <p className="fd-section-title">RELASJONER</p>
           <ul className="fd-list">
             {RELATIONS.map(({ type, label }) => (
               <li key={type}>
                 <label className="fd-item">
                   <input
                     type="checkbox"
-                    checked={pendingRelation.includes(type)}
+                    checked={activeRelation.includes(type)}
                     onChange={() => toggleRelation(type)}
                   />
                   <span className="fd-label">{label}</span>
@@ -117,10 +101,6 @@ export default function FilterDropdown({
               </li>
             ))}
           </ul>
-
-          <button className="fd-apply" onClick={handleApply}>
-            Bruk filter
-          </button>
 
         </div>
       )}
