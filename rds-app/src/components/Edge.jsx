@@ -5,7 +5,7 @@ const ASPECT_COLORS = {
   "%%": "#a855f7",
 };
 
-export default function Edge({ from, to, type, allNodes }) {
+export default function Edge({ from, to, type, allNodes, index = 0, total = 1 }) {
 
   if (!from || !to) return null;
 
@@ -13,9 +13,6 @@ export default function Edge({ from, to, type, allNodes }) {
   const NODE_WIDTH = 160;
   const OFFSET = NODE_HEIGHT / 2;
 
-  // ----------------------------
-  // FINN ASPEKTER + BUS
-  // ----------------------------
   const aspectNodes =
     allNodes?.filter(n => n.type === "aspect") || [];
 
@@ -28,9 +25,6 @@ export default function Edge({ from, to, type, allNodes }) {
   const minX = Math.min(...xs);
   const maxX = Math.max(...xs);
 
-  // ----------------------------
-  // ROOT → BUS SYSTEM
-  // ----------------------------
   if (type === "root") {
     const root = from;
     return (
@@ -44,9 +38,6 @@ export default function Edge({ from, to, type, allNodes }) {
     );
   }
 
-  // ----------------------------
-  // HIERARCHY
-  // ----------------------------
   if (type === "hierarchy") {
     const aspect = from.aspect;
     const color = ASPECT_COLORS[aspect] || "#999";
@@ -62,27 +53,31 @@ export default function Edge({ from, to, type, allNodes }) {
     );
   }
 
-  // ----------------------------
-  // CROSS — diagonal linje
-  // ----------------------------
   if (type !== "hierarchy" && type !== "root") {
-  const cx1 = from.x + NODE_WIDTH / 2;
-  const cy1 = from.y;
-  const cx2 = to.x - NODE_WIDTH / 2;
-  const cy2 = to.y;
 
-  // Kontrollpunkter for kurven
-  const cpx1 = cx1 + (cx2 - cx1) * 0.5;
-  const cpx2 = cx2 - (cx2 - cx1) * 0.5;
+    const OFFSET_STEP = 6;
+    const offset = (index - (total - 1) / 2) * OFFSET_STEP;
 
-  return (
-    <path
-      d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
-      fill="none"
-      stroke="orange"
-      strokeWidth={1.5}
-    />
-  );
-}
+    const cx1 = from.x + NODE_WIDTH / 2;
+    const cy1 = from.y + offset;
+
+    const cx2 = to.x - NODE_WIDTH / 2;
+    const cy2 = to.y + offset;
+
+    const dx = cx2 - cx1;
+
+    const cpx1 = cx1 + dx * 0.5;
+    const cpx2 = cx2 - dx * 0.5;
+
+    return (
+      <path
+        d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
+        fill="none"
+        stroke="orange"
+        strokeWidth={1.5}
+      />
+    );
+  }
+
   return null;
 }
