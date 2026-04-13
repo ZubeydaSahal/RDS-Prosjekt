@@ -51,7 +51,11 @@ export default function GraphView({ graph, graphRef, aspectOrder }) {
   const height = maxY - minY + padding * 2;
 
   return (
-    <div ref={graphRef} className="graph-container">
+    <div ref={graphRef} className="graph-container" style={{
+      width: "100%",
+      height: "100%",
+      overflow: "auto",
+      position: "relative",}}>
 
       <button onClick={() => setFitView(!fitView)}>
         {fitView ? "Scroll mode" : "Fit to screen"}
@@ -65,6 +69,7 @@ export default function GraphView({ graph, graphRef, aspectOrder }) {
             ? `${minX - padding} ${minY - padding} ${width} ${height}`
             : undefined
         }
+        style={{display: "block",}}
       >
 
         {/* BUS */}

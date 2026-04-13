@@ -66,11 +66,19 @@ export default function Menu({inputPanelRef, graphRef, graph, setBackendGraph, a
                     width: "6px",
                     cursor: "col-resize",
                     backgroundColor: "#ddd",
+                    flexShrink: 0,
+                    zIndex: 10,
                 }}
             />
 
             {/* RIGHT: GraphView */}
-            <div style={{flex: 1, padding: "10px", height: "100%", boxSizing: "border-box"}}>
+            <div style={{
+                flex: 1,
+                padding: "10px",
+                height: "100%",
+                boxSizing: "border-box",
+                minWidth: 0,
+            }}>
                 {graph ? (
                     <GraphView
                         graph={graph}
