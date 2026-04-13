@@ -49,7 +49,7 @@ export default function Menu({inputPanelRef, graphRef, graph, setBackendGraph, a
             }}
         >
             {/* LEFT: InputPanel */}
-            <div style={{ width: `${dividerPos}%`, padding: "10px" }}>
+            <div style={{ width: `${dividerPos}%`, padding: "10px", height: "100%", boxSizing: "border-box" }}>
                 <InputPanel
                     ref={inputPanelRef}
                     setGraph={setBackendGraph}
@@ -70,12 +70,17 @@ export default function Menu({inputPanelRef, graphRef, graph, setBackendGraph, a
             />
 
             {/* RIGHT: GraphView */}
-            <div style={{ flex: 1, padding: "10px" }}>
-                <GraphView
-                    graph={graph}
-                    aspectOrder={aspectOrder}
-                    graphRef={graphRef}
-                />
+            <div style={{flex: 1, padding: "10px", height: "100%", boxSizing: "border-box"}}>
+                {graph ? (
+                    <GraphView
+                        graph={graph}
+                        aspectOrder={aspectOrder}
+                        graphRef={graphRef}
+                    />
+                ) : (
+                    // ENDRING: tom hvit boks i stedet for "Ingen graf lastet"
+                    <div className="graph-container"/>
+                )}
             </div>
         </div>
     );

@@ -1,8 +1,7 @@
-import GraphView from "./components/GraphView";
-import InputPanel from "./components/InputPanel.jsx";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import FilterDropdown from "./components/FilterDropdown";
+import Menu from "./components/Menu.jsx";
 
 import { useState, useRef, useEffect } from "react";
 
@@ -18,7 +17,7 @@ function App() {
   // ----------------------------
   const [activeAspect, setActiveAspect] = useState(["=", "%", "-", "%%"]);
   const [activeRelation, setActiveRelation] = useState(["cross", "hierarchy"]);
-  const [rdsText, setRdsText] = useState("");
+  const [, setRdsText] = useState("");
 
   const graphRef = useRef(null);
   const inputPanelRef = useRef(null);
@@ -58,25 +57,25 @@ function App() {
     if (backendGraph && inputPanelRef.current) {
       inputPanelRef.current.buildGraph();
     }
-  }, [activeAspect, activeRelation]);
+  }, [activeAspect, activeRelation, backendGraph]);
 
   return (
     <div>
 
       <Navbar />
-
+      <Menu
+          inputPanelRef={inputPanelRef}
+          graphRef={graphRef}
+          graph={graph}
+          setBackendGraph={setBackendGraph}
+          aspectOrder={aspectOrder}
+          activeAspect={activeAspect}
+          activeRelation={activeRelation}
+      />
       <div className="layout">
 
         {/* VENSTRE PANEL */}
         <div className="input-section">
-
-          <InputPanel
-            ref={inputPanelRef}
-            setGraph={setBackendGraph}
-            graphRef={graphRef}
-            activeAspect={activeAspect}
-            activeRelation={activeRelation}
-          />
 
           <FilterDropdown
             activeAspect={activeAspect}
@@ -101,18 +100,6 @@ function App() {
               </div>
             ))}
           </div>
-
-          {graph ? (
-            <GraphView
-              graph={graph}
-              aspectOrder={aspectOrder}
-              graphRef={graphRef}
-            />
-          ) : (
-            // ENDRING: tom hvit boks i stedet for "Ingen graf lastet"
-            <div className="graph-container" />
-          )}
-
         </div>
 
       </div>

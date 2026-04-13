@@ -141,49 +141,62 @@ const InputPanel = forwardRef(function InputPanel({ setGraph, graphRef, activeAs
     };
 
     reader.readAsText(file);
+    event.target.value = null;
   };
 
 
   return (
-    <div className="input-section">
+      <div
+          className="input-section"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            width: "100%"
+          }}
+      >
+        <div>
+          {/* ERROR */}
+          {error && (
+              <div className="error-box">
+                {error}
+              </div>
+          )}
 
-      <h2>Input</h2>
+          {/* BUTTONS */}
+          <div className="buttons">
+            <button onClick={handleBuild}>Bygg tre</button>
+            <button onClick={handleDownloadImage}>
+              Last ned som bilde
+            </button>
+            <button onClick={handleDownloadText}>
+              Last ned tekst
+            </button>
+          </div>
 
-      <textarea
-        rows="12"
-        value={text}
-        onChange={(e) => {
-          setText(e.target.value);
-        }}
-        placeholder="Paste RDS script here..."
-      />
-
-      {/* ERROR */}
-      {error && (
-        <div className="error-box">
-          {error}
+          {/* FILE UPLOAD */}
+          <input
+              type="file"
+              accept=".txt"
+              onChange={handleFileUpload}
+          />
         </div>
-      )}
+        {/* TEXTAREA (MAIN AREA) */}
+        <textarea
+            style={{
+              flex: 1,                 // takes ALL remaining space
+              width: "100%",
+              resize: "none",
+              boxSizing: "border-box",
+            }}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Paste RDS script here..."
+        />
 
-      {/* BUTTONS */}
-      <div className="buttons">
-        <button onClick={handleBuild}>Bygg tre</button>
-        <button onClick={handleDownloadImage}>
-          Last ned som bilde
-        </button>
-        <button onClick={handleDownloadText}>
-          Last ned tekst
-        </button>
+        {/* BOTTOM PANEL (FIXED HEIGHT) */}
+
       </div>
-
-      {/* FILE UPLOAD */}
-      <input
-        type="file"
-        accept=".txt"
-        onChange={handleFileUpload}
-      />
-
-    </div>
   );
 });
 
