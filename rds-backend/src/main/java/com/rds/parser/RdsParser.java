@@ -48,7 +48,7 @@ public class RdsParser {
                         relationPositions.add(new int[]{matcher.start(), matcher.end()});
                         relations.add(matcher.group());
                     }
-                    //if matcher.find() do find relations it will send data of the two nodes and the relation betwen them for processing.
+                    //if matcher.find() do find relations it will send data of the two nodes and the relation between them for processing.
                     if (!relations.isEmpty()) {
                         String previousNodePart = null; // Might be redundant
                         System.out.print("detected cross relations\n\tInput: " + line + "\n");
