@@ -103,7 +103,8 @@ body {
 /* #### Split pane ####*/
 .split-pane-container{
   display: flex;
-  height: 400px;
+  height: 100%;
+  max-height: 25rem;
   border: 2px solid #FFEBAD;
   border-top: none;
 }
@@ -146,6 +147,7 @@ body {
   margin: 5px;
   padding: 8px 12px;
   border-radius: 6px;
+  position: fixed;
 
   border: 1px solid #f5d97a;
   background: #FFF9E5;
@@ -176,8 +178,10 @@ body {
 
 /* Trestruktur boks */ 
 .graph-container {
-  height: auto;        /* fast høyde på visning */
-  overflow: auto;       /* scroll når grafen blir stor:vertikalt og horisontalt */
+  height: 100%;        /* fast høyde på visning */
+  width: 100%;
+  overflow: hidden;       /* scroll når grafen blir stor:vertikalt og horisontalt */
+  touch-action: none;
   background: white;
   border: 1px solid #ccc;
 }
