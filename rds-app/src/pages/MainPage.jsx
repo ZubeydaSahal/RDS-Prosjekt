@@ -11,7 +11,11 @@ function MainPage() {
     // ----------------------------
     // ASPEKT-REKKEFØLGE (MASTER STATE)
     // ----------------------------
-    const [aspectOrder] = useState(["=", "%", "-", "%%"]);
+    const [aspectOrder] = useState(["=", "-", "%", "%%"]);
+    /*"%": "Typeaspekt",
+    "=": "Funksjonsaspekt",
+    "-": "Produktaspekt",
+    "%%": "Typeaspekt (produkt)"*/
 
 
 
@@ -220,9 +224,10 @@ function MainPage() {
 
             <SplitPane
                 graph={backendGraph}
+                graphRef={graphRef}
+                aspectOrder={aspectOrder}
                 text={text}
                 setText={setText}
-                graphRef={graphRef}
             />
             <Footer/>
         </div>

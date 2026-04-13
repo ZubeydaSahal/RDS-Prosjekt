@@ -21,9 +21,9 @@ export default function GraphView({ graph, graphRef, aspectOrder }) {
     }
 
     return layoutTree({
-      ...transformed,
-      aspectOrder: aspectOrder
-    });
+      ...transformed,},
+      aspectOrder
+    );
 
   }, [graph, aspectOrder]);
 
