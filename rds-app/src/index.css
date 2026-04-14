@@ -1,16 +1,17 @@
-.MainPage{
-  height: auto;
+.MainPage {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-/*  #### NAVBAR #### */
+/* #### NAVBAR #### */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 30px;
-  /*background: #1f2937;*/
-  background: #172141; /*BaneNor farge*/
-  color: white;
+  background:  #172141;
+  color: rgb(235, 229, 229);
 }
 
 .nav-title {
@@ -24,59 +25,76 @@
   text-decoration: none;
 }
 
-
 /* ##### BODY ##### */
 body {
   font-family: Arial, sans-serif;
-  background-color: rgb(223, 240, 245);
+  background-color: #dff0f5;
+  margin: 0;
 }
+
+/* Padding rundt den hvite boksen — gir luft mellom navbar og boksen */
+.main-content {
+  flex: 1;
+  padding: 24px 32px 32px;
+  box-sizing: border-box;
+  background-color: #dff0f5;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Den store hvite boksen */
+.main-box {
+  flex: 1;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #c8dde3;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* #### MENU — inni hvit boks #### */
 .menu {
   display: flex;
   align-items: center;
   gap: 10px;
-
-  /* #### MENU ####*/
   padding: 10px 16px;
-  background: #FFF9E5;
-  border: 5px solid #FFEBAD;
-  /*border-bottom: 1px solid #ddd;*/
+  background: #eaf6fa;        /* lys blå i stedet for gul */
+  border-bottom: 1.5px solid #b8dce8;  /* lys blå border */
+  flex-shrink: 0;
 }
-/* Meny knapper */
+
 .menu button {
   padding: 8px 12px;
   border-radius: 6px;
-
-  border: 1px solid #f5d97a;
+  border: 1px solid #b8dce8;  /* lys blå */
   background: white;
-
   font-size: 13px;
   cursor: pointer;
-
   transition: all 0.15s ease;
 }
 
 .menu button:hover {
-  background: #fff3c4;
-  border-color: #f5d97a;
+  background: #dff0f5;
+  border-color: #8fc5d6;
 }
 
 .menu button:active {
   transform: scale(0.95);
 }
 
-/* Bygg tre */
+/* Bygg tre — grønn primærknapp */
 .menu button.primary {
   margin-left: auto;
-  background: #35DE6D;
+  background: #e673ae;
   color: black;
-  border-color: #f5d97a;
 }
 
 .menu button.primary:hover {
   background: #DDFAE2;
 }
 
-/* Fil input */
 .menu input[type="file"] {
   display: none;
 }
@@ -84,106 +102,98 @@ body {
 .file-button {
   padding: 8px 12px;
   border-radius: 6px;
-  border: 1px solid #f5d97a;
+  border: 1px solid #b8dce8;
   font-size: 13px;
   cursor: pointer;
-
   background: white;
   transition: 0.15s;
 }
 
 .file-button:hover {
-  background: #fff3c4;
+  background: #dff0f5;
 }
 
 .file-button:active {
   transform: scale(0.95);
 }
 
-/* #### Split pane ####*/
-.split-pane-container{
+/* #### SPLIT PANE #### */
+.split-pane-container {
   display: flex;
-  height: 100%;
-  max-height: 25rem;
-  border: 2px solid #FFEBAD;
-  border-top: none;
+  flex: 1;
+  overflow: hidden;
 }
 
+.split-left {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: white;   /* hvit bakgrunn på textarea-siden */
+}
+
+.split-right {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: white;
+}
 
 /* Slider */
-
-/* linje */
 .slider {
   position: relative;
-  width: 4px;
-  cursor: pointer;
+  width: 1px;
+  cursor: col-resize;
   user-select: none;
-  background: #FFEBAD;
+  background: #c8dde3;
+  flex-shrink: 0;
+  transition: width 0.1s, background 0.1s;
 }
 
+.slider:hover {
+  background: #8fc5d6;
+  width: 3px;
+}
 
-
-/* Ikon oppå linjen */
 .slider-icon {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
   background: white;
-  border: 1px solid #ddd;
+  border: 1px solid #c8dde3;
   border-radius: 4px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 2px;
 }
 
-
-/* #### GRAPH ####*/
-.scroll-mode{
+/* #### GRAPH #### */
+.scroll-mode {
   margin: 5px;
   padding: 8px 12px;
   border-radius: 6px;
   position: fixed;
-
-  border: 1px solid #f5d97a;
-  background: #FFF9E5;
-
+  border: 1px solid #b8dce8;
+  background: #eaf6fa;
   font-size: 13px;
   cursor: pointer;
-
   transition: all 0.15s ease;
 }
+
 .scroll-mode:hover {
-  background: #fff3c4;
-  border-color: #f5d97a;
+  background: #dff0f5;
+  border-color: #8fc5d6;
 }
 
-.layout {
-  display: flex;
-  gap: 40px;
-  align-items: flex-start;
-  margin: 20px;
-}
-
-.tree-section {
-  flex: 1;
-  min-width: 0;
-  padding: 10px;
-  background-color:  rgb(223, 240, 245);
-}
-
-/* Trestruktur boks */ 
 .graph-container {
-  height: 100%;        /* fast høyde på visning */
+  height: 100%;
   width: 100%;
-  overflow: hidden;       /* scroll når grafen blir stor:vertikalt og horisontalt */
+  overflow: hidden;
   touch-action: none;
   background: white;
-  border: 1px solid #ccc;
 }
 
 svg {
@@ -191,9 +201,10 @@ svg {
   display: block;
 }
 
+/* #### INPUT #### */
 .input-section {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   height: 100%;
 }
 
@@ -202,24 +213,24 @@ textarea {
   width: 100%;
   font-family: monospace;
   font-size: 14px;
-}
-
-.buttons {
-  margin-top: 10px;
-  display: flex;
-  gap: 10px;
-}
-
-/* #### ERROR BOX #### */ 
-.error-box {
-  margin-top: 10px;
+  border: none;
+  outline: none;
   padding: 12px;
+  box-sizing: border-box;
+  resize: none;
+  background: white;   /* hvit bakgrunn */
+}
+
+/* #### ERROR BOX #### */
+.error-box {
+  padding: 12px 16px;
   background: #ffe0e0;
   color: #900;
-  border: 2px solid red;
-  border-radius: 6px;
+  border-top: 2px solid red;
+  border-bottom: 2px solid red;
   font-weight: bold;
   white-space: pre-line;
+  flex-shrink: 0;
 }
 
 /* #### Endre rekkefølge på aspekter #### */
@@ -242,14 +253,10 @@ textarea {
   cursor: pointer;
 }
 
-/*FILTER*/
-
+/* FILTER */
 .fd-wrapper {
   position: relative;
   display: inline-block;
-  margin-bottom: 12px;
-  margin-top: 15px;
-
 }
 
 .fd-trigger {
@@ -258,7 +265,7 @@ textarea {
   gap: 6px;
   padding: 6px 12px;
   background: white;
-  border: 1.5px solid #d1d5db;
+  border: 1.5px solid #b8dce8;
   border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
@@ -268,11 +275,11 @@ textarea {
 }
 
 .fd-trigger:hover {
-  border-color: #6366f1;
+  border-color: #4da3c8;
 }
 
 .fd-badge {
-  background: #6366f1;
+  background: #4da3c8;
   color: white;
   font-size: 11px;
   font-weight: 700;
@@ -291,7 +298,7 @@ textarea {
   left: 0;
   z-index: 100;
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #c8dde3;
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.10);
   width: 220px;
@@ -323,14 +330,12 @@ textarea {
   transition: background 0.1s;
 }
 
-.fd-item:hover {
-  background: #f9fafb;
-}
+.fd-item:hover { background: #f0f9fc; }
 
 .fd-item input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #6366f1;
+  accent-color: #4da3c8;
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -339,7 +344,7 @@ textarea {
   font-family: monospace;
   font-size: 14px;
   font-weight: 700;
-  color: #6366f1;
+  color: #4da3c8;
   width: 16px;
 }
 
@@ -350,7 +355,7 @@ textarea {
 
 .fd-divider {
   height: 1px;
-  background: #f1f5f9;
+  background: #e8f4f8;
   margin: 8px 0;
 }
 
@@ -358,7 +363,7 @@ textarea {
   display: block;
   width: 100%;
   padding: 10px;
-  background: #6366f1;
+  background: #4da3c8;
   color: white;
   border: none;
   border-radius: 0 0 10px 10px;
@@ -368,24 +373,13 @@ textarea {
   transition: background 0.15s;
 }
 
-.fd-apply:hover {
-  background: #4f46e5;
-}
-
-
-
-
+.fd-apply:hover { background: #3a8aaa; }
 
 /* FOOTER */
-
 .footer {
-  /*margin-top: 40px;*/
   padding: 15px;
   padding-bottom: 20px;
-
   text-align: center;
-
-  /*background: #1f2937;*/
   background: #172141;
   color: white;
 }
