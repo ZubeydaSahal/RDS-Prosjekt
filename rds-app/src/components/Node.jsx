@@ -34,7 +34,7 @@ export default function Node({ node }) {
   // DESIGN SETTINGS 
   // ----------------------------
   const BOX_WIDTH = 190;
-  const BOX_HEIGHT = 32;
+  const BOX_HEIGHT = 22;
 
   const STRIPE_WIDTH = 6;
   const TEXT_PADDING = 8;

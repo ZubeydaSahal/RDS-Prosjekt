@@ -121,7 +121,7 @@ export function layoutTree(graph, aspectOrder) {
   // ----------------------------
   // LAYOUT
   // ----------------------------
-  const ROW_GAP = 45;
+  const ROW_GAP = 35;
   const INDENT = 40;
 
   aspects.forEach((aspect) => {
