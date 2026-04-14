@@ -52,6 +52,12 @@ public class GraphManager {
                 LOGGER.warning("<GraphManager> Missing aspect for node id: " + id + ". Using aspectless constructor");
             }
 
+            // Don't add root to nodelist or break into peaces TODO: (hør med de andre om denne logikken)
+            if(aspect == "<root>"){
+                nodes.put(id, node);  // TEMP
+                return node;
+            }
+
             nodes.put(id, node);  // Add node to attribute 'nodes' (HashMap)
 
             // ––––– find parent and create relation –––––
