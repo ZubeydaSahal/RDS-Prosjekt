@@ -9,9 +9,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 30px;
-  background:  #172141;
-  color: rgb(235, 229, 229);
+  padding: 15px 30px;
+  background: #172141;
+  color: white;
 }
 
 .nav-title {
@@ -32,10 +32,10 @@ body {
   margin: 0;
 }
 
-/* Padding rundt den hvite boksen — gir luft mellom navbar og boksen */
+/* Mer padding mellom navbar og boksen  */
 .main-content {
   flex: 1;
-  padding: 24px 32px 32px;
+  padding: 32px 48px 48px;
   box-sizing: border-box;
   background-color: #dff0f5;
   display: flex;
@@ -54,21 +54,21 @@ body {
   overflow: hidden;
 }
 
-/* #### MENU — inni hvit boks #### */
+/* #### MENU #### */
 .menu {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px 16px;
-  background: #eaf6fa;        /* lys blå i stedet for gul */
-  border-bottom: 1.5px solid #b8dce8;  /* lys blå border */
+  background: #eaf6fa;
+  border-bottom: 1.5px solid #b8dce8;
   flex-shrink: 0;
 }
 
 .menu button {
   padding: 8px 12px;
   border-radius: 6px;
-  border: 1px solid #b8dce8;  /* lys blå */
+  border: 1px solid #b8dce8;
   background: white;
   font-size: 13px;
   cursor: pointer;
@@ -84,11 +84,11 @@ body {
   transform: scale(0.95);
 }
 
-/* Bygg tre — grønn primærknapp */
 .menu button.primary {
   margin-left: auto;
-  background: #e673ae;
+  background: #35DE6D;
   color: black;
+  border-color: #28c45a;
 }
 
 .menu button.primary:hover {
@@ -109,13 +109,8 @@ body {
   transition: 0.15s;
 }
 
-.file-button:hover {
-  background: #dff0f5;
-}
-
-.file-button:active {
-  transform: scale(0.95);
-}
+.file-button:hover { background: #dff0f5; }
+.file-button:active { transform: scale(0.95); }
 
 /* #### SPLIT PANE #### */
 .split-pane-container {
@@ -129,7 +124,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: white;   /* hvit bakgrunn på textarea-siden */
+  background: white;
 }
 
 .split-right {
@@ -181,6 +176,7 @@ body {
   font-size: 13px;
   cursor: pointer;
   transition: all 0.15s ease;
+  z-index: 10;
 }
 
 .scroll-mode:hover {
@@ -218,7 +214,7 @@ textarea {
   padding: 12px;
   box-sizing: border-box;
   resize: none;
-  background: white;   /* hvit bakgrunn */
+  background: white;
 }
 
 /* #### ERROR BOX #### */
@@ -249,9 +245,7 @@ textarea {
   border-radius: 6px;
 }
 
-.aspect-item button {
-  cursor: pointer;
-}
+.aspect-item button { cursor: pointer; }
 
 /* FILTER */
 .fd-wrapper {
@@ -269,14 +263,12 @@ textarea {
   border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
-  color: #0c0b0b;
+  color: #374151;
   cursor: pointer;
   transition: border-color 0.15s;
 }
 
-.fd-trigger:hover {
-  border-color: #4da3c8;
-}
+.fd-trigger:hover { border-color: #4da3c8; }
 
 .fd-badge {
   background: #4da3c8;
@@ -301,8 +293,8 @@ textarea {
   border: 1px solid #c8dde3;
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.10);
-  width: 220px;
-  padding: 12px 0 0;
+  width: 240px;
+  padding: 12px 0 8px;
 }
 
 .fd-section-title {
@@ -345,12 +337,19 @@ textarea {
   font-size: 14px;
   font-weight: 700;
   color: #4da3c8;
-  width: 16px;
+  width: 20px;
 }
 
 .fd-label {
   font-size: 13px;
   color: #374151;
+}
+
+.fd-empty {
+  padding: 8px 14px;
+  display: block;
+  color: #aaa;
+  font-size: 13px;
 }
 
 .fd-divider {
@@ -359,27 +358,10 @@ textarea {
   margin: 8px 0;
 }
 
-.fd-apply {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  background: #4da3c8;
-  color: white;
-  border: none;
-  border-radius: 0 0 10px 10px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.fd-apply:hover { background: #3a8aaa; }
-
 /* FOOTER */
 .footer {
   padding: 15px;
   padding-bottom: 20px;
-  padding-left: 50px;
   text-align: center;
   background: #172141;
   color: white;
