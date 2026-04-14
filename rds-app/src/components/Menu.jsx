@@ -5,6 +5,7 @@ function Menu({
   setActiveAspect,
   activeRelation,
   setActiveRelation,
+  relationTypes = [],
   onBuild,
   onDownloadImage,
   onDownloadText,
@@ -12,26 +13,23 @@ function Menu({
 }) {
     return (
         <div className="menu">
-            {/* FILTER */}
+             {/* FILTER */}
             <FilterDropdown
                 activeAspect={activeAspect}
                 setActiveAspect={setActiveAspect}
                 activeRelation={activeRelation}
                 setActiveRelation={setActiveRelation}
+                relationTypes={relationTypes}
             />
 
-            <button onClick={onDownloadImage}>
-                Last ned bilde
-            </button>
-
-            <button onClick={onDownloadText}>
-                Last ned tekst
-            </button>
+            <button onClick={onDownloadImage}>Last ned bilde</button>
+            <button onClick={onDownloadText}>Last ned tekst</button>
 
             <label className="file-button">
                 Last opp fil
-                <input type="file" onChange={onUploadFile}/>
+                <input type="file" onChange={onUploadFile} />
             </label>
+
             <button className="primary" onClick={onBuild}>Bygg tre</button>
         </div>
     );

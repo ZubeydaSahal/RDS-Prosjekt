@@ -93,40 +93,6 @@ export default function GraphView({ graph, graphRef, aspectOrder }) {
           <g transform={`scale(${zoom})`}>
 
 
-          {/* BUS */}
-          {aspectNodes.length > 0 && (() => {
-            const xs = aspectNodes.map(n => n.x);
-            const minBusX = Math.min(...xs);
-            const maxBusX = Math.max(...xs);
-
-            return (
-                <>
-                  {rootNode && (
-                      <line
-                          x1={rootNode.x}
-                          y1={rootNode.y + 20}
-                          x2={rootNode.x}
-                          y2={busY - 60}
-                          stroke="#999"
-                          strokeWidth={2}
-                      />
-                  )}
-                  <line x1={minBusX} y1={busY - 60} x2={maxBusX} y2={busY - 60} stroke="#999" strokeWidth={2}/>
-                  {aspectNodes.map(node => (
-                      <line
-                          key={node.id}
-                          x1={node.x}
-                          y1={busY - 60}
-                          x2={node.x}
-                          y2={node.y - 20}
-                          stroke="#999"
-                          strokeWidth={2}
-                      />
-                  ))}
-                </>
-            );
-          })()}
-
           {/* EDGES */}
           {relations.map((edge, index) => {
             const from = nodeMap[edge.from];

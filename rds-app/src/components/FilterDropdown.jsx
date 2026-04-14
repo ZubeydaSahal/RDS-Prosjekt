@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
 const ASPECTS = [
-   { type: "cross",label: "Kryssrelasjon" },
   { symbol: "=",  label: "Funksjon aspektet" },
   { symbol: "%",  label: "Type aspekt for funksjon aspekt" },
   { symbol: "-",  label: "Produktaspektet" },
@@ -11,7 +10,6 @@ const ASPECTS = [
 export default function FilterDropdown({
   activeAspect = [], setActiveAspect,
   activeRelation = [], setActiveRelation,
-  // ENDRING: mottar relasjonstyper dynamisk fra App.jsx
   relationTypes = [],
 }) {
   const [open, setOpen] = useState(false);
@@ -41,9 +39,8 @@ export default function FilterDropdown({
     setActiveRelation(next);
   }
 
-  // ENDRING: tell alle aktive — aspekter + relasjonstyper
   const totalActive = activeAspect.length + activeRelation.length;
-  const totalAll = ASPECTS.length + relationTypes.length;
+  const totalAll = ASPECTS.length + 1 + relationTypes.length; // +1 for "cross"
   const hasFilter = totalActive < totalAll;
 
   return (
@@ -60,7 +57,7 @@ export default function FilterDropdown({
       {open && (
         <div className="fd-dropdown">
 
-          {/* Aspekter */}
+          {/* ASPEKTER */}
           <p className="fd-section-title">ASPEKTER</p>
           <ul className="fd-list">
             {ASPECTS.map(({ symbol, label }) => (
@@ -80,25 +77,46 @@ export default function FilterDropdown({
 
           <div className="fd-divider" />
 
-          {/* ENDRING: relasjonstyper dynamisk fra grafen */}
-          <p className="fd-section-title">RELASJONSTYPER</p>
+          {/* RELASJONER — master toggle */}
+          <p className="fd-section-title">RELASJONER</p>
           <ul className="fd-list">
-            {relationTypes.length === 0 && (
-              <li><span className="fd-label" style={{ color: "#aaa" }}>Ingen relasjoner i grafen</span></li>
-            )}
-            {relationTypes.map(type => (
-              <li key={type}>
-                <label className="fd-item">
-                  <input
-                    type="checkbox"
-                    checked={activeRelation.includes(type)}
-                    onChange={() => toggleRelation(type)}
-                  />
-                  <span className="fd-label">|{type}|</span>
-                </label>
-              </li>
-            ))}
+            <li>
+              <label className="fd-item">
+                <input
+                  type="checkbox"
+                  checked={activeRelation.includes("cross")}
+                  onChange={() => toggleRelation("cross")}
+                />
+                <span className="fd-label">Kryssrelasjon</span>
+              </label>
+            </li>
           </ul>
+
+          {/* RELASJONSTYPER — individuelle typer */}
+          {relationTypes.length > 0 && (
+            <>
+              <div className="fd-divider" />
+              <p className="fd-section-title">RELASJONSTYPER</p>
+              <ul className="fd-list">
+                {relationTypes.map(type => (
+                  <li key={type}>
+                    <label className="fd-item fd-item-indented">
+                      <input
+                        type="checkbox"
+                        checked={activeRelation.includes(type)}
+                        onChange={() => toggleRelation(type)}
+                      />
+                      <span className="fd-label">|{type}|</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {relationTypes.length === 0 && (
+            <span className="fd-empty">Ingen relasjoner i grafen</span>
+          )}
 
         </div>
       )}

@@ -10,72 +10,65 @@ function MainPage() {
 
     const [aspectOrder] = useState(["=", "-", "%", "%%"]);
     const [activeAspect, setActiveAspect] = useState(["=", "%", "-", "%%"]);
-    const [activeRelation, setActiveRelation] = useState(["cross", "hierarchy"]);
+    // ENDRING: starter med "cross" aktiv
+    const [activeRelation, setActiveRelation] = useState(["cross"]);
     const [backendGraph, setBackendGraph] = useState(null);
     const [text, setText] = useState("");
     const [error, setError] = useState("");
     const graphRef = useRef(null);
 
-    // FIX: riktig encoding av spesialtegn
-    const encodeAspectKey = (a) =>
-        a.replace(/%/g, "%25").replace(/=/g, "%3D");
+    // Hent unike relasjonstyper fra backendGraph
+    const relationTypes = backendGraph
+        ? [...new Set((backendGraph.relationDTO || []).map(r => r.type).filter(Boolean))]
+        : [];
+
+    // Når ny graf lastes — legg til alle relasjonstyper som aktive (behold "cross")
+    useEffect(() => {
+        if (relationTypes.length > 0) {
+            setActiveRelation(prev => {
+                const next = [...prev];
+                relationTypes.forEach(t => {
+                    if (!next.includes(t)) next.push(t);
+                });
+                return next;
+            });
+        }
+    }, [backendGraph]);
 
     const handleBuild = async () => {
         setError("");
-
         if (!text.trim()) {
             setBackendGraph(null);
             return;
         }
-
         try {
             const paramParts = [];
-
+            const encodeAspectKey = (a) => a.replace(/%/g, "%25").replace(/=/g, "%3D");
             const allAspects = ["=", "%", "-", "%%"];
             allAspects.forEach(a => {
-                const key = encodeAspectKey(a);
-                paramParts.push(
-                    `aspect_${key}=${activeAspect.includes(a) ? "true" : "false"}`
-                );
+                paramParts.push(`aspect_${encodeAspectKey(a)}=${activeAspect.includes(a) ? "true" : "false"}`);
             });
-
-            const allRelations = ["cross"];
-            allRelations.forEach(r => {
-                paramParts.push(
-                    `rel_${r}=${activeRelation.includes(r) ? "true" : "false"}`
-                );
-            });
-
+            // Send cross-filter
+            paramParts.push(`rel_cross=${activeRelation.includes("cross") ? "true" : "false"}`);
             const paramString = paramParts.join("&");
-            console.log("URL params:", paramString);
-
-            const response = await fetch(
-                `http://localhost:8080/parse?${paramString}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "content-type": "text/plain",
-                        "Accept": "application/json"
-                    },
-                    body: text
-                }
-            );
-
+            const response = await fetch(`http://localhost:8080/parse?${paramString}`, {
+                method: "POST",
+                headers: { "content-type": "text/plain", "Accept": "application/json" },
+                body: text
+            });
             if (!response.ok) {
                 setError("Ugyldig input.\nSørg for at linjene starter med %, = eller -");
                 return;
             }
-
             const graph = await response.json();
             setBackendGraph(graph);
-
         } catch (err) {
             console.error("Network error:", err);
             setError("Noe gikk galt med serveren");
         }
     };
 
-    //Auto rebuild når filter endres
+    // Auto-rebuild når filter endres
     useEffect(() => {
         if (backendGraph) {
             handleBuild();
@@ -84,23 +77,13 @@ function MainPage() {
 
     const handleDownloadImage = async () => {
         const node = graphRef.current;
-
-        if (!node) {
-            alert("Fant ikke grafen");
-            return;
-        }
-
+        if (!node) { alert("Fant ikke grafen"); return; }
         try {
-            const dataUrl = await toPng(node, {
-                cacheBust: true,
-                pixelRatio: 2
-            });
-
+            const dataUrl = await toPng(node, { cacheBust: true, pixelRatio: 2 });
             const link = document.createElement("a");
             link.download = "graph.png";
             link.href = dataUrl;
             link.click();
-
         } catch (err) {
             alert("Kunne ikke laste ned bilde");
         }
@@ -109,11 +92,9 @@ function MainPage() {
     const handleDownloadText = () => {
         const blob = new Blob([text], { type: "text/plain" });
         const url = URL.createObjectURL(blob);
-
         const link = document.createElement("a");
         link.href = url;
         link.download = "RDSscript.txt";
-
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -123,7 +104,6 @@ function MainPage() {
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
         if (!file) return;
-
         const reader = new FileReader();
         reader.onload = (e) => setText(e.target.result);
         reader.readAsText(file);
@@ -141,6 +121,7 @@ function MainPage() {
                         setActiveAspect={setActiveAspect}
                         activeRelation={activeRelation}
                         setActiveRelation={setActiveRelation}
+                        relationTypes={relationTypes}
                         onBuild={handleBuild}
                         onDownloadImage={handleDownloadImage}
                         onDownloadText={handleDownloadText}
