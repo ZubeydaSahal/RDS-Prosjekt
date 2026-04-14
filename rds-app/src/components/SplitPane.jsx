@@ -2,7 +2,7 @@ import { useState } from "react";
 import InputPanel from "./InputPanel";
 import GraphView from "./GraphView";
 
-function SplitPane({ graph, graphRef, aspectOrder, text, setText }) {
+function SplitPane({ graph, graphRef, aspectOrder, text, setText, onBuild }) {
     const [leftWidth, setLeftWidth] = useState(40);
 
     const handleDrag = (e) => {
@@ -16,7 +16,7 @@ function SplitPane({ graph, graphRef, aspectOrder, text, setText }) {
 
             {/* Left side — width er dynamisk, må være inline */}
             <div className="split-left" style={{ width: `${leftWidth}%` }}>
-                <InputPanel text={text} setText={setText} />
+                <InputPanel text={text} setText={setText} onBuild={onBuild} />
             </div>
 
             {/* Slider */}

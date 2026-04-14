@@ -117,6 +117,7 @@ function MainPage() {
                         aspectOrder={aspectOrder}
                         text={text}
                         setText={setText}
+                        onBuild={handleBuild}
                     />
 
                 </div>
