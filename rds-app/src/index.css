@@ -37,8 +37,8 @@ body {
 
   /* #### MENU ####*/
   padding: 10px 16px;
-  background: #FFF9E5;
-  border: 5px solid #FFEBAD;
+  background: #a8a9a9;
+  border: 5px solid #ecf5f4;
   /*border-bottom: 1px solid #ddd;*/
 }
 /* Meny knapper */
@@ -46,7 +46,7 @@ body {
   padding: 8px 12px;
   border-radius: 6px;
 
-  border: 1px solid #f5d97a;
+  border: 1px solid #85837e;
   background: white;
 
   font-size: 13px;
@@ -56,8 +56,7 @@ body {
 }
 
 .menu button:hover {
-  background: #fff3c4;
-  border-color: #f5d97a;
+  background: #b6b3b5;
 }
 
 .menu button:active {
@@ -67,9 +66,7 @@ body {
 /* Bygg tre */
 .menu button.primary {
   margin-left: auto;
-  background: #35DE6D;
-  color: black;
-  border-color: #f5d97a;
+  color: rgb(17, 16, 16);
 }
 
 .menu button.primary:hover {
@@ -84,7 +81,7 @@ body {
 .file-button {
   padding: 8px 12px;
   border-radius: 6px;
-  border: 1px solid #f5d97a;
+  border: 1px solid #85837e;
   font-size: 13px;
   cursor: pointer;
 
@@ -93,7 +90,7 @@ body {
 }
 
 .file-button:hover {
-  background: #fff3c4;
+  background: #85837e;
 }
 
 .file-button:active {
@@ -105,7 +102,6 @@ body {
   display: flex;
   height: 100%;
   max-height: 25rem;
-  border: 2px solid #FFEBAD;
   border-top: none;
 }
 
@@ -118,7 +114,7 @@ body {
   width: 4px;
   cursor: pointer;
   user-select: none;
-  background: #FFEBAD;
+  background: #adb2ff;
 }
 
 
@@ -149,7 +145,7 @@ body {
   border-radius: 6px;
   position: fixed;
 
-  border: 1px solid #f5d97a;
+  border: 1px solid #f57adc;
   background: #FFF9E5;
 
   font-size: 13px;
@@ -330,7 +326,7 @@ textarea {
 .fd-item input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #6366f1;
+  accent-color: #333336;
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -339,7 +335,7 @@ textarea {
   font-family: monospace;
   font-size: 14px;
   font-weight: 700;
-  color: #6366f1;
+  color: ##333336;
   width: 16px;
 }
 
