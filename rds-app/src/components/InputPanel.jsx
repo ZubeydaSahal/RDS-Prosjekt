@@ -21,9 +21,13 @@ const InputPanel = forwardRef(function InputPanel({ setGraph, graphRef, activeAs
 
     try {
       const paramParts = [];
+      // = og % er spesialtegn i URL-nøkler — må encodes.
+      // % må encodes FØR = for å unngå dobbel-encoding.
+      // Spring Boot dekoder %25 → % og %3D → = automatisk.
+      const encodeAspectKey = (a) => a.replace(/%/g, "%25").replace(/=/g, "%3D");
       const allAspects = ["=", "%", "-", "%%"];
       allAspects.forEach(a => {
-          paramParts.push(`aspect_${a}=${activeAspect.includes(a) ? "true" : "false"}`);
+          paramParts.push(`aspect_${encodeAspectKey(a)}=${activeAspect.includes(a) ? "true" : "false"}`);
       });
       const allRelations = ["cross"];
       allRelations.forEach(r => {

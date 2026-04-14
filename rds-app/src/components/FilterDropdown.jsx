@@ -43,6 +43,7 @@ export default function FilterDropdown({
       : [...activeRelation, type];
     setActiveRelation(next);
   }
+  
 
   // Tell hvor mange filtre som er skrudd av
   const totalActive = activeAspect.length + activeRelation.length;

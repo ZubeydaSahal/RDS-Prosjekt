@@ -1,9 +1,11 @@
-export default function Node({ node }) {
+export default function Node({ node, onToggle, collapsed }) {
+
+  console.log(node.id, node.aspect);
 
   // ----------------------------
   // TRUNCATE TEKST (…)
   // ----------------------------
-  function truncateText(text, maxLength = 28) {
+  function truncateText(text, maxLength = 26) {
     if (!text) return "";
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength) + "...";
@@ -16,57 +18,69 @@ export default function Node({ node }) {
   // ----------------------------
   function splitLabel(label) {
     if (!label) return { prefix: "", rest: "" };
-
     const parts = label.split(" ");
-    if (parts.length === 1) {
-      return { prefix: parts[0], rest: "" };
-    }
-
+    if (parts.length === 1) return { prefix: parts[0], rest: "" };
     const prefix = parts.shift();
     const rest = parts.join(" ");
-
     return { prefix, rest };
   }
 
   const { prefix, rest } = splitLabel(truncatedLabel);
 
   // ----------------------------
-  // DESIGN SETTINGS 
+  // FIXED BOKS-STØRRELSE
   // ----------------------------
   const BOX_WIDTH = 190;
-  const BOX_HEIGHT = 32;
+  const BOX_HEIGHT = 42;
 
-  const STRIPE_WIDTH = 6;
-  const TEXT_PADDING = 8;
+  // ----------------------------
+  // FINN ASPEKT FRA ID
+  // ----------------------------
+  const getAspect = (id) => {
+    if (!id) return null;
+    if (id.startsWith("%%")) return "%%";
+    if (id.startsWith("%")) return "%";
+    if (id.startsWith("=")) return "=";
+    if (id.startsWith("-")) return "-";
+    return null;
+  };
 
-  const FONT_SIZE = 11;
+  const aspect = getAspect(node.id);
 
   // ----------------------------
   // FARGER
   // ----------------------------
   const aspectColors = {
     "%": "#4da3ff",
-    "=": "#ff8c5a",
-    "-": "#6ccf4f",
-    "%%": "#9b8cff"
+    "=": "#ff9f6e",
+    "-": "#7ed957",
+    "%%": "#a78bfa"
   };
 
   const aspectHeaderColors = {
     "%": "#cfe8ff",
     "=": "#ffd6bf",
-    "-": "#dff5dc",
-    "%%": "#e6ddff"
+    "-": "#d4f5d0",
+    "%%": "#e4d7ff"
   };
 
-  const aspect = node.aspect;
-  const strokeColor = aspectColors[aspect] || "#999";
+  const strokeColor = aspectColors[aspect] || "#888";
 
   // ----------------------------
   // TYPE NODER
   // ----------------------------
   const isAspect = node.id?.startsWith("aspect_");
   const isRoot = node.type === "root";
+  const hasChildren = node.children && node.children.length > 0;
+
   const aspectKey = isAspect ? node.id.replace("aspect_", "") : null;
+
+  // ----------------------------
+  // EXPAND/COLLAPSE KNAPP
+  // ----------------------------
+  const BTN_SIZE = 14;
+  const btnX = node.x - BOX_WIDTH / 2 - BTN_SIZE / 2;
+  const btnY = node.y - BTN_SIZE / 2;
 
   return (
     <g>
@@ -82,25 +96,22 @@ export default function Node({ node }) {
         y={node.y - BOX_HEIGHT / 2}
         width={BOX_WIDTH}
         height={BOX_HEIGHT}
-        rx={2}
-
+        rx={4}
         fill={
           isRoot
-            ? "#2b448c"
+            ? "#1e3a8a"
             : isAspect
             ? aspectHeaderColors[aspectKey] || "#eee"
-            : "#f8f8f8"
+            : "#ffffff"
         }
-
         stroke={
           isRoot
-            ? "#2b448c"
+            ? "#1e3a8a"
             : isAspect
-            ? "#bbb"
+            ? "#999"
             : strokeColor
         }
-
-        strokeWidth={isAspect ? 1 : 1.5}
+        strokeWidth={isAspect ? 1 : 2}
       />
 
       {/* ----------------------------
@@ -110,7 +121,7 @@ export default function Node({ node }) {
         <rect
           x={node.x - BOX_WIDTH / 2}
           y={node.y - BOX_HEIGHT / 2}
-          width={STRIPE_WIDTH}
+          width={6}
           height={BOX_HEIGHT}
           fill={strokeColor}
         />
@@ -120,35 +131,51 @@ export default function Node({ node }) {
           TEKST
       ---------------------------- */}
       <text
-  x={
-    isAspect || isRoot
-      ? node.x
-      : node.x - BOX_WIDTH / 2 + STRIPE_WIDTH + TEXT_PADDING
-  }
-  y={node.y}
-  textAnchor={isAspect || isRoot ? "middle" : "start"}
-  dominantBaseline="middle"
-  fontSize={isAspect ? 13 : FONT_SIZE}   
-  fontFamily="Roboto, Segoe UI, Arial, sans-serif"
-  fill={isRoot ? "#ffffff" : "#333"}
-  fontWeight={isAspect ? "700" : "400"}  
->
-  {isAspect || isRoot ? (
-    node.label
-  ) : (
-    <>
-      <tspan fontWeight="600">
-        {prefix}
-      </tspan>
+        x={node.x}
+        y={node.y}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize="12"
+        fill={isRoot ? "#ffffff" : "#333"}
+      >
+        <tspan fontWeight="bold">{prefix}</tspan>
+        {rest && (
+          <tspan dx="6" fontWeight="normal">{rest}</tspan>
+        )}
+      </text>
 
-      {rest && (
-        <tspan dx="6" fontWeight="400">
-          {rest}
-        </tspan>
+      {/* ----------------------------
+          EXPAND/COLLAPSE KNAPP
+          Vises bare hvis noden har barn
+      ---------------------------- */}
+      {hasChildren && !isRoot && !isAspect && (
+        <g
+          style={{ cursor: "pointer" }}
+          onClick={() => onToggle && onToggle(node.id)}
+        >
+          {/* Sirkel */}
+          <circle
+            cx={btnX}
+            cy={node.y}
+            r={BTN_SIZE / 2}
+            fill="white"
+            stroke={strokeColor}
+            strokeWidth={1.5}
+          />
+          {/* + eller - */}
+          <text
+            x={btnX}
+            y={node.y}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fontSize="12"
+            fontWeight="bold"
+            fill={strokeColor}
+          >
+            {collapsed ? "+" : "−"}
+          </text>
+        </g>
       )}
-    </>
-  )}
-</text>
 
     </g>
   );

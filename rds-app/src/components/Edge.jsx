@@ -63,26 +63,56 @@ export default function Edge({ from, to, type, allNodes }) {
   }
 
   // ----------------------------
-  // CROSS — diagonal linje
+  // CROSS — S-kurve med relasjonsnavn midt på
   // ----------------------------
   if (type !== "hierarchy" && type !== "root") {
-  const cx1 = from.x + NODE_WIDTH / 2;
-  const cy1 = from.y;
-  const cx2 = to.x - NODE_WIDTH / 2;
-  const cy2 = to.y;
+    const cx1 = from.x + NODE_WIDTH / 2;
+    const cy1 = from.y;
+    const cx2 = to.x - NODE_WIDTH / 2;
+    const cy2 = to.y;
 
-  // Kontrollpunkter for kurven
-  const cpx1 = cx1 + (cx2 - cx1) * 0.5;
-  const cpx2 = cx2 - (cx2 - cx1) * 0.5;
+    const cpx1 = cx1 + (cx2 - cx1) * 0.5;
+    const cpx2 = cx2 - (cx2 - cx1) * 0.5;
 
-  return (
-    <path
-      d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
-      fill="none"
-      stroke="orange"
-      strokeWidth={1.5}
-    />
-  );
-}
+    // ENDRING: midtpunkt på kurven for label
+    const midX = (cx1 + cx2) / 2;
+    const midY = (cy1 + cy2) / 2;
+
+    return (
+      <>
+        {/* S-kurve */}
+        <path
+          d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
+          fill="none"
+          stroke="orange"
+          strokeWidth={1.5}
+        />
+
+        {/* ENDRING: label boks midt på linjen */}
+        <rect
+          x={midX - 12}
+          y={midY - 10}
+          width={24}
+          height={20}
+          rx={3}
+          fill="white"
+          stroke="orange"
+          strokeWidth={1}
+        />
+        <text
+          x={midX}
+          y={midY}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize="10"
+          fontWeight="bold"
+          fill="orange"
+        >
+          {type}
+        </text>
+      </>
+    );
+  }
+
   return null;
 }
