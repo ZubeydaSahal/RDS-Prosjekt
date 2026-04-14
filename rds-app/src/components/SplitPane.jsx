@@ -9,18 +9,18 @@ function SplitPane({
     aspectOrder,
     text,
     setText,
+    onBuild
 }) {
     const [leftWidth, setLeftWidth] = useState(40);
 
     const handleDrag = (e) => {
+        if (!e || e.clientX === undefined) return; 
         let newWidth = (e.clientX / window.innerWidth) * 100;
 
         // min 10% / max 90%
         newWidth = Math.min(90, Math.max(10, newWidth));
 
         setLeftWidth(newWidth);
-
-
     };
 
     return (
@@ -31,6 +31,7 @@ function SplitPane({
                 <InputPanel
                     text={text}
                     setText={setText}
+                    onBuild={onBuild} // for å få til Enter+cmd for bygg tre 
                 />
             </div>
 
@@ -45,7 +46,6 @@ function SplitPane({
                     }, {once: true});
                 }}
             >
-
 
                 <div className="slider-icon">
                     <svg
