@@ -2,11 +2,16 @@ function InputPanel({ text, setText, onBuild }) {
 
   const handleKeyDown = (e) => {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     console.log("KEY:", e.key, "META:", e.metaKey, "CTRL:", e.ctrlKey);
   
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
       console.log("CMD+ENTER DETECTED");
       e.preventDefault();
+=======
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault(); 
+>>>>>>> Stashed changes
 =======
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
       e.preventDefault(); 
@@ -25,8 +30,11 @@ function InputPanel({ text, setText, onBuild }) {
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             placeholder="Paste RDS script here... Press cmd + Enter to build tree"
 =======
+=======
+>>>>>>> Stashed changes
             placeholder="Paste RDS script here..."
 >>>>>>> Stashed changes
         />
