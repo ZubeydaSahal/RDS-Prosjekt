@@ -1,82 +1,40 @@
-import { useState, useRef, useEffect } from "react";
-import InputPanel from "./InputPanel";
-import GraphView from "./GraphView";
+import FilterDropdown from "./FilterDropdown";
 
-export default function Menu({inputPanelRef, graphRef, graph, setBackendGraph, aspectOrder, activeAspect, activeRelation,}) {
-    const [dividerPos, setDividerPos] = useState(50);
-    const containerRef = useRef(null);
-    const isDragging = useRef(false);
-
-    const handleMouseDown = () => {
-        isDragging.current = true;
-        document.body.style.userSelect = "none";
-    };
-
-    const handleMouseUp = () => {
-        isDragging.current = false;
-        document.body.style.userSelect = "auto";
-    };
-
-    const handleMouseMove = (e) => {
-        if (!isDragging.current) return;
-
-        const rect = containerRef.current.getBoundingClientRect();
-        const newPos = ((e.clientX - rect.left) / rect.width) * 100;
-
-        if (newPos > 10 && newPos < 90) {
-            setDividerPos(newPos);
-        }
-    };
-
-    // smoother dragging (works outside container)
-    useEffect(() => {
-        window.addEventListener("mousemove", handleMouseMove);
-        window.addEventListener("mouseup", handleMouseUp);
-
-        return () => {
-            window.removeEventListener("mousemove", handleMouseMove);
-            window.removeEventListener("mouseup", handleMouseUp);
-        };
-    }, []);
-
+function Menu({
+  activeAspect,
+  setActiveAspect,
+  activeRelation,
+  setActiveRelation,
+  onBuild,
+  onDownloadImage,
+  onDownloadText,
+  onUploadFile
+}) {
     return (
-        <div
-            ref={containerRef}
-            style={{
-                display: "flex",
-                height: "100vh",
-                width: "100%",
-            }}
-        >
-            {/* LEFT: InputPanel */}
-            <div style={{ width: `${dividerPos}%`, padding: "10px" }}>
-                <InputPanel
-                    ref={inputPanelRef}
-                    setGraph={setBackendGraph}
-                    graphRef={graphRef}
-                    activeAspect={activeAspect}
-                    activeRelation={activeRelation}
-                />
-            </div>
-
-            {/* Divider */}
-            <div
-                onMouseDown={handleMouseDown}
-                style={{
-                    width: "6px",
-                    cursor: "col-resize",
-                    backgroundColor: "#ddd",
-                }}
+        <div className="menu">
+            {/* FILTER */}
+            <FilterDropdown
+                activeAspect={activeAspect}
+                setActiveAspect={setActiveAspect}
+                activeRelation={activeRelation}
+                setActiveRelation={setActiveRelation}
             />
 
-            {/* RIGHT: GraphView */}
-            <div style={{ flex: 1, padding: "10px" }}>
-                <GraphView
-                    graph={graph}
-                    aspectOrder={aspectOrder}
-                    graphRef={graphRef}
-                />
-            </div>
+            <button onClick={onDownloadImage}>
+                Last ned bilde
+            </button>
+
+            <button onClick={onDownloadText}>
+                Last ned tekst
+            </button>
+
+            <label className="file-button">
+                Last opp fil
+                <input type="file" onChange={onUploadFile}/>
+            </label>
+            <button className="primary" onClick={onBuild}>Bygg tre</button>
         </div>
     );
 }
+
+export default Menu;

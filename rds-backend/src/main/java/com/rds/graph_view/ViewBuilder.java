@@ -158,7 +158,6 @@ public class ViewBuilder {
         }*/
 
         // printe hele objektet som sendes (GraphViewDTO)
-        /*
         System.out.println("Aspects: "+graphViewDTO.getNodeDTO());
         System.out.println("Relations: "+graphViewDTO.getRelationDTO());
         //System.out.println("GetRelations: "+graphViewDTO.getRelations());
@@ -170,7 +169,7 @@ public class ViewBuilder {
             System.out.println("JSON: "+json);
         }catch (JsonProcessingException e){
             e.printStackTrace();
-        }*/
+        }
         // ==================================
 
         return graphViewDTO;

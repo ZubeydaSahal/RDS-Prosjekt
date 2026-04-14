@@ -1,4 +1,4 @@
-export function layoutTree(graph) {
+export function layoutTree(graph, aspectOrder) {
 
   if (!graph || !graph.nodes || !graph.root) {
     console.log("Ugyldig graph");
@@ -26,8 +26,10 @@ export function layoutTree(graph) {
   // ----------------------------
   let aspects;
 
-  if (graph.aspectOrder && graph.aspectOrder.length) {
-    aspects = graph.aspectOrder
+  if (aspectOrder) {
+    console.log("===== ASpect order: "+aspectOrder + " ===============")
+    aspects = aspectOrder
+        //console.log(graph.aspects)
       .map(id => graph.aspects.find(a => a.id === id))
       .filter(Boolean);
   } else {
@@ -53,6 +55,7 @@ export function layoutTree(graph) {
   // ----------------------------
   // ASPEKT HEADERS
   // ----------------------------
+  console.log(aspects)
   aspects.forEach((aspect) => {
     nodes.push({
       id: "aspect_" + aspect.id,
@@ -62,6 +65,7 @@ export function layoutTree(graph) {
       type: "aspect"
     });
   });
+  console.log(aspects)
 
   // ----------------------------
   // NODE MAP
@@ -117,7 +121,7 @@ export function layoutTree(graph) {
   // ----------------------------
   // LAYOUT
   // ----------------------------
-  const ROW_GAP = 45;
+  const ROW_GAP = 35;
   const INDENT = 40;
 
   aspects.forEach((aspect) => {
