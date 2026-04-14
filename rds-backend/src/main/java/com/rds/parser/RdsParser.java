@@ -20,7 +20,7 @@ public class RdsParser {
         System.out.println("<Parse> Script: \n" + script + "\n");
         String[] lines = script.split("\\r?\\n");
         int lineNumber = 0;
-        Pattern pattern = Pattern.compile("\\|\\||\\|[^|]+\\|");
+        Pattern pattern = Pattern.compile("\\|\\||\\|[^|]+\\||/");
 
         // 1. it checks if the topNode is declared or not in the first line
         // 2. checks the line for explicit relation being declared
@@ -55,6 +55,7 @@ public class RdsParser {
 
                         for (int i = 0; i < relations.size(); i++) {
                             String relation = relations.get(i);
+                            System.out.println("Matched relation: " + relation);
                             System.out.print("\n\t•Relation #" + (i + 1) + ": ");
 
                             // Get relation start and end postion
@@ -201,7 +202,7 @@ public class RdsParser {
 
     private void CheckExplicitRelationForName(String leftSide, String rightSide, String relation, GraphManager graphmanger) {
         String relationName = null;
-        if (!relation.equals("||")) {
+        if (!relation.equals("||") && !relation.equals("/")) {
             relationName = relation.substring(1, relation.length() - 1);
             System.out.println("\t✓Relation name detected: "+relationName);
         }
