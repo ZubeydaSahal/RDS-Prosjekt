@@ -45,6 +45,7 @@ export function transformGraph(raw) {
         list.forEach(item => {
             nodes.push({
                 id: item.id,
+                code: item.code,
                 name: item.name || item.metadata,
                 aspect: aspectKey
             });

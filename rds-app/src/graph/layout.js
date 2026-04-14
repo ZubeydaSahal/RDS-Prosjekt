@@ -72,6 +72,7 @@ export function layoutTree(graph, aspectOrder) {
   // ----------------------------
   const nodeMap = {};
   graph.nodes.forEach(n => {
+    console.log(n)
     nodeMap[n.id] = { ...n, children: [] };
   });
 
@@ -134,8 +135,8 @@ export function layoutTree(graph, aspectOrder) {
 
       const label = node.id
         ? node.description
-          ? `${node.id} ${name} (${node.description})`
-          : `${node.id} ${name}`
+          ? `${node.aspect} ${node.code} ${name} (${node.description})`
+          : `${node.aspect} ${node.code} ${name}`
         : "";
 
       nodes.push({
