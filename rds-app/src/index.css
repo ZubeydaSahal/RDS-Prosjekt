@@ -9,7 +9,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 30px;
+  padding: 20px 30px;
   background:  #172141;
   color: rgb(235, 229, 229);
 }
@@ -269,7 +269,7 @@ textarea {
   border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
-  color: #374151;
+  color: #0c0b0b;
   cursor: pointer;
   transition: border-color 0.15s;
 }
@@ -379,6 +379,7 @@ textarea {
 .footer {
   padding: 15px;
   padding-bottom: 20px;
+  padding-left: 50px;
   text-align: center;
   background: #172141;
   color: white;
