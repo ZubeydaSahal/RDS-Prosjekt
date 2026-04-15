@@ -13,7 +13,12 @@ export default function Edge({ from, to, type, allNodes }) {
   const NODE_WIDTH = 160;
   const OFFSET = NODE_HEIGHT / 2;
 
-  const aspectNodes = allNodes?.filter(n => n.type === "aspect") || [];
+  // ----------------------------
+  // FINN ASPEKTER + BUS
+  // ----------------------------
+  const aspectNodes =
+    allNodes?.filter(n => n.type === "aspect") || [];
+
   if (!aspectNodes.length) return null;
 
   const topAspectY = Math.min(...aspectNodes.map(n => n.y));
@@ -72,21 +77,28 @@ export default function Edge({ from, to, type, allNodes }) {
     const midX = (cx1 + cx2) / 2;
     const midY = (cy1 + cy2) / 2;
 
+      // Velg farge basert på relasjontype
+      let strokeColor = "orange"; // default
+      if (type === "A") {
+        strokeColor = "#dbabd3"; // blå for |A|
+      } else if (type === "B") {
+        strokeColor = "#6187a5"; // grønn for |B|
+      }
+      
     return (
       <>
         <path
           d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
           fill="none"
-          stroke="orange"
+          stroke={strokeColor}
           strokeWidth={1.5}
         />
-        <rect x={midX - 16} y={midY - 12} width={32} height={24} rx={4} fill="white" stroke="orange" strokeWidth={1.5} />
-        <text x={midX} y={midY} textAnchor="middle" dominantBaseline="middle" fontSize="12" fontWeight="bold" fill="orange">
+        <rect x={midX - 16} y={midY - 12} width={32} height={24} rx={4} fill="white" stroke={strokeColor} strokeWidth={1.5} />
+        <text x={midX} y={midY} textAnchor="middle" dominantBaseline="middle" fontSize="12" fontWeight="bold" fill={strokeColor}>
           |{type}|
         </text>
       </>
     );
   }
-
   return null;
 }
