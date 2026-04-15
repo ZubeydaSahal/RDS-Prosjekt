@@ -48,8 +48,12 @@ function MainPage() {
             allAspects.forEach(a => {
                 paramParts.push(`aspect_${encodeAspectKey(a)}=${activeAspect.includes(a) ? "true" : "false"}`);
             });
-            // Send cross-filter
+            // Send cross-filter (master toggle)
             paramParts.push(`rel_cross=${activeRelation.includes("cross") ? "true" : "false"}`);
+            // Send individuelle relasjonstyper (A, B osv.) for kjente typer
+            relationTypes.forEach(type => {
+                paramParts.push(`rel_${type}=${activeRelation.includes(type) ? "true" : "false"}`);
+            });
             const paramString = paramParts.join("&");
             const response = await fetch(`http://localhost:8080/parse?${paramString}`, {
                 method: "POST",
@@ -70,10 +74,8 @@ function MainPage() {
 
     // Auto-rebuild når filter endres
     useEffect(() => {
-        if (backendGraph) {
-            handleBuild();
-        }
-    }, [activeAspect, activeRelation]);
+    if (backendGraph) handleBuild();
+}, [activeAspect]); // bare aspekt trigger backend
 
     const handleDownloadImage = async () => {
         const node = graphRef.current;
@@ -134,6 +136,7 @@ function MainPage() {
                         graph={backendGraph}
                         graphRef={graphRef}
                         aspectOrder={aspectOrder}
+                        activeRelation={activeRelation}
                         text={text}
                         setText={setText}
                         onBuild={handleBuild}
