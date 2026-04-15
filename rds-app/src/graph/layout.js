@@ -5,6 +5,7 @@ export function layoutTree(graph, aspectOrder) {
     return { nodes: [], hierarchyEdges: [] };
   }
 
+  const collapsedNodes = graph.collapsedNodes || new Set();
   const nodes = [];
 
   const backendEdges = (graph.relations || []).filter(
@@ -25,7 +26,6 @@ export function layoutTree(graph, aspectOrder) {
   // ASPEKTER
   // ----------------------------
   let aspects;
-
   if (aspectOrder) {
     console.log("===== ASpect order: "+aspectOrder + " ===============")
     aspects = aspectOrder
@@ -43,7 +43,7 @@ export function layoutTree(graph, aspectOrder) {
   });
 
   // ----------------------------
-  // 🆕 NAVN PÅ ASPEKTER
+  //  NAVN PÅ ASPEKTER
   // ----------------------------
   const ASPECT_NAMES = {
     "%": "Typeaspekt",
@@ -120,10 +120,11 @@ export function layoutTree(graph, aspectOrder) {
   });
 
   // ----------------------------
-  // LAYOUT
+  // LAYOUT MED COLLASPE NODE
   // ----------------------------
-  const ROW_GAP = 45;
+  const ROW_GAP = 35;
   const INDENT = 40;
+  const visibleHierarchyEdges = [];
 
   aspects.forEach((aspect) => {
 
@@ -139,25 +140,35 @@ export function layoutTree(graph, aspectOrder) {
           : `${node.aspect} ${node.code} ${name}`
         : "";
 
+        const isCollapsed = collapsedNodes.has(node.id);
+
       nodes.push({
         ...node,
         label,
         x: COLUMN_X[aspect.id] + depth * 20,
-        y: currentY
+        y: currentY,
+        children: node.children,
+        collapsed:isCollapsed
       });
 
       currentY += ROW_GAP;
 
-      node.children.forEach(child => {
-        dfs(child, depth + 1);
-      });
+        if (!isCollapsed) {
+        node.children.forEach(child => {
+          visibleHierarchyEdges.push({ from: node.id, to: child.id, type: "hierarchy" });
+          dfs(child, depth + 1);
+        });
+      }
     }
 
+      
     rootsByAspect[aspect.id].forEach(rootNode => {
       dfs(nodeMap[rootNode.id], 0);
     });
 
   });
+
+
 
   // ----------------------------
   // RETURN
@@ -165,6 +176,7 @@ export function layoutTree(graph, aspectOrder) {
   return {
     nodes,
     hierarchyEdges: [
+      ...visibleHierarchyEdges,
       ...generatedHierarchyEdges,
       ...backendEdges
     ]

@@ -1,4 +1,4 @@
-export default function Node({ node }) {
+export default function Node({ node, onToggle, collapsed }) {
 
   // ----------------------------
   // TRUNCATE TEKST (…)
@@ -30,11 +30,12 @@ export default function Node({ node }) {
 
   const { prefix, rest } = splitLabel(truncatedLabel);
 
+
   // ----------------------------
   // DESIGN SETTINGS 
   // ----------------------------
   const BOX_WIDTH = 190;
-  const BOX_HEIGHT = 32;
+  const BOX_HEIGHT = 22;
 
   const STRIPE_WIDTH = 6;
   const TEXT_PADDING = 8;
@@ -67,6 +68,12 @@ export default function Node({ node }) {
   const isAspect = node.id?.startsWith("aspect_");
   const isRoot = node.type === "root";
   const aspectKey = isAspect ? node.id.replace("aspect_", "") : null;
+  const hasChildren = node.children && node.children.length > 0;
+
+  //Collapse knapp poisjonering
+  const BTN_R = 8;
+  const btnX = node.x - BOX_WIDTH / 2 - BTN_R - 4;
+  const btnY = node.y; 
 
   return (
     <g>
@@ -149,6 +156,25 @@ export default function Node({ node }) {
     </>
   )}
 </text>
+   {/* COLLAPSE/EXPAND KNAPP — bare på noder med barn */}
+      {hasChildren && !isRoot && !isAspect && (
+        <g style={{ cursor: "pointer" }} onClick={() => onToggle && onToggle(node.id)}>
+          <circle cx={btnX} cy={btnY} r={BTN_R} fill="white" stroke={strokeColor} strokeWidth={1.5} />
+          <text
+            x={btnX}
+            y={btnY}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fontSize="12"
+            fontWeight="bold"
+            fill={strokeColor}
+          >
+            {collapsed ? "+" : "−"}
+          </text>
+        </g>
+      )}
+
+
 
     </g>
   );
