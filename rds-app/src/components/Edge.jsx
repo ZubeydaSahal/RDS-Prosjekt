@@ -84,7 +84,7 @@ export default function Edge({ from, to, type, allNodes }) {
     const midY = (cy1 + cy2) / 2;
 
     let strokeColor = "orange";
-    if (type === "A") strokeColor = "#dbabd3";
+    if (type === "A") strokeColor = "#ffa040";
     else if (type === "B") strokeColor = "#6187a5";
 
     return (

@@ -18,16 +18,26 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
   const [zoom, setZoom] = useState(1);
   const [collapsedNodes, setCollapsedNodes] = useState(new Set());
 
+  // NY: holder styr på hvilken edge som er hoveret
+  const [hoveredEdge, setHoveredEdge] = useState(null);
+
+  // ----------------------------
+  // ZOOM (uendret)
+  // ----------------------------
   const handleWheel = (e) => {
     if (fitView) return;
     if (e.ctrlKey) e.preventDefault();
     e.preventDefault();
     e.stopPropagation();
+
     const scaleFactor = 0.005;
     const newZoom = zoom - e.deltaY * scaleFactor;
     setZoom(Math.min(3, Math.max(0.2, newZoom)));
   };
 
+  // ----------------------------
+  // COLLAPSE (uendret)
+  // ----------------------------
   function handleToggle(nodeId) {
     setCollapsedNodes(prev => {
       const next = new Set(prev);
@@ -37,6 +47,9 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
     });
   }
 
+  // ----------------------------
+  // LAYOUT (uendret)
+  // ----------------------------
   const layout = useMemo(() => {
     if (!graph) return { nodes: [], hierarchyEdges: [] };
     const transformed = transformGraph(graph);
@@ -47,7 +60,9 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
   const nodes = layout.nodes || [];
   const relations = layout.hierarchyEdges || [];
 
-  // ENDRING: filtrer kryssrelasjoner basert på activeRelation
+  // ----------------------------
+  // FILTER RELASJONER (uendret)
+  // ----------------------------
   const visibleRelations = relations.filter(edge => {
     if (edge.type === "hierarchy") return true;
     if (!activeRelation.includes("cross")) return false;
@@ -91,11 +106,12 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
       >
         <g transform={`scale(${zoom})`}>
 
-          {/* BUS SYSTEM rot til aspekt-header */}
+          {/* BUS SYSTEM */}
           {aspectNodes.length > 0 && (() => {
             const xs = aspectNodes.map(n => n.x);
             const minBusX = Math.min(...xs);
             const maxBusX = Math.max(...xs);
+
             return (
               <>
                 {rootNode && (
@@ -109,7 +125,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
             );
           })()}
 
-          {/* LINJER FRA ASPEKT HEADER TIL ROT-NODER */}
+          {/* ASPECT → ROOT */}
           {aspectNodes.map(aspectNode => {
             const aspectKey = aspectNode.id.replace("aspect_", "");
             const color = ASPECT_COLORS[aspectKey] || "#999";
@@ -123,52 +139,73 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
 
             return rootNodesInColumn.map(node => (
               <g key={`aspect-root-${node.id}`}>
-                <line
-                  x1={aspectNode.x - 90}
-                  y1={aspectNode.y + 20}
-                  x2={aspectNode.x - 90}
-                  y2={node.y}
-                  stroke={color}
-                  strokeWidth={2}
-                />
-                <line
-                  x1={aspectNode.x - 90}
-                  y1={node.y}
-                  x2={node.x - 95}
-                  y2={node.y}
-                  stroke={color}
-                  strokeWidth={2}
-                />
+                <line x1={aspectNode.x - 90} y1={aspectNode.y + 20} x2={aspectNode.x - 90} y2={node.y} stroke={color} strokeWidth={2} />
+                <line x1={aspectNode.x - 90} y1={node.y} x2={node.x - 95} y2={node.y} stroke={color} strokeWidth={2} />
               </g>
             ));
           })}
 
-          {/* EDGES — bruker visibleRelations */}
-          {visibleRelations.map((edge, index) => {
-            const from = nodeMap[edge.from];
-            const to = nodeMap[edge.to];
-            if (!from || !to) return null;
-            return (
-              <Edge
-                key={`${edge.from}-${edge.to}-${index}`}
-                from={from}
-                to={to}
-                type={edge.type}
-                busY={busY}
-                allNodes={nodes}
-              />
-            );
-          })}
+          {/* LAYER 1: EDGES (bak) */}
+          <g>
+            {visibleRelations.map((edge, index) => {
+              const from = nodeMap[edge.from];
+              const to = nodeMap[edge.to];
+              if (!from || !to) return null;
 
-          {/* NODES */}
-          {nodes.map(node => (
-            <Node
-              key={node.id}
-              node={node}
-              onToggle={handleToggle}
-              collapsed={collapsedNodes.has(node.id)}
-            />
-          ))}
+              const edgeId = `${edge.from}-${edge.to}-${index}`;
+              if (hoveredEdge === edgeId) return null;
+
+              return (
+                <Edge
+                  key={edgeId}
+                  edgeId={edgeId}
+                  from={from}
+                  to={to}
+                  type={edge.type}
+                  allNodes={nodes}
+                  setHoveredEdge={setHoveredEdge}
+                  isHovered={false}
+                />
+              );
+            })}
+          </g>
+
+          {/* LAYER 2: NODES */}
+          <g>
+            {nodes.map(node => (
+              <Node
+                key={node.id}
+                node={node}
+                onToggle={handleToggle}
+                collapsed={collapsedNodes.has(node.id)}
+              />
+            ))}
+          </g>
+
+          {/* LAYER 3: HOVERED EDGE (øverst) */}
+          <g>
+            {visibleRelations.map((edge, index) => {
+              const edgeId = `${edge.from}-${edge.to}-${index}`;
+              if (edgeId !== hoveredEdge) return null;
+
+              const from = nodeMap[edge.from];
+              const to = nodeMap[edge.to];
+              if (!from || !to) return null;
+
+              return (
+                <Edge
+                  key={edgeId}
+                  edgeId={edgeId}
+                  from={from}
+                  to={to}
+                  type={edge.type}
+                  allNodes={nodes}
+                  setHoveredEdge={setHoveredEdge}
+                  isHovered={true}
+                />
+              );
+            })}
+          </g>
 
         </g>
       </svg>
