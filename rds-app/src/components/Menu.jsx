@@ -1,5 +1,7 @@
 import FilterDropdown from "./FilterDropdown";
-
+import imageDownload from "../assets/image-download.svg"
+import TextDownload from "../assets/file-download.svg"
+import TextUpload from "../assets/upload text.svg"
 function Menu({
   activeAspect,
   setActiveAspect,
@@ -13,24 +15,33 @@ function Menu({
 }) {
     return (
         <div className="menu">
-             {/* FILTER */}
-            <FilterDropdown
-                activeAspect={activeAspect}
-                setActiveAspect={setActiveAspect}
-                activeRelation={activeRelation}
-                setActiveRelation={setActiveRelation}
-                relationTypes={relationTypes}
-            />
+            <div className="left">
+                <button onClick={onDownloadText} title="Download Text">
+                    <img src={TextDownload} alt="Download Text" height={24} width={24}/>
+                </button>
 
-            <button onClick={onDownloadImage}>Last ned bilde</button>
-            <button onClick={onDownloadText}>Last ned tekst</button>
+                <label className="file-button" title="Upload text">
+                    <img src={TextUpload} alt="Upload text" height={24} width={24}/>
+                    <input type="file" onChange={onUploadFile}/>
+                </label>
 
-            <label className="file-button">
-                Last opp fil
-                <input type="file" onChange={onUploadFile} />
-            </label>
+                <button onClick={onDownloadImage} title="Download Graph">
+                    <img src={imageDownload} alt="Download Graph" height={24} width={24}/>
+                </button>
+            </div>
 
-            <button className="primary" onClick={onBuild}>Bygg tre</button>
+            <div className="center">
+
+                <button className="primary" onClick={onBuild}>Bygg tre</button>
+                {/* FILTER */}
+                <FilterDropdown
+                    activeAspect={activeAspect}
+                    setActiveAspect={setActiveAspect}
+                    activeRelation={activeRelation}
+                    setActiveRelation={setActiveRelation}
+                    relationTypes={relationTypes}
+                />
+            </div>
         </div>
     );
 }

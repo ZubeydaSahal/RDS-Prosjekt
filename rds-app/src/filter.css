@@ -1,0 +1,111 @@
+/* FILTER */
+.fd-wrapper {
+    position: relative;
+    margin-left: auto;
+    display: inline-block;
+}
+
+.fd-trigger {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: white;
+    border: 1.5px solid #b8dce8;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.fd-trigger:hover { border-color: #4da3c8; }
+
+.fd-badge {
+    background: #4da3c8;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 1px 6px;
+}
+
+.fd-chevron {
+    font-size: 10px;
+    color: #9ca3af;
+}
+
+.fd-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 100;
+    background: white;
+    border: 1px solid #c8dde3;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+    width: 240px;
+    padding: 12px 0 8px;
+}
+
+.fd-section-title {
+    margin: 0 0 4px;
+    padding: 0 14px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+}
+
+.fd-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.fd-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.fd-item:hover { background: #f0f9fc; }
+
+.fd-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #4da3c8;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.fd-symbol {
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: #4da3c8;
+    width: 20px;
+}
+
+.fd-label {
+    font-size: 13px;
+    color: #374151;
+}
+
+.fd-empty {
+    padding: 8px 14px;
+    display: block;
+    color: #aaa;
+    font-size: 13px;
+}
+
+.fd-divider {
+    height: 1px;
+    background: #e8f4f8;
+    margin: 8px 0;
+}

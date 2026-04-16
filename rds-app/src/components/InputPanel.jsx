@@ -16,7 +16,7 @@ function InputPanel({ text, setText, onBuild}) {
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Paste RDS script here... Press CMD + Enter to build tree"
+            placeholder="Write RDS script here or upload .txt file. press ctr + enter or button to build graph."
         />
       </div>
   );
