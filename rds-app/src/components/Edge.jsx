@@ -9,6 +9,7 @@ const ASPECT_COLORS = {
 
 export default function Edge({ from, to, type, allNodes }) {
 
+  // Hover state (lovlig plassert – alltid kjøres)
   const [isHovered, setIsHovered] = useState(false);
 
   if (!from || !to) return null;
@@ -33,7 +34,7 @@ export default function Edge({ from, to, type, allNodes }) {
   const maxX = Math.max(...xs);
 
   // ----------------------------
-  // ROOT → BUS SYSTEM
+  // ROOT → BUS SYSTEM (UENDRET)
   // ----------------------------
   if (type === "root") {
     const root = from;
@@ -49,7 +50,7 @@ export default function Edge({ from, to, type, allNodes }) {
   }
 
   // ----------------------------
-  // HIERARCHY
+  // HIERARCHY (100% UENDRET)
   // ----------------------------
   if (type === "hierarchy") {
     const aspect = from.aspect;
@@ -67,7 +68,7 @@ export default function Edge({ from, to, type, allNodes }) {
   }
 
   // ----------------------------
-  // CROSS — S-kurve med hover
+  // CROSS — hover lagt til
   // ----------------------------
   if (type !== "hierarchy" && type !== "root") {
 
@@ -82,28 +83,23 @@ export default function Edge({ from, to, type, allNodes }) {
     const midX = (cx1 + cx2) / 2;
     const midY = (cy1 + cy2) / 2;
 
-    // Farge basert på type
     let strokeColor = "orange";
     if (type === "A") strokeColor = "#dbabd3";
     else if (type === "B") strokeColor = "#6187a5";
 
     return (
       <>
-        {/* --------------------------------
-            HITBOX (gjør det lett å hovere)
-        -------------------------------- */}
+        {/* HITBOX (gjør hover lett) */}
         <path
           d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
           fill="none"
           stroke="transparent"
-          strokeWidth={12} // større område = enklere hover
+          strokeWidth={12}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         />
 
-        {/* --------------------------------
-            SYNLIG LINJE
-        -------------------------------- */}
+        {/* SYNLIG LINJE */}
         <path
           d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
           fill="none"
@@ -113,9 +109,7 @@ export default function Edge({ from, to, type, allNodes }) {
           style={{ pointerEvents: "none" }}
         />
 
-        {/* --------------------------------
-            LABEL
-        -------------------------------- */}
+        {/* LABEL */}
         <rect
           x={midX - 16}
           y={midY - 12}
