@@ -7,15 +7,7 @@ const ASPECT_COLORS = {
   "%%": "#a855f7",
 };
 
-export default function Edge({ 
-  from, 
-  to, 
-  type, 
-  allNodes,
-  edgeId,
-  isDimmed,
-  setHoveredEdge
-}) {
+export default function Edge({ from, to, type, allNodes }) {
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -24,9 +16,6 @@ export default function Edge({
   const NODE_HEIGHT = 40;
   const NODE_WIDTH = 160;
   const OFFSET = NODE_HEIGHT / 2;
-
-  // 🔥 NY: hover styres av GraphView
-  const isHovered = !isDimmed;
 
   // ----------------------------
   // FINN ASPEKTER + BUS
