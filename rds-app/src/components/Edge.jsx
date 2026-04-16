@@ -17,6 +17,8 @@ export default function Edge({
   setHoveredEdge
 }) {
 
+  const [isHovered, setIsHovered] = useState(false);
+
   if (!from || !to) return null;
 
   const NODE_HEIGHT = 40;
@@ -91,36 +93,40 @@ export default function Edge({
     const midX = (cx1 + cx2) / 2;
     const midY = (cy1 + cy2) / 2;
 
+    // Farge basert på type
     let strokeColor = "orange";
-    if (type === "A") {
-      strokeColor = "#dbabd3";
-    } else if (type === "B") {
-      strokeColor = "#6187a5";
-    }
+    if (type === "A") strokeColor = "#dbabd3";
+    else if (type === "B") strokeColor = "#6187a5";
 
     return (
       <>
-        {/* Hover trigger */}
+        {/* --------------------------------
+            HITBOX (gjør det lett å hovere)
+        -------------------------------- */}
         <path
           d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
           fill="none"
           stroke="transparent"
-          strokeWidth={10}
-          onMouseEnter={() => setHoveredEdge(edgeId)}
-          onMouseLeave={() => setHoveredEdge(null)}
+          strokeWidth={12} // større område = enklere hover
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         />
 
-        {/* Synlig linje */}
+        {/* --------------------------------
+            SYNLIG LINJE
+        -------------------------------- */}
         <path
           d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
           fill="none"
           stroke={strokeColor}
           strokeWidth={isHovered ? 4 : 1.5}
-          opacity={isHovered ? 1 : 0.2}
+          opacity={isHovered ? 1 : 0.7}
           style={{ pointerEvents: "none" }}
         />
 
-        {/* Label */}
+        {/* --------------------------------
+            LABEL
+        -------------------------------- */}
         <rect
           x={midX - 16}
           y={midY - 12}
@@ -131,7 +137,7 @@ export default function Edge({
           stroke={strokeColor}
           strokeWidth={1.5}
           opacity={isHovered ? 1 : 0.8}
-          pointerEvents="none"
+          style={{ pointerEvents: "none" }}
         />
 
         <text
