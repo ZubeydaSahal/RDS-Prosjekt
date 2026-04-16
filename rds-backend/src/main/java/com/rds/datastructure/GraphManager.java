@@ -172,16 +172,23 @@ public class GraphManager {
 
     
     public Set<Relation> getFilteredCrossRelations(Map<String, Boolean> filters) {
-    if (filters == null) return crossRelations;
+        if (filters == null) return crossRelations;
 
-    // Hvis rel_cross er false → returner tom liste
-    Boolean showCross = filters.get("cross");
-    if (showCross != null && !showCross) {
-        return new HashSet<>();
+        // Hvis rel_cross er false → returner tom liste
+        Boolean showCross = filters.get("cross");
+        if (showCross != null && !showCross) {
+            return new HashSet<>();
+        }
+
+        // Filtrer på spesifikke relasjonstyper (A, B osv.)
+        return crossRelations.stream()
+            .filter(r -> {
+                String type = r.getType();
+                Boolean show = filters.get(type);
+                return show == null || show; // vis hvis ikke eksplisitt skrudd av
+            })
+            .collect(Collectors.toSet());
     }
-
-    return crossRelations;
-}
 
     // filter for aspect
     public Map<String, Node> getFilteredNodesByAspect(Map<String, Boolean> filters) {
