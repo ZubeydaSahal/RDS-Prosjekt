@@ -29,7 +29,6 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
     if (e.ctrlKey) e.preventDefault();
     e.preventDefault();
     e.stopPropagation();
-
     const scaleFactor = 0.005;
     const newZoom = zoom - e.deltaY * scaleFactor;
     setZoom(Math.min(3, Math.max(0.2, newZoom)));
@@ -61,12 +60,14 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
   const relations = layout.hierarchyEdges || [];
 
   // ----------------------------
-  // FILTER RELASJONER 
+  // FILTER RELASJONER
+  // ENDRING: null-type håndteres som "ingen"
   // ----------------------------
   const visibleRelations = relations.filter(edge => {
     if (edge.type === "hierarchy") return true;
     if (!activeRelation.includes("cross")) return false;
-    if (!activeRelation.includes(edge.type)) return false;
+    const typeKey = edge.type ?? "ingen";
+    if (!activeRelation.includes(typeKey)) return false;
     return true;
   });
 
@@ -106,12 +107,11 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
       >
         <g transform={`scale(${zoom})`}>
 
-          {/* BUS SYSTEM */}
+          {/* BUS SYSTEM rot til aspekt-header */}
           {aspectNodes.length > 0 && (() => {
             const xs = aspectNodes.map(n => n.x);
             const minBusX = Math.min(...xs);
             const maxBusX = Math.max(...xs);
-
             return (
               <>
                 {rootNode && (
@@ -125,7 +125,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
             );
           })()}
 
-          {/* ASPECT → ROOT */}
+          {/* ASPECT → ROOT NODER */}
           {aspectNodes.map(aspectNode => {
             const aspectKey = aspectNode.id.replace("aspect_", "");
             const color = ASPECT_COLORS[aspectKey] || "#999";
@@ -165,7 +165,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
                   allNodes={nodes}
                   setHoveredEdge={setHoveredEdge}
                   isHovered={false}
-                  index={index} 
+                  index={index}
                 />
               );
             })}
@@ -203,7 +203,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
                   allNodes={nodes}
                   setHoveredEdge={setHoveredEdge}
                   isHovered={true}
-                  index={index} 
+                  index={index}
                 />
               );
             })}
