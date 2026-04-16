@@ -5,7 +5,7 @@
     grid-template-columns: 1fr auto 1fr;
     gap: 10px;
     padding: 10px 16px;
-    background: #fd9f3f; /* eaf6fa, fd9f3f, fbf0e4, 0051a4*/
+    background: #0051a4; /* eaf6fa, fd9f3f, fbf0e4, 0051a4*/
     border-bottom: 1.5px solid #b8dce8;
     flex-shrink: 0;
 }
@@ -20,14 +20,17 @@
     gap: 12px;
     align-items: center;
 }
+.menu .right {
+    display: flex;
+    gap: 5px;
+    justify-self: end;
+}
 .menu button.primary {
     margin: 0 auto;
     background: #BBF9C5; /* 35DE6D, BBF9C5 */
     color: black;
     border-color: #28c45a;
 }
-
-
 
 .menu button {
     padding: 8px 12px;
