@@ -18,16 +18,30 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
   const [zoom, setZoom] = useState(1);
   const [collapsedNodes, setCollapsedNodes] = useState(new Set());
 
+  // ----------------------------
+  // NY: holder styr på hvilken edge som er hoveret
+  // brukes for layered rendering
+  // ----------------------------
+  const [hoveredEdge, setHoveredEdge] = useState(null);
+
+  // ----------------------------
+  // ZOOM (beholdt uendret)
+  // ----------------------------
   const handleWheel = (e) => {
     if (fitView) return;
     if (e.ctrlKey) e.preventDefault();
     e.preventDefault();
     e.stopPropagation();
+
     const scaleFactor = 0.005;
     const newZoom = zoom - e.deltaY * scaleFactor;
+
     setZoom(Math.min(3, Math.max(0.2, newZoom)));
   };
 
+  // ----------------------------
+  // COLLAPSE (beholdt uendret)
+  // ----------------------------
   function handleToggle(nodeId) {
     setCollapsedNodes(prev => {
       const next = new Set(prev);
@@ -37,17 +51,24 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
     });
   }
 
+  // ----------------------------
+  // LAYOUT (beholdt uendret)
+  // ----------------------------
   const layout = useMemo(() => {
     if (!graph) return { nodes: [], hierarchyEdges: [] };
+
     const transformed = transformGraph(graph);
     if (!transformed) return { nodes: [], hierarchyEdges: [] };
+
     return layoutTree({ ...transformed, collapsedNodes }, aspectOrder);
   }, [graph, aspectOrder, collapsedNodes]);
 
   const nodes = layout.nodes || [];
   const relations = layout.hierarchyEdges || [];
 
-  // ENDRING: filtrer kryssrelasjoner basert på activeRelation
+  // ----------------------------
+  // FILTER RELASJONER (beholdt uendret)
+  // ----------------------------
   const visibleRelations = relations.filter(edge => {
     if (edge.type === "hierarchy") return true;
     if (!activeRelation.includes("cross")) return false;
@@ -76,7 +97,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
     <div
       ref={graphRef}
       className="graph-container"
-      style={{ overflow: fitView ? "hidden" : "auto" }}
+      style={{ overflow: fitView ? "hidden" : "auto" }} // beholdt
     >
       <button className="scroll-mode" onClick={() => setFitView(!fitView)}>
         {fitView ? "Scroll mode" : "Fit to screen"}
@@ -91,11 +112,14 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
       >
         <g transform={`scale(${zoom})`}>
 
-          {/* BUS SYSTEM rot til aspekt-header */}
+          {/* ----------------------------
+              BUS SYSTEM (uendret)
+          ---------------------------- */}
           {aspectNodes.length > 0 && (() => {
             const xs = aspectNodes.map(n => n.x);
             const minBusX = Math.min(...xs);
             const maxBusX = Math.max(...xs);
+
             return (
               <>
                 {rootNode && (
@@ -109,66 +133,80 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
             );
           })()}
 
-          {/* LINJER FRA ASPEKT HEADER TIL ROT-NODER */}
-          {aspectNodes.map(aspectNode => {
-            const aspectKey = aspectNode.id.replace("aspect_", "");
-            const color = ASPECT_COLORS[aspectKey] || "#999";
+          {/* ----------------------------
+              LAYER 1: ALLE EDGES (dimmet)
+              tegnes bak nodes
+          ---------------------------- */}
+          <g>
+            {visibleRelations.map((edge, index) => {
+              const from = nodeMap[edge.from];
+              const to = nodeMap[edge.to];
+              if (!from || !to) return null;
 
-            const rootNodesInColumn = nodes.filter(n => {
-              if (n.aspect !== aspectKey) return false;
-              if (n.id.startsWith("aspect_")) return false;
-              const parentId = n.id.substring(0, n.id.lastIndexOf("."));
-              return !nodes.some(p => p.id === parentId);
-            });
+              const edgeId = `${edge.from}-${edge.to}-${index}`;
 
-            return rootNodesInColumn.map(node => (
-              <g key={`aspect-root-${node.id}`}>
-                <line
-                  x1={aspectNode.x - 90}
-                  y1={aspectNode.y + 20}
-                  x2={aspectNode.x - 90}
-                  y2={node.y}
-                  stroke={color}
-                  strokeWidth={2}
+              // hover-edge tegnes i layer 3
+              if (hoveredEdge === edgeId) return null;
+
+              return (
+                <Edge
+                  key={edgeId}
+                  edgeId={edgeId}
+                  from={from}
+                  to={to}
+                  type={edge.type}
+                  allNodes={nodes}
+                  index={index}
+                  isDimmed={true}
+                  setHoveredEdge={setHoveredEdge}
                 />
-                <line
-                  x1={aspectNode.x - 90}
-                  y1={node.y}
-                  x2={node.x - 95}
-                  y2={node.y}
-                  stroke={color}
-                  strokeWidth={2}
-                />
-              </g>
-            ));
-          })}
+              );
+            })}
+          </g>
 
-          {/* EDGES — bruker visibleRelations */}
-          {visibleRelations.map((edge, index) => {
-            const from = nodeMap[edge.from];
-            const to = nodeMap[edge.to];
-            if (!from || !to) return null;
-            return (
-              <Edge
-                key={`${edge.from}-${edge.to}-${index}`}
-                from={from}
-                to={to}
-                type={edge.type}
-                busY={busY}
-                allNodes={nodes}
+          {/* ----------------------------
+              LAYER 2: NODES
+              alltid lesbare
+          ---------------------------- */}
+          <g>
+            {nodes.map(node => (
+              <Node
+                key={node.id}
+                node={node}
+                onToggle={handleToggle}
+                collapsed={collapsedNodes.has(node.id)}
               />
-            );
-          })}
+            ))}
+          </g>
 
-          {/* NODES */}
-          {nodes.map(node => (
-            <Node
-              key={node.id}
-              node={node}
-              onToggle={handleToggle}
-              collapsed={collapsedNodes.has(node.id)}
-            />
-          ))}
+          {/* ----------------------------
+              LAYER 3: HOVERED EDGE
+              tegnes øverst
+          ---------------------------- */}
+          <g>
+            {visibleRelations.map((edge, index) => {
+              const edgeId = `${edge.from}-${edge.to}-${index}`;
+              if (edgeId !== hoveredEdge) return null;
+
+              const from = nodeMap[edge.from];
+              const to = nodeMap[edge.to];
+              if (!from || !to) return null;
+
+              return (
+                <Edge
+                  key={edgeId}
+                  edgeId={edgeId}
+                  from={from}
+                  to={to}
+                  type={edge.type}
+                  allNodes={nodes}
+                  index={index}
+                  isDimmed={false}
+                  setHoveredEdge={setHoveredEdge}
+                />
+              );
+            })}
+          </g>
 
         </g>
       </svg>

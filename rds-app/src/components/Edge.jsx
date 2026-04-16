@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const ASPECT_COLORS = {
   "=": "#f97316",
   "%": "#3b82f6",
@@ -6,6 +8,8 @@ const ASPECT_COLORS = {
 };
 
 export default function Edge({ from, to, type, allNodes }) {
+
+  const [isHovered, setIsHovered] = useState(false);
 
   if (!from || !to) return null;
 
@@ -63,9 +67,10 @@ export default function Edge({ from, to, type, allNodes }) {
   }
 
   // ----------------------------
-  // CROSS — S-kurve med type-label
+  // CROSS — S-kurve med hover
   // ----------------------------
   if (type !== "hierarchy" && type !== "root") {
+
     const cx1 = from.x + NODE_WIDTH / 2;
     const cy1 = from.y;
     const cx2 = to.x - NODE_WIDTH / 2;
@@ -77,28 +82,65 @@ export default function Edge({ from, to, type, allNodes }) {
     const midX = (cx1 + cx2) / 2;
     const midY = (cy1 + cy2) / 2;
 
-      // Velg farge basert på relasjontype
-      let strokeColor = "orange"; // default
-      if (type === "A") {
-        strokeColor = "#dbabd3"; // blå for |A|
-      } else if (type === "B") {
-        strokeColor = "#6187a5"; // grønn for |B|
-      }
-      
+    // Velg farge basert på relasjontype
+    let strokeColor = "orange";
+    if (type === "A") {
+      strokeColor = "#dbabd3";
+    } else if (type === "B") {
+      strokeColor = "#6187a5";
+    }
+
     return (
       <>
+        {/* Usynlig hitbox for hover */}
+        <path
+          d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
+          fill="none"
+          stroke="transparent"
+          strokeWidth={10}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        />
+
+        {/* Synlig linje */}
         <path
           d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
           fill="none"
           stroke={strokeColor}
-          strokeWidth={1.5}
+          strokeWidth={isHovered ? 4 : 1.5}
+          opacity={isHovered ? 1 : 0.7}
+          style={{ pointerEvents: "none" }}
         />
-        <rect x={midX - 16} y={midY - 12} width={32} height={24} rx={4} fill="white" stroke={strokeColor} strokeWidth={1.5} />
-        <text x={midX} y={midY} textAnchor="middle" dominantBaseline="middle" fontSize="12" fontWeight="bold" fill={strokeColor}>
+
+        {/* Label */}
+        <rect
+          x={midX - 16}
+          y={midY - 12}
+          width={32}
+          height={24}
+          rx={4}
+          fill="white"
+          stroke={strokeColor}
+          strokeWidth={1.5}
+          opacity={isHovered ? 1 : 0.8}
+          pointerEvents="none"
+        />
+
+        <text
+          x={midX}
+          y={midY}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize="12"
+          fontWeight="bold"
+          fill={strokeColor}
+          style={{ pointerEvents: "none" }}
+        >
           |{type}|
         </text>
       </>
     );
   }
+
   return null;
 }
