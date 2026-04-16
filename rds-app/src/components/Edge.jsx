@@ -93,7 +93,7 @@ export default function Edge({
 
     let strokeColor = "orange";
     if (type === "A") {
-      strokeColor = "#ffa040";
+      strokeColor = "#dbabd3";
     } else if (type === "B") {
       strokeColor = "#6187a5";
     }
@@ -112,7 +112,7 @@ export default function Edge({
 
         {/* Synlig linje */}
         <path
-          d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} h${cpx2} ${cy2} ${cx2} ${cy2}`}
+          d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
           fill="none"
           stroke={strokeColor}
           strokeWidth={isHovered ? 4 : 1.5}
@@ -129,7 +129,7 @@ export default function Edge({
           rx={4}
           fill="white"
           stroke={strokeColor}
-          strokeWidth={3.5}
+          strokeWidth={1.5}
           opacity={isHovered ? 1 : 0.8}
           pointerEvents="none"
         />
