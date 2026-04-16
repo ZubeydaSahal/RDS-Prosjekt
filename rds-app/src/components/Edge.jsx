@@ -7,15 +7,24 @@ const ASPECT_COLORS = {
   "%%": "#a855f7",
 };
 
-export default function Edge({ from, to, type, allNodes }) {
-
-  const [isHovered, setIsHovered] = useState(false);
+export default function Edge({ 
+  from, 
+  to, 
+  type, 
+  allNodes,
+  edgeId,
+  isDimmed,
+  setHoveredEdge
+}) {
 
   if (!from || !to) return null;
 
   const NODE_HEIGHT = 40;
   const NODE_WIDTH = 160;
   const OFFSET = NODE_HEIGHT / 2;
+
+  // 🔥 NY: hover styres av GraphView
+  const isHovered = !isDimmed;
 
   // ----------------------------
   // FINN ASPEKTER + BUS
@@ -82,7 +91,6 @@ export default function Edge({ from, to, type, allNodes }) {
     const midX = (cx1 + cx2) / 2;
     const midY = (cy1 + cy2) / 2;
 
-    // Velg farge basert på relasjontype
     let strokeColor = "orange";
     if (type === "A") {
       strokeColor = "#dbabd3";
@@ -92,14 +100,14 @@ export default function Edge({ from, to, type, allNodes }) {
 
     return (
       <>
-        {/* Usynlig hitbox for hover */}
+        {/* Hover trigger */}
         <path
           d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
           fill="none"
           stroke="transparent"
           strokeWidth={10}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          onMouseEnter={() => setHoveredEdge(edgeId)}
+          onMouseLeave={() => setHoveredEdge(null)}
         />
 
         {/* Synlig linje */}
@@ -108,7 +116,7 @@ export default function Edge({ from, to, type, allNodes }) {
           fill="none"
           stroke={strokeColor}
           strokeWidth={isHovered ? 4 : 1.5}
-          opacity={isHovered ? 1 : 0.7}
+          opacity={isHovered ? 1 : 0.2}
           style={{ pointerEvents: "none" }}
         />
 
