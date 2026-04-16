@@ -18,11 +18,11 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
   const [zoom, setZoom] = useState(1);
   const [collapsedNodes, setCollapsedNodes] = useState(new Set());
 
-  // NY: holder styr på hvilken edge som er hoveret
+  // Holder styr på hvilken edge som er hoveret
   const [hoveredEdge, setHoveredEdge] = useState(null);
 
   // ----------------------------
-  // ZOOM (uendret)
+  // ZOOM 
   // ----------------------------
   const handleWheel = (e) => {
     if (fitView) return;
@@ -36,7 +36,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
   };
 
   // ----------------------------
-  // COLLAPSE (uendret)
+  // COLLAPSE 
   // ----------------------------
   function handleToggle(nodeId) {
     setCollapsedNodes(prev => {
@@ -48,7 +48,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
   }
 
   // ----------------------------
-  // LAYOUT (uendret)
+  // LAYOUT 
   // ----------------------------
   const layout = useMemo(() => {
     if (!graph) return { nodes: [], hierarchyEdges: [] };
@@ -61,7 +61,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
   const relations = layout.hierarchyEdges || [];
 
   // ----------------------------
-  // FILTER RELASJONER (uendret)
+  // FILTER RELASJONER 
   // ----------------------------
   const visibleRelations = relations.filter(edge => {
     if (edge.type === "hierarchy") return true;
@@ -165,6 +165,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
                   allNodes={nodes}
                   setHoveredEdge={setHoveredEdge}
                   isHovered={false}
+                  index={index} 
                 />
               );
             })}
@@ -202,6 +203,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
                   allNodes={nodes}
                   setHoveredEdge={setHoveredEdge}
                   isHovered={true}
+                  index={index} 
                 />
               );
             })}
