@@ -37,9 +37,11 @@
     border-radius: 6px;
     border: 1px solid #b8dce8; /*b8dce8, fd9f3f */
     background: white; /* white,  fddbb9*/
-    font-size: 13px;
     cursor: pointer;
     transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .menu button:hover {
@@ -69,7 +71,11 @@
     cursor: pointer;
     background: white;
     transition: 0.15s;
+    align-items: center;
+    display: flex;
+    gap: 6px;
 }
 
 .file-button:hover { background: #dff0f5; }
 .file-button:active { transform: scale(0.95); }
+.menu label span {}

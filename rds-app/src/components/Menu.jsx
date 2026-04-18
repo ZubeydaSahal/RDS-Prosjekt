@@ -17,14 +17,13 @@ function Menu({
         <div className="menu">
             <div className="left">
 
-
-
             </div>
 
             <div className="center">
 
                 <label className="file-button" title="Upload text">
                     <img src={TextUpload} alt="Upload text" height={24} width={24}/>
+                    <span>Upload text</span>
                     <input type="file" onChange={onUploadFile}/>
                 </label>
 
@@ -38,13 +37,14 @@ function Menu({
 
                 <button className="primary" onClick={onBuild}>Bygg tre</button>
 
-
-
                 <button onClick={onDownloadText} title="Download Text">
                     <img src={TextDownload} alt="Download Text" height={24} width={24}/>
+                    <span>Download Text</span>
                 </button>
+
                 <button onClick={onDownloadImage} title="Download Graph">
                     <img src={imageDownload} alt="Download Graph" height={24} width={24}/>
+                    <span>Download Graph</span>
                 </button>
             </div>
             <div className="right">
