@@ -226,7 +226,7 @@ public class RdsParser {
         //String rightLastId = rightNodeAspect + rightSide.split("\\.")[rightSide.split("\\.").length-1];
 
         //Creats explicit relation
-        RelationChecker(leftNodeAspect + leftSide, leftNodeAspect, rightNodeAspect + rightSide, rightNodeAspect, relationName, graphmanger);
+        RelationChecker(leftSide, leftNodeAspect, rightSide, rightNodeAspect, relationName, graphmanger);
         
     }
 

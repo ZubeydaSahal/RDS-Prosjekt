@@ -12,15 +12,7 @@ export function layoutTree(graph, aspectOrder) {
     e => e.type !== "hierarchy"
   );
 
-  // ----------------------------
-  // ROOT
-  // ----------------------------
-  nodes.push({
-    ...graph.root,
-    x: 700,
-    y: 40,
-    type: "root"
-  });
+
 
 
   // ----------------------------
@@ -44,6 +36,7 @@ export function layoutTree(graph, aspectOrder) {
   // NODE MAP – Sean moved up, to check node depth before spacing columns
   // ----------------------------
   let greatestDepth = 0;
+  let incrColBy = 20;
 
   const nodeMap = {};
   graph.nodes.forEach(n => {
@@ -60,12 +53,31 @@ export function layoutTree(graph, aspectOrder) {
 
   // =====  Column spacing incrementing ====
   // Increase spacing between columns if node depth is greater than 5
-  if (greatestDepth > 5) {
-    // indent = 40 per child/generation 5*40 = 200 -> increament by 200 for each child to keep gap
+  if (greatestDepth > 1) {
+    if(greatestDepth > 50){
+      incrColBy = 30;
+    }
+      if (greatestDepth > 100) {
+        incrColBy = 40;  // increase spacing between columns with 40 for each depth}
+    }
+    // indent = 40 per child/generation 5*40 = 200 -> increament by 200 for each time to keep gap large enough
     console.log("<><><> A node has more than level 5 depth <><><> \n'greatestDepth': " + greatestDepth)
-    colSpacing = colSpacing + 200 * Math.floor(greatestDepth / 5)  // increase spacing between columns with 1.5 *
-    console.log("colSpacing * 200 * "+ Math.floor(greatestDepth / 5))
+    //colSpacing = colSpacing + 200 * Math.floor(greatestDepth / 5)  // increase spacing between columns with 1.5 *
+    colSpacing = colSpacing + incrColBy * greatestDepth  // increase spacing between columns with 40 for each depth
+    console.log("colSpacing * 40 * "+ greatestDepth)
+
   }
+
+
+  // ----------------------------
+  // ROOT
+  // ----------------------------
+  nodes.push({
+    ...graph.root,
+    x: 700 + (incrColBy * greatestDepth * 1.5),
+    y: 40,
+    type: "root"
+  });
 
   aspects.forEach((aspect, index) => {
     COLUMN_X[aspect.id] = 150 + index * colSpacing;
