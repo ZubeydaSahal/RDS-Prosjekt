@@ -40,6 +40,7 @@ public class ViewBuilder {
         /* Maps a single node (from datastructure type) to nodeDTO type, to avoid transferring revealing data */
         return new NodeDTO(
                 node.getId(),
+                node.getCode(),
                 node.getMetadata(), // nodes name, if it exists
                 node.getLevel()
         );

@@ -39,6 +39,7 @@ function MainPage() {
         setError("");
         if (!text.trim()) {
             setBackendGraph(null);
+            setError("No data input")
             return;
         }
         try {
