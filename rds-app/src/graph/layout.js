@@ -37,10 +37,9 @@ export function layoutTree(graph, aspectOrder) {
   }
 
   const COLUMN_X = {};
+  let colSpacing = 150;
 
-  aspects.forEach((aspect, index) => {
-    COLUMN_X[aspect.id] = 150 + index * 350;
-  });
+
 
   // ----------------------------
   //  NAVN PÅ ASPEKTER
@@ -52,10 +51,32 @@ export function layoutTree(graph, aspectOrder) {
     "%%": "Typeaspekt (produkt)"
   };
 
+ /* // ----------------------------
+  // NODE MAP – Sean moved up, to know depth before defining spacing
+  // ----------------------------
+  const nodeMap = {};
+  // eslint-disable-next-line no-unused-vars
+  let increaseDepth = false;
+  graph.nodes.forEach(n => {
+    if(n.depth > 5){
+      console.log("<><><> node is more than level 5 depth <><><> " + n.id)
+      colSpacing = colSpacing * 1.5  // increase spacing between columns
+      increaseDepth = true;
+    }
+    console.log("Layout: L77 foreach – node: ", n)
+    nodeMap[n.id] = { ...n, children: [] };
+  });*/
+
+
+  // Sets apect spacing? comment code: XCVX
+  aspects.forEach((aspect, index) => {
+    COLUMN_X[aspect.id] = colSpacing + index * 350;
+  });
+
   // ----------------------------
   // ASPEKT HEADERS
   // ----------------------------
-  console.log(aspects)
+  console.log("ASpects (before header placement): " ,aspects)
   aspects.forEach((aspect) => {
     nodes.push({
       id: "aspect_" + aspect.id,
@@ -65,14 +86,21 @@ export function layoutTree(graph, aspectOrder) {
       type: "aspect"
     });
   });
-  console.log(aspects)
+  console.log("Aspects (after header placement): " ,aspects)
 
   // ----------------------------
-  // NODE MAP
+  // NODE MAP – Sean moved up, to know depth before defining spacing
   // ----------------------------
   const nodeMap = {};
+  // eslint-disable-next-line no-unused-vars
+  let increaseDepth = false;
   graph.nodes.forEach(n => {
-    console.log(n)
+    /*if(n.depth > 5){
+      console.log("<><><> node is more than level 5 depth <><><> " + n.id)
+      colSpacing = colSpacing * 1.5  // increase spacing between columns
+      increaseDepth = true;
+    }*/
+    console.log("Layout: L77 foreach – node: ", n)
     nodeMap[n.id] = { ...n, children: [] };
   });
 

@@ -39,17 +39,17 @@ export function transformGraph(raw) {
             label: aspectKey,
             order: index
         });
+        console.log("000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
 
         if (!Array.isArray(list)) return;
 
         list.forEach(item => {
             nodes.push({
-                id: item.id,
-                code: item.code,
-                name: item.name || item.metadata,
-                aspect: aspectKey
+                ...item
             });
+            console.log("TransformGraph: L49 foreach node – node: ", item)
         });
+        console.log("TransformGraph: L51 after foreach node – nodes[]: ", nodes)
     });
 
     // ----------------------------

@@ -6,13 +6,15 @@ public class NodeDTO {
     // ===== Attributes =====
     private String id;
     private String code;
+    private int depth;
     private String name;
     private int level;
 
     // ===== Constuctor =====
-    public NodeDTO(String id, String code, String name, int level) {
+    public NodeDTO(String id, String code, int depth, String name, int level) {
         this.id = id;
         this.code = code;
+        this.depth = depth;
         this.name = name;
         this.level = level;
         // aspect?
@@ -20,6 +22,11 @@ public class NodeDTO {
 
     // ===== Getters =====
     public String getId() { return id; }
+
+    public int getDepth() {
+        return depth;
+    }
+
     public String getCode(){return code;}
     public String getName() { return name; }
     public int getLevel() { return level; }
