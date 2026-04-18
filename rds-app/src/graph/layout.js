@@ -22,6 +22,7 @@ export function layoutTree(graph, aspectOrder) {
     type: "root"
   });
 
+
   // ----------------------------
   // ASPEKTER
   // ----------------------------
@@ -37,9 +38,38 @@ export function layoutTree(graph, aspectOrder) {
   }
 
   const COLUMN_X = {};
+  let colSpacing = 350;
+
+  // ----------------------------
+  // NODE MAP – Sean moved up, to check node depth before spacing columns
+  // ----------------------------
+  let increaseDepth = false;
+  let greatestDepth = 0;
+
+  const nodeMap = {};
+  graph.nodes.forEach(n => {
+    // Find deepest node
+    if(n.depth > greatestDepth) {
+      greatestDepth = n.depth;  // replace 'greatestDepth'
+    }
+
+
+    console.log("Layout: L77 foreach – node: ", n)
+    console.log(n)
+    nodeMap[n.id] = { ...n, children: [] };
+  });
+
+  // =====  Column spacing incrementing ====
+  // Increase spacing between columns if node depth is greater than 5
+  if (greatestDepth > 5) {
+    // indent = 40 per child/generation 5*40 = 200 -> increament by 200 for each child to keep gap
+    console.log("<><><> A node has more than level 5 depth <><><> \n'greatestDepth': " + greatestDepth)
+    colSpacing = colSpacing + 200 * Math.floor(greatestDepth / 5)  // increase spacing between columns with 1.5 *
+    console.log("colSpacing * 200 * "+ Math.floor(greatestDepth / 5))
+  }
 
   aspects.forEach((aspect, index) => {
-    COLUMN_X[aspect.id] = 150 + index * 350;
+    COLUMN_X[aspect.id] = 150 + index * colSpacing;
   });
 
   // ----------------------------
@@ -52,10 +82,12 @@ export function layoutTree(graph, aspectOrder) {
     "%%": "Typeaspekt (produkt)"
   };
 
+
   // ----------------------------
   // ASPEKT HEADERS
   // ----------------------------
-  console.log(aspects)
+  console.log("Aspects before ASPECT HEADERS: ", aspects)
+  console.log("'colSpacing' jsut before ASPECT HEADERS: "+ colSpacing)
   aspects.forEach((aspect) => {
     nodes.push({
       id: "aspect_" + aspect.id,
@@ -67,14 +99,7 @@ export function layoutTree(graph, aspectOrder) {
   });
   console.log(aspects)
 
-  // ----------------------------
-  // NODE MAP
-  // ----------------------------
-  const nodeMap = {};
-  graph.nodes.forEach(n => {
-    console.log(n)
-    nodeMap[n.id] = { ...n, children: [] };
-  });
+
 
   // ----------------------------
   // RIKTIG PARENT LOGIKK

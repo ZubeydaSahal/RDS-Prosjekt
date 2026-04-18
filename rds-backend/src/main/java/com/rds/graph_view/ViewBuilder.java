@@ -41,6 +41,7 @@ public class ViewBuilder {
         return new NodeDTO(
                 node.getId(),
                 node.getCode(),
+                node.getLevel(),
                 node.getMetadata(), // nodes name, if it exists
                 node.getLevel()
         );

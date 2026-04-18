@@ -46,8 +46,10 @@ export function transformGraph(raw) {
             nodes.push({
                 id: item.id,
                 code: item.code,
-                name: item.name || item.metadata,
+                depth: item.depth,
+                name: item.name/* || item.metadata*/,
                 aspect: aspectKey
+                /*...item // hvorfor funker ikke denne? kræsjer med noe i node plassering*/
             });
         });
     });
