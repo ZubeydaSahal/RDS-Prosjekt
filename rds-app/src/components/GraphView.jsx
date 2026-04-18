@@ -137,12 +137,26 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
               return !nodes.some(p => p.id === parentId);
             });
 
-            return rootNodesInColumn.map(node => (
-              <g key={`aspect-root-${node.id}`}>
-                <line x1={aspectNode.x - 90} y1={aspectNode.y + 20} x2={aspectNode.x - 90} y2={node.y} stroke={color} strokeWidth={2} />
-                <line x1={aspectNode.x - 90} y1={node.y} x2={node.x - 95} y2={node.y} stroke={color} strokeWidth={2} />
+            if (rootNodesInColumn.length === 0) return null;
+
+            const NODE_HALF = 95;   // BOX_WIDTH / 2 fra Node.jsx
+            const NODE_HALF_H = 11; // BOX_HEIGHT / 2 fra Node.jsx
+            const busX = aspectNode.x - NODE_HALF - 15;
+            const startY = aspectNode.y + NODE_HALF_H; // bunn-senter av aspektnoden
+            const endY = Math.max(...rootNodesInColumn.map(n => n.y));
+
+            return (
+              <g key={`aspect-hierarchy-${aspectNode.id}`}>
+                {/* Senter av aspektnode → venstre (busX) */}
+                <line x1={aspectNode.x} y1={startY} x2={busX} y2={startY} stroke={color} strokeWidth={2} />
+                {/* Vertikal bus-linje ned til siste root-node */}
+                <line x1={busX} y1={startY} x2={busX} y2={endY} stroke={color} strokeWidth={2} />
+                {/* Horisontal linje til venstre kant av hver root-node */}
+                {rootNodesInColumn.map(node => (
+                  <line key={`to-root-${node.id}`} x1={busX} y1={node.y} x2={node.x - NODE_HALF} y2={node.y} stroke={color} strokeWidth={2} />
+                ))}
               </g>
-            ));
+            );
           })}
 
           {/* LAYER 1: EDGES (bak) */}
