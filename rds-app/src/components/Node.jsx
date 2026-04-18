@@ -72,7 +72,7 @@ export default function Node({ node, onToggle, collapsed }) {
 
   //Collapse knapp poisjonering
   const BTN_R = 8;
-  const btnX = node.x - BOX_WIDTH / 2 - BTN_R - 4;
+  const btnX = node.x + BOX_WIDTH / 2 + BTN_R + 4;
   const btnY = node.y; 
 
   return (

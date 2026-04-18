@@ -141,16 +141,20 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
 
             const NODE_HALF = 95;   // BOX_WIDTH / 2 fra Node.jsx
             const NODE_HALF_H = 11; // BOX_HEIGHT / 2 fra Node.jsx
+            const DROP = 20;        // piksler ned før svingen til venstre
             const busX = aspectNode.x - NODE_HALF - 15;
             const startY = aspectNode.y + NODE_HALF_H; // bunn-senter av aspektnoden
+            const turnY = startY + DROP;               // punkt der linjen svinger til venstre
             const endY = Math.max(...rootNodesInColumn.map(n => n.y));
 
             return (
               <g key={`aspect-hierarchy-${aspectNode.id}`}>
-                {/* Senter av aspektnode → venstre (busX) */}
-                <line x1={aspectNode.x} y1={startY} x2={busX} y2={startY} stroke={color} strokeWidth={2} />
+                {/* Ned fra senter av aspektnode */}
+                <line x1={aspectNode.x} y1={startY} x2={aspectNode.x} y2={turnY} stroke={color} strokeWidth={2} />
+                {/* Sving til venstre (busX) */}
+                <line x1={aspectNode.x} y1={turnY} x2={busX} y2={turnY} stroke={color} strokeWidth={2} />
                 {/* Vertikal bus-linje ned til siste root-node */}
-                <line x1={busX} y1={startY} x2={busX} y2={endY} stroke={color} strokeWidth={2} />
+                <line x1={busX} y1={turnY} x2={busX} y2={endY} stroke={color} strokeWidth={2} />
                 {/* Horisontal linje til venstre kant av hver root-node */}
                 {rootNodesInColumn.map(node => (
                   <line key={`to-root-${node.id}`} x1={busX} y1={node.y} x2={node.x - NODE_HALF} y2={node.y} stroke={color} strokeWidth={2} />

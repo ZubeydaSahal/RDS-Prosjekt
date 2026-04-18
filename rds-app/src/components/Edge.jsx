@@ -7,23 +7,16 @@ const ASPECT_COLORS = {
   "%%": "#a855f7",
 };
 
-const RELATION_COLORS = [
-  "#f97316", // oransje  — A
-  "#8b5cf6", // lilla    — B
-  "#06b6d4", // cyan     — C
-  "#ec4899", // rosa     — D
-  "#84cc16", // lime     — E
-  "#f59e0b", // amber    — F
-];
-
-// : grå for relasjoner uten type, ellers hash-basert farge
+// Genererer en unik farge per relasjonstype via HSL og hash
 function getRelationColor(type) {
   if (!type) return "#94a3b8";
-  let hash = 5381;
+  let hash = 0;
   for (let i = 0; i < type.length; i++) {
-    hash = (hash * 33) ^ type.charCodeAt(i);
+    hash = (hash << 5) - hash + type.charCodeAt(i);
+    hash |= 0;
   }
-  return RELATION_COLORS[Math.abs(hash) % RELATION_COLORS.length];
+  const hue = Math.abs(hash) % 360;
+  return `hsl(${hue}, 65%, 48%)`;
 }
 
 // ENDRING: viser "——" for relasjoner uten type
