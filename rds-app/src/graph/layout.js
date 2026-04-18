@@ -43,7 +43,6 @@ export function layoutTree(graph, aspectOrder) {
   // ----------------------------
   // NODE MAP – Sean moved up, to check node depth before spacing columns
   // ----------------------------
-  let increaseDepth = false;
   let greatestDepth = 0;
 
   const nodeMap = {};
