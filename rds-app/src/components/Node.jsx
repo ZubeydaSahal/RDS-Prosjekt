@@ -93,7 +93,7 @@ export default function Node({ node, onToggle, collapsed }) {
 
         fill={
           isRoot
-            ? "#2b448c"
+            ? "#1e3a8a"
             : isAspect
             ? aspectHeaderColors[aspectKey] || "#eee"
             : "#f8f8f8"
@@ -101,7 +101,7 @@ export default function Node({ node, onToggle, collapsed }) {
 
         stroke={
           isRoot
-            ? "#2b448c"
+            ? "#1e3a8a"
             : isAspect
             ? "#bbb"
             : strokeColor
