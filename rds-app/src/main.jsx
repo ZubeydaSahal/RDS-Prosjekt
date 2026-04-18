@@ -1,6 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import "./menu.css"
+import "./slider.css"
+import "./graph.css"
+import "./filter.css"
 import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(

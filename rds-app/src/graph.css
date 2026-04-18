@@ -1,0 +1,51 @@
+/* #### GRAPH #### */
+.scroll-mode {
+    margin: 5px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    position: fixed;
+    border: 1px solid #b8dce8;
+    background: #eaf6fa;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    z-index: 10;
+}
+
+.scroll-mode:hover {
+    background: #dff0f5;
+    border-color: #8fc5d6;
+}
+
+.graph-container {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    touch-action: none;
+    background: white;
+}
+
+svg {
+    background-color: white;
+    display: block;
+}
+
+/* #### INPUT #### */
+.input-section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+textarea {
+    flex: 1;
+    width: 100%;
+    font-family: monospace;
+    font-size: 14px;
+    border: none;
+    outline: none;
+    padding: 12px;
+    box-sizing: border-box;
+    resize: none;
+    background: white;
+}

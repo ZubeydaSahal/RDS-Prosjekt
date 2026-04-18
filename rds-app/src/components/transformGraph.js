@@ -62,7 +62,7 @@ export function transformGraph(raw) {
     const relations = relationArray.map(r => ({
         from: r.node1,
         to: r.node2,
-        type: r.type || "cross"
+        type: r.type || null
     }));
 
     return {
