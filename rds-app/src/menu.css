@@ -5,7 +5,7 @@
     grid-template-columns: 1fr auto 1fr;
     gap: 10px;
     padding: 10px 16px;
-    background: #0051a4; /* eaf6fa, fd9f3f, fbf0e4, 0051a4*/
+    background: #eef5fb; /* eaf6fa, fd9f3f, fbf0e4, 0051a4*/
     border-bottom: 1.5px solid #b8dce8;
     flex-shrink: 0;
 }
