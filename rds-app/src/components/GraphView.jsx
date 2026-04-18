@@ -67,10 +67,11 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
     if (edge.type === "hierarchy") return true;
     if (!activeRelation.includes("cross")) return false;
     const typeKey = edge.type ?? "ingen";
-    if (!activeRelation.includes(typeKey)) return false;
+    if (edge.type && !activeRelation.includes(edge.type)) return false;
     return true;
   });
 
+  
   const nodeMap = Object.fromEntries(nodes.map(node => [node.id, node]));
   const rootNode = nodes.find(n => n.type === "root");
   const aspectNodes = nodes.filter(n => n.type === "aspect");

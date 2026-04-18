@@ -7,7 +7,9 @@ const ASPECT_COLORS = {
   "%%": "#a855f7",
 };
 
-// Genererer en unik farge per relasjonstype via HSL og hash
+// Genererer en unik farge per relasjonstype.
+// Bruker gullforholdet (137.508°) for å spre fargetoner jevnt,
+// slik at selv veldig like typenavn får svært ulike farger.
 function getRelationColor(type) {
   if (!type) return "#94a3b8";
   let hash = 0;
@@ -15,7 +17,7 @@ function getRelationColor(type) {
     hash = (hash << 5) - hash + type.charCodeAt(i);
     hash |= 0;
   }
-  const hue = Math.abs(hash) % 360;
+  const hue = (Math.abs(hash) * 137.508) % 360;
   return `hsl(${hue}, 65%, 48%)`;
 }
 
