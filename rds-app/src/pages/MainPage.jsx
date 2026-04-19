@@ -18,9 +18,14 @@ function MainPage() {
     const graphRef = useRef(null);
 
     // Hent unike relasjonstyper fra backendGraph
-    const relationTypes = backendGraph
-        ? [...new Set((backendGraph.relationDTO || []).map(r => r.type).filter(Boolean))]
-        : [];
+    const allRelationTypes = backendGraph ? (backendGraph.relationDTO || []).map(r => r.type) : [];
+    const hasUntypedRelations = allRelationTypes.some(t => !t);
+
+     const relationTypes = [
+        ...new Set(allRelationTypes.filter(Boolean)),
+        ...(hasUntypedRelations ? ["ingen"] : []),
+    ];
+
 
     // Når ny graf lastes — legg til alle relasjonstyper som aktive (behold "cross")
     useEffect(() => {

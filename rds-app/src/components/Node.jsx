@@ -158,7 +158,11 @@ export default function Node({ node, onToggle, collapsed }) {
 </text>
    {/* COLLAPSE/EXPAND KNAPP — bare på noder med barn */}
       {hasChildren && !isRoot && !isAspect && (
-        <g style={{ cursor: "pointer" }} onClick={() => onToggle && onToggle(node.id)}>
+        <g
+          style={{ cursor: "pointer" }}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={() => onToggle && onToggle(node.id)}
+        >
           <circle cx={btnX} cy={btnY} r={BTN_R} fill="white" stroke={strokeColor} strokeWidth={1.5} />
           <text
             x={btnX}

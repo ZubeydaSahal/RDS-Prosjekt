@@ -110,7 +110,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
   }, [fitView, zoom, offset]);
 
   // ----------------------------
-  // COLLAPSE 
+  // COLLAPSE NODES
   // ----------------------------
   function handleToggle(nodeId) {
     setCollapsedNodes(prev => {
@@ -142,7 +142,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
     if (edge.type === "hierarchy") return true;
     if (!activeRelation.includes("cross")) return false;
     const typeKey = edge.type ?? "ingen";
-    if (edge.type && !activeRelation.includes(edge.type)) return false;
+    if (!activeRelation.includes(typeKey)) return false;
     return true;
   });
 
