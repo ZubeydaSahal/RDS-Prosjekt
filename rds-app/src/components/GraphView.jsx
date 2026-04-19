@@ -85,7 +85,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
   const minY = Math.min(...nodes.map(n => n.y || 0), 0);
   const maxY = Math.max(...nodes.map(n => n.y || 0), 800);
 
-  const padding = 50;
+  const padding = 150;
   const width = maxX - minX + padding * 2;
   const height = maxY - minY + padding * 2;
 

@@ -74,13 +74,13 @@ export function layoutTree(graph, aspectOrder) {
   // ----------------------------
   nodes.push({
     ...graph.root,
-    x: 700 + (incrColBy * greatestDepth * 1.5),
+    x: 350 * 1.5 + (incrColBy * greatestDepth * 1.5),
     y: 40,
     type: "root"
   });
 
   aspects.forEach((aspect, index) => {
-    COLUMN_X[aspect.id] = 150 + index * colSpacing;
+    COLUMN_X[aspect.id] = 50 + index * colSpacing;
   });
 
   // ----------------------------
