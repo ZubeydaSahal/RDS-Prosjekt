@@ -1,9 +1,10 @@
 /* #### GRAPH #### */
 .scroll-mode {
-    margin: 5px;
     padding: 8px 12px;
     border-radius: 6px;
-    position: fixed;
+    position: absolute;
+    top: 10px;
+    left: 10px;
     border: 1px solid #b8dce8;
     background: #eaf6fa;
     font-size: 13px;
@@ -21,6 +22,7 @@
     height: 100%;
     width: 100%;
     overflow: hidden;
+    position: relative;
     touch-action: none;
     background: white;
 }
