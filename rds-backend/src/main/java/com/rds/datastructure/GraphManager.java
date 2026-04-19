@@ -59,6 +59,7 @@ public class GraphManager {
             }
 
             nodes.put(id, node);  // Add node to attribute 'nodes' (HashMap)
+            System.out.println("Just addded node: id="+id + ", nodes: "+ nodes.get(id));
 
             // ––––– find parent and create relation –––––
             int index = id.lastIndexOf(".");  // find index of last '.' – last node reference
@@ -70,7 +71,7 @@ public class GraphManager {
 
                 // ––––– If parent doesn't exist, create parent–––––
                 if (parent == null) {  // handles non declared parent – to be replaced check TODO
-                    System.out.print("\t");
+                    System.out.print("\t Parent = null");
                     createOrUpdateNode(parentId, node.getAspect(), null);  // parents and children share aspect
                 }
 
@@ -85,6 +86,7 @@ public class GraphManager {
             node.updateNode(metadata);  // Update varying fields (metadata is JSON or replaced with relevant fields (name..)
         }
 
+        System.out.println("Node just before return: " + node.getAspect());
         return node;
     }
 

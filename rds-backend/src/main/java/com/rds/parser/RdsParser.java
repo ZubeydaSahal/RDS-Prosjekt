@@ -100,6 +100,7 @@ public class RdsParser {
                         // check for aspect and remove aspect symbol
                         String aspect = checkAspect(trimmedLine);
                         // endring: fjerner aspect.length() tegn i stedet for alltid 1
+                        System.out.println("length of aspect: " + aspect.length());
                         trimmedLine = trimmedLine.substring(aspect.length()).trim();
 
                         // Normal RDS line
@@ -142,7 +143,7 @@ public class RdsParser {
                 if(!currentFullId.isEmpty()) {
                     currentFullId = currentFullId + "." + node.substring(0, startIndex).trim();
                 }else {
-                    currentFullId = aspect + node.substring(0, startIndex).trim();
+                    currentFullId = node.substring(0, startIndex).trim();
                 }
 
                 name = node.substring(startIndex + 1, endIndex);
@@ -154,7 +155,7 @@ public class RdsParser {
                     currentFullId = currentFullId + "." + node.trim();
                 } else {
                     //endring: lagt til aspect + på første node
-                    currentFullId = aspect + node;
+                    currentFullId = node;
                 }
                 System.out.println("\n\t×No name detected for: "+currentFullId);
             }
