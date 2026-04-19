@@ -155,7 +155,7 @@ public class RdsParser {
                     currentFullId = currentFullId + "." + node.trim();
                 } else {
                     //endring: lagt til aspect + på første node
-                    currentFullId = aspect + node;
+                    currentFullId = node;
                 }
                 System.out.println("\n\t×No name detected for: "+currentFullId);
             }
