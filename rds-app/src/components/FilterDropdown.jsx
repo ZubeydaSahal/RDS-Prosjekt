@@ -106,7 +106,7 @@ export default function FilterDropdown({
                         checked={activeRelation.includes(type)}
                         onChange={() => toggleRelation(type)}
                       />
-                      <span className="fd-label">|{type}|</span>
+                      <span className="fd-label">{type === "ingen" ? "Ingen type" : `|${type}|`}</span>
                     </label>
                   </li>
                 ))}

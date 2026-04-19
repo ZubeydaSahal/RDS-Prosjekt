@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { layoutTree } from "../graph/layout";
 import { transformGraph } from "./transformGraph";
 
@@ -18,24 +18,26 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
   const [zoom, setZoom] = useState(1);
   const [collapsedNodes, setCollapsedNodes] = useState(new Set());
 
-  // Holder styr på hvilken edge som er hoveret
   const [hoveredEdge, setHoveredEdge] = useState(null);
+  const svgRef = useRef(null);
+
+  // Non-passive wheel listener so preventDefault actually works
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const handler = (e) => {
+      if (fitView) return;
+      if (!e.ctrlKey && !e.metaKey) return; // plain scroll navigates, ctrl+scroll zooms
+      e.preventDefault();
+      const scaleFactor = 0.005;
+      setZoom(prev => Math.min(3, Math.max(0.2, prev - e.deltaY * scaleFactor)));
+    };
+    el.addEventListener("wheel", handler, { passive: false });
+    return () => el.removeEventListener("wheel", handler);
+  }, [fitView]);
 
   // ----------------------------
-  // ZOOM 
-  // ----------------------------
-  const handleWheel = (e) => {
-    if (fitView) return;
-    if (e.ctrlKey) e.preventDefault();
-    e.preventDefault();
-    e.stopPropagation();
-    const scaleFactor = 0.005;
-    const newZoom = zoom - e.deltaY * scaleFactor;
-    setZoom(Math.min(3, Math.max(0.2, newZoom)));
-  };
-
-  // ----------------------------
-  // COLLAPSE 
+  // COLLAPSE NODER
   // ----------------------------
   function handleToggle(nodeId) {
     setCollapsedNodes(prev => {
@@ -67,7 +69,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
     if (edge.type === "hierarchy") return true;
     if (!activeRelation.includes("cross")) return false;
     const typeKey = edge.type ?? "ingen";
-    if (edge.type && !activeRelation.includes(edge.type)) return false;
+    if (!activeRelation.includes(typeKey)) return false;
     return true;
   });
 
@@ -100,13 +102,13 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
       </button>
 
       <svg
-        width={fitView ? "100%" : width}
-        height={fitView ? "100%" : height}
-        viewBox={fitView ? `${minX - padding} ${minY - padding} ${width} ${height}` : undefined}
-        onWheelCapture={handleWheel}
+        ref={svgRef}
+        width={fitView ? "100%" : width * zoom}
+        height={fitView ? "100%" : height * zoom}
+        viewBox={`${minX - padding} ${minY - padding} ${width} ${height}`}
         preserveAspectRatio="xMidYMid meet"
       >
-        <g transform={`scale(${zoom})`}>
+        <g>
 
           {/* BUS SYSTEM rot til aspekt-header */}
           {aspectNodes.length > 0 && (() => {
