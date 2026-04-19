@@ -48,5 +48,6 @@
     min-height: 0;
     /*padding: 50px;*/
     overflow: hidden;
+    touch-action: none; /*Prevents page scrolling when moving/zooming in graph image */
     background: white;
 }
