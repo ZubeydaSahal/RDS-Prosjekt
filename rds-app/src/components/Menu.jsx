@@ -20,13 +20,6 @@ function Menu({
             </div>
 
             <div className="center">
-
-                <label className="file-button" title="Upload text">
-                    <img src={TextUpload} alt="Upload text" height={24} width={24}/>
-                    <span>Upload text</span>
-                    <input type="file" onChange={onUploadFile}/>
-                </label>
-
                 <FilterDropdown
                     activeAspect={activeAspect}
                     setActiveAspect={setActiveAspect}
@@ -34,6 +27,13 @@ function Menu({
                     setActiveRelation={setActiveRelation}
                     relationTypes={relationTypes}
                 />
+                <label className="file-button" title="Upload text">
+                    <img src={TextUpload} alt="Upload text" height={24} width={24}/>
+                    <span>Upload text</span>
+                    <input type="file" onChange={onUploadFile}/>
+                </label>
+
+
 
                 <button className="primary" onClick={onBuild}>Bygg tre</button>
 
