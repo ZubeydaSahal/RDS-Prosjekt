@@ -143,7 +143,7 @@ public class RdsParser {
                 if(!currentFullId.isEmpty()) {
                     currentFullId = currentFullId + "." + node.substring(0, startIndex).trim();
                 }else {
-                    currentFullId = node.substring(0, startIndex).trim();
+                    currentFullId = aspect + node.substring(0, startIndex).trim();
                 }
 
                 name = node.substring(startIndex + 1, endIndex);
@@ -155,7 +155,7 @@ public class RdsParser {
                     currentFullId = currentFullId + "." + node.trim();
                 } else {
                     //endring: lagt til aspect + på første node
-                    currentFullId = node;
+                    currentFullId = aspect + node;
                 }
                 System.out.println("\n\t×No name detected for: "+currentFullId);
             }
