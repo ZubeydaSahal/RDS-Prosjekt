@@ -93,7 +93,7 @@ export default function FilterDropdown({
           </ul>
 
           {/* RELASJONSTYPER — individuelle typer */}
-          {relationTypes.length > 0 && (
+          {relationTypes.length > 0 && activeRelation.includes("cross") && (
             <>
               <div className="fd-divider" />
               <p className="fd-section-title">RELASJONSTYPER</p>
