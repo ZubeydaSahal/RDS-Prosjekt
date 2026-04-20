@@ -1,11 +1,9 @@
 export default function Node({ node, onToggle, collapsed }) {
 
-  console.log(node.id, node.aspect);
-
   // ----------------------------
   // TRUNCATE TEKST (…)
   // ----------------------------
-  function truncateText(text, maxLength = 26) {
+  function truncateText(text, maxLength = 28) {
     if (!text) return "";
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength) + "...";
@@ -18,69 +16,64 @@ export default function Node({ node, onToggle, collapsed }) {
   // ----------------------------
   function splitLabel(label) {
     if (!label) return { prefix: "", rest: "" };
+
     const parts = label.split(" ");
-    if (parts.length === 1) return { prefix: parts[0], rest: "" };
+    if (parts.length === 1) {
+      return { prefix: parts[0], rest: "" };
+    }
+
     const prefix = parts.shift();
     const rest = parts.join(" ");
+
     return { prefix, rest };
   }
 
   const { prefix, rest } = splitLabel(truncatedLabel);
 
+
   // ----------------------------
-  // FIXED BOKS-STØRRELSE
+  // DESIGN SETTINGS 
   // ----------------------------
   const BOX_WIDTH = 190;
-  const BOX_HEIGHT = 42;
+  const BOX_HEIGHT = 22;
 
-  // ----------------------------
-  // FINN ASPEKT FRA ID
-  // ----------------------------
-  const getAspect = (id) => {
-    if (!id) return null;
-    if (id.startsWith("%%")) return "%%";
-    if (id.startsWith("%")) return "%";
-    if (id.startsWith("=")) return "=";
-    if (id.startsWith("-")) return "-";
-    return null;
-  };
+  const STRIPE_WIDTH = 6;
+  const TEXT_PADDING = 8;
 
-  const aspect = getAspect(node.id);
+  const FONT_SIZE = 11;
 
   // ----------------------------
   // FARGER
   // ----------------------------
   const aspectColors = {
     "%": "#4da3ff",
-    "=": "#ff9f6e",
-    "-": "#7ed957",
-    "%%": "#a78bfa"
+    "=": "#ff8c5a",
+    "-": "#6ccf4f",
+    "%%": "#9b8cff"
   };
 
   const aspectHeaderColors = {
     "%": "#cfe8ff",
     "=": "#ffd6bf",
-    "-": "#d4f5d0",
-    "%%": "#e4d7ff"
+    "-": "#dff5dc",
+    "%%": "#e6ddff"
   };
 
-  const strokeColor = aspectColors[aspect] || "#888";
+  const aspect = node.aspect;
+  const strokeColor = aspectColors[aspect] || "#999";
 
   // ----------------------------
   // TYPE NODER
   // ----------------------------
   const isAspect = node.id?.startsWith("aspect_");
   const isRoot = node.type === "root";
+  const aspectKey = isAspect ? node.id.replace("aspect_", "") : null;
   const hasChildren = node.children && node.children.length > 0;
 
-  const aspectKey = isAspect ? node.id.replace("aspect_", "") : null;
-
-  // ----------------------------
-  // EXPAND/COLLAPSE KNAPP
-  // ----------------------------
-  const BTN_SIZE = 14;
-  const btnX = node.x - BOX_WIDTH / 2 - BTN_SIZE / 2;
-  const btnY = node.y - BTN_SIZE / 2;
+  //Collapse knapp poisjonering
+  const BTN_R = 8;
+  const btnX = node.x + BOX_WIDTH / 2 + BTN_R + 4;
+  const btnY = node.y; 
 
   return (
     <g>
@@ -96,22 +89,25 @@ export default function Node({ node, onToggle, collapsed }) {
         y={node.y - BOX_HEIGHT / 2}
         width={BOX_WIDTH}
         height={BOX_HEIGHT}
-        rx={4}
+        rx={2}
+
         fill={
           isRoot
             ? "#1e3a8a"
             : isAspect
             ? aspectHeaderColors[aspectKey] || "#eee"
-            : "#ffffff"
+            : "#f8f8f8"
         }
+
         stroke={
           isRoot
             ? "#1e3a8a"
             : isAspect
-            ? "#999"
+            ? "#bbb"
             : strokeColor
         }
-        strokeWidth={isAspect ? 1 : 2}
+
+        strokeWidth={isAspect ? 1 : 1.5}
       />
 
       {/* ----------------------------
@@ -121,7 +117,7 @@ export default function Node({ node, onToggle, collapsed }) {
         <rect
           x={node.x - BOX_WIDTH / 2}
           y={node.y - BOX_HEIGHT / 2}
-          width={6}
+          width={STRIPE_WIDTH}
           height={BOX_HEIGHT}
           fill={strokeColor}
         />
@@ -131,41 +127,46 @@ export default function Node({ node, onToggle, collapsed }) {
           TEKST
       ---------------------------- */}
       <text
-        x={node.x}
-        y={node.y}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontSize="12"
-        fill={isRoot ? "#ffffff" : "#333"}
-      >
-        <tspan fontWeight="bold">{prefix}</tspan>
-        {rest && (
-          <tspan dx="6" fontWeight="normal">{rest}</tspan>
-        )}
-      </text>
+  x={
+    isAspect || isRoot
+      ? node.x
+      : node.x - BOX_WIDTH / 2 + STRIPE_WIDTH + TEXT_PADDING
+  }
+  y={node.y}
+  textAnchor={isAspect || isRoot ? "middle" : "start"}
+  dominantBaseline="middle"
+  fontSize={isAspect ? 13 : FONT_SIZE}   
+  fontFamily="Roboto, Segoe UI, Arial, sans-serif"
+  fill={isRoot ? "#ffffff" : "#333"}
+  fontWeight={isAspect ? "700" : "400"}  
+>
+  {isAspect || isRoot ? (
+    node.label
+  ) : (
+    <>
+      <tspan fontWeight="600">
+        {prefix}
+      </tspan>
 
-      {/* ----------------------------
-          EXPAND/COLLAPSE KNAPP
-          Vises bare hvis noden har barn
-      ---------------------------- */}
+      {rest && (
+        <tspan dx="6" fontWeight="400">
+          {rest}
+        </tspan>
+      )}
+    </>
+  )}
+</text>
+   {/* COLLAPSE/EXPAND KNAPP — bare på noder med barn */}
       {hasChildren && !isRoot && !isAspect && (
         <g
           style={{ cursor: "pointer" }}
+          onMouseDown={(e) => e.stopPropagation()}
           onClick={() => onToggle && onToggle(node.id)}
         >
-          {/* Sirkel */}
-          <circle
-            cx={btnX}
-            cy={node.y}
-            r={BTN_SIZE / 2}
-            fill="white"
-            stroke={strokeColor}
-            strokeWidth={1.5}
-          />
-          {/* + eller - */}
+          <circle cx={btnX} cy={btnY} r={BTN_R} fill="white" stroke={strokeColor} strokeWidth={1.5} />
           <text
             x={btnX}
-            y={node.y}
+            y={btnY}
             textAnchor="middle"
             dominantBaseline="middle"
             fontSize="12"
@@ -176,6 +177,8 @@ export default function Node({ node, onToggle, collapsed }) {
           </text>
         </g>
       )}
+
+
 
     </g>
   );

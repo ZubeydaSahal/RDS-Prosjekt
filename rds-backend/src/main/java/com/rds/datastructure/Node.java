@@ -27,12 +27,22 @@ public class Node {
         String[] parts = id.split("\\.");
         this.level = parts.length;
         this.code = parts[parts.length - 1];
+
     }
 
     // Temp constructor with aspect – refactoring
     public Node(String id, String aspect){
-        this(id);
+        this.id = id;
         this.aspect = aspect;
+        // calculate level and code
+        String[] parts = id.split("\\.");
+        this.level = parts.length;
+        if(aspect!="<root>"){
+            this.code = parts[parts.length - 1].substring(aspect.length());
+        }else {
+            this.code = parts[parts.length - 1];
+        }
+
     }
 
     // Update node

@@ -59,16 +59,25 @@ public class RdsController {
     }
 
     private Map<String, Boolean> buildFilter(Map<String, String> params, String prefix) {
-    if (params == null) return null;
-
-    Map<String, Boolean> filter = new HashMap<>();
-    for (Map.Entry<String, String> entry : params.entrySet()) {
-        if (entry.getKey().startsWith(prefix)) {
-            String key = entry.getKey().substring(prefix.length());
-            filter.put(key, Boolean.parseBoolean(entry.getValue()));
+        if (params == null) return null;
+ 
+        Map<String, Boolean> filter = new HashMap<>();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (entry.getKey().startsWith(prefix)) {
+                String raw = entry.getKey().substring(prefix.length());
+ 
+                // ENDRING: dekod URL-sikre nøkler tilbake til aspektsymboler
+                // PCTPCT må dekodes FØR PCT!
+                String key = raw
+                    .replace("PCTPCT", "%%")
+                    .replace("PCT", "%")
+                    .replace("EQ", "=")
+                    .replace("DASH", "-");
+ 
+                filter.put(key, Boolean.parseBoolean(entry.getValue()));
+            }
         }
+        return filter.isEmpty() ? null : filter;
     }
-    return filter.isEmpty() ? null : filter;
-}
 
 }

@@ -7,18 +7,14 @@ const ASPECTS = [
   { symbol: "%%", label: "Type aspekt for produktaspekt" },
 ];
 
-const RELATIONS = [
-  { type: "cross", label: "Kryssrelasjon" },
-];
-
 export default function FilterDropdown({
   activeAspect = [], setActiveAspect,
   activeRelation = [], setActiveRelation,
+  relationTypes = [],
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
-  // Lukk når man klikker utenfor
   useEffect(() => {
     function handleClickOutside(e) {
       if (ref.current && !ref.current.contains(e.target)) {
@@ -29,7 +25,6 @@ export default function FilterDropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ENDRING: oppdater state direkte når checkbox endres
   function toggleAspect(symbol) {
     const next = activeAspect.includes(symbol)
       ? activeAspect.filter(a => a !== symbol)
@@ -43,17 +38,14 @@ export default function FilterDropdown({
       : [...activeRelation, type];
     setActiveRelation(next);
   }
-  
 
-  // Tell hvor mange filtre som er skrudd av
   const totalActive = activeAspect.length + activeRelation.length;
-  const totalAll    = ASPECTS.length + RELATIONS.length;
-  const hasFilter   = totalActive < totalAll;
+  const totalAll = ASPECTS.length + 1 + relationTypes.length; // +1 for "cross"
+  const hasFilter = totalActive < totalAll;
 
   return (
     <div className="fd-wrapper" ref={ref}>
 
-      {/* Trigger */}
       <button className="fd-trigger" onClick={() => setOpen(o => !o)}>
         <span>Filter</span>
         {hasFilter && (
@@ -62,11 +54,10 @@ export default function FilterDropdown({
         <span className="fd-chevron">{open ? "▲" : "▼"}</span>
       </button>
 
-      {/* Dropdown */}
       {open && (
         <div className="fd-dropdown">
 
-          {/* Aspekter */}
+          {/* ASPEKTER */}
           <p className="fd-section-title">ASPEKTER</p>
           <ul className="fd-list">
             {ASPECTS.map(({ symbol, label }) => (
@@ -86,22 +77,46 @@ export default function FilterDropdown({
 
           <div className="fd-divider" />
 
-          {/* Relasjoner */}
+          {/* RELASJONER — master toggle */}
           <p className="fd-section-title">RELASJONER</p>
           <ul className="fd-list">
-            {RELATIONS.map(({ type, label }) => (
-              <li key={type}>
-                <label className="fd-item">
-                  <input
-                    type="checkbox"
-                    checked={activeRelation.includes(type)}
-                    onChange={() => toggleRelation(type)}
-                  />
-                  <span className="fd-label">{label}</span>
-                </label>
-              </li>
-            ))}
+            <li>
+              <label className="fd-item">
+                <input
+                  type="checkbox"
+                  checked={activeRelation.includes("cross")}
+                  onChange={() => toggleRelation("cross")}
+                />
+                <span className="fd-label">Kryssrelasjon</span>
+              </label>
+            </li>
           </ul>
+
+          {/* RELASJONSTYPER — individuelle typer */}
+          {relationTypes.length > 0 && activeRelation.includes("cross") && (
+            <>
+              <div className="fd-divider" />
+              <p className="fd-section-title">RELASJONSTYPER</p>
+              <ul className="fd-list">
+                {relationTypes.map(type => (
+                  <li key={type}>
+                    <label className="fd-item fd-item-indented">
+                      <input
+                        type="checkbox"
+                        checked={activeRelation.includes(type)}
+                        onChange={() => toggleRelation(type)}
+                      />
+                      <span className="fd-label">{type === "ingen" ?"ingen type":`|${type}|`}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {relationTypes.length === 0 && (
+            <span className="fd-empty">Ingen relasjoner i grafen</span>
+          )}
 
         </div>
       )}

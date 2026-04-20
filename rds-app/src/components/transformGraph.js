@@ -45,8 +45,11 @@ export function transformGraph(raw) {
         list.forEach(item => {
             nodes.push({
                 id: item.id,
-                name: item.name || item.metadata,
+                code: item.code,
+                depth: item.depth,
+                name: item.name/* || item.metadata*/,
                 aspect: aspectKey
+                /*...item // hvorfor funker ikke denne? kræsjer med noe i node plassering*/
             });
         });
     });
@@ -61,7 +64,7 @@ export function transformGraph(raw) {
     const relations = relationArray.map(r => ({
         from: r.node1,
         to: r.node2,
-        type: r.type || "cross"
+        type: r.type || null
     }));
 
     return {

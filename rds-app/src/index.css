@@ -1,10 +1,16 @@
-/*  #### NAVBAR #### */
+.MainPage {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* #### NAVBAR #### */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 30px;
-  background: #1f2937;
+  background: #1e3a8a; /* 172141, 1d2868, 63c6f7, f7c113, 1d2868*/
   color: white;
 }
 
@@ -23,64 +29,43 @@
 /* ##### BODY ##### */
 body {
   font-family: Arial, sans-serif;
-  background-color: rgb(223, 240, 245);
+  background-color: #dff0f5;
+  margin: 0;
 }
 
-/* #### GRAPH ####*/
-.layout {
-  display: flex;
-  gap: 40px;
-  align-items: flex-start;
-  margin: 20px;
-}
-
-.input-section {
-  width: 450px;
-  padding-top: 10px;
-}
-
-.tree-section {
+/* Mer padding mellom navbar og boksen  */
+.main-content {
   flex: 1;
-  min-width: 0;
-  padding: 10px;
-  background-color:  rgb(223, 240, 245);
-}
-
-/* Trestruktur boks */ 
-.graph-container {
-  height: 600px;        /* fast høyde på visning */
-  overflow: auto;       /* scroll når grafen blir stor:vertikalt og horisontalt */
-  background: white;
-  border: 1px solid #ccc;
-}
-
-svg {
-  background-color: white;
-  display: block;
-}
-
-textarea {
-  width: 100%;
-  font-family: monospace;
-  font-size: 14px;
-}
-
-.buttons {
-  margin-top: 10px;
+  padding: 32px 48px 48px;
+  box-sizing: border-box;
+  background-color: #dff0f7; /* dff0f5,  FFEBAD, fddbb9*/
   display: flex;
-  gap: 10px;
+  flex-direction: column;
 }
 
-/* #### ERROR BOX #### */ 
+/* Den store hvite boksen */
+.main-box {
+  flex: 1;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #c8dde3;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+
+/* #### ERROR BOX #### */
 .error-box {
-  margin-top: 10px;
-  padding: 12px;
+  padding: 12px 16px;
   background: #ffe0e0;
   color: #900;
-  border: 2px solid red;
-  border-radius: 6px;
+  border-top: 2px solid red;
+  border-bottom: 2px solid red;
   font-weight: bold;
   white-space: pre-line;
+  flex-shrink: 0;
 }
 
 /* #### Endre rekkefølge på aspekter #### */
@@ -99,153 +84,13 @@ textarea {
   border-radius: 6px;
 }
 
-.aspect-item button {
-  cursor: pointer;
-}
-
-/*FILTER*/
-
-.fd-wrapper {
-  position: relative;
-  display: inline-block;
-  margin-bottom: 12px;
-  margin-top: 15px;
-
-}
-
-.fd-trigger {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: white;
-  border: 1.5px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #374151;
-  cursor: pointer;
-  transition: border-color 0.15s;
-}
-
-.fd-trigger:hover {
-  border-color: #6366f1;
-}
-
-.fd-badge {
-  background: #6366f1;
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-  border-radius: 999px;
-  padding: 1px 6px;
-}
-
-.fd-chevron {
-  font-size: 10px;
-  color: #9ca3af;
-}
-
-.fd-dropdown {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  z-index: 100;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
-  width: 220px;
-  padding: 12px 0 0;
-}
-
-.fd-section-title {
-  margin: 0 0 4px;
-  padding: 0 14px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #94a3b8;
-}
-
-.fd-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.fd-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-  cursor: pointer;
-  transition: background 0.1s;
-}
-
-.fd-item:hover {
-  background: #f9fafb;
-}
-
-.fd-item input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  accent-color: #6366f1;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.fd-symbol {
-  font-family: monospace;
-  font-size: 14px;
-  font-weight: 700;
-  color: #6366f1;
-  width: 16px;
-}
-
-.fd-label {
-  font-size: 13px;
-  color: #374151;
-}
-
-.fd-divider {
-  height: 1px;
-  background: #f1f5f9;
-  margin: 8px 0;
-}
-
-.fd-apply {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  background: #6366f1;
-  color: white;
-  border: none;
-  border-radius: 0 0 10px 10px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.fd-apply:hover {
-  background: #4f46e5;
-}
-
-
-
-
+.aspect-item button { cursor: pointer; }
 
 /* FOOTER */
-
 .footer {
-  margin-top: 40px;
   padding: 15px;
   padding-bottom: 20px;
-
   text-align: center;
-
-  background: #1f2937;
+  background: #1e3a8a; /* 172141, 1d2868, 63c6f7, f7c113, 1d2868*/
   color: white;
 }

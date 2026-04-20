@@ -40,6 +40,8 @@ public class ViewBuilder {
         /* Maps a single node (from datastructure type) to nodeDTO type, to avoid transferring revealing data */
         return new NodeDTO(
                 node.getId(),
+                node.getCode(),
+                node.getLevel(),
                 node.getMetadata(), // nodes name, if it exists
                 node.getLevel()
         );
@@ -158,7 +160,6 @@ public class ViewBuilder {
         }*/
 
         // printe hele objektet som sendes (GraphViewDTO)
-        /*
         System.out.println("Aspects: "+graphViewDTO.getNodeDTO());
         System.out.println("Relations: "+graphViewDTO.getRelationDTO());
         //System.out.println("GetRelations: "+graphViewDTO.getRelations());
@@ -170,7 +171,7 @@ public class ViewBuilder {
             System.out.println("JSON: "+json);
         }catch (JsonProcessingException e){
             e.printStackTrace();
-        }*/
+        }
         // ==================================
 
         return graphViewDTO;

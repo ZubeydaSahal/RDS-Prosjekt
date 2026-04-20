@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const ASPECT_COLORS = {
   "=": "#f97316",
   "%": "#3b82f6",
@@ -5,114 +7,151 @@ const ASPECT_COLORS = {
   "%%": "#a855f7",
 };
 
-export default function Edge({ from, to, type, allNodes }) {
+// Genererer en unik farge per relasjonstype.
+// Bruker gullforholdet (137.508°) for å spre fargetoner jevnt,
+// slik at selv veldig like typenavn får svært ulike farger.
+function getRelationColor(type) {
+  if (!type) return "#94a3b8";
+  let hash = 0;
+  for (let i = 0; i < type.length; i++) {
+    hash = (hash << 5) - hash + type.charCodeAt(i);
+    hash |= 0;
+  }
+  const hue = (Math.abs(hash) * 137.508) % 360;
+  return `hsl(${hue}, 65%, 48%)`;
+}
+
+// ENDRING: viser "——" for relasjoner uten type
+function getRelationLabel(type) {
+  if (!type) return "——";
+  return `|${type}|`;
+}
+
+export default function Edge({ 
+  from, 
+  to, 
+  type, 
+  allNodes,
+  edgeId,
+  index = 0,
+  isHovered,
+  setHoveredEdge
+}) {
 
   if (!from || !to) return null;
 
-  const NODE_HEIGHT = 40;
   const NODE_WIDTH = 160;
-  const OFFSET = NODE_HEIGHT / 2;
 
-  // ----------------------------
-  // FINN ASPEKTER + BUS
-  // ----------------------------
-  const aspectNodes =
-    allNodes?.filter(n => n.type === "aspect") || [];
-
+  const aspectNodes = allNodes?.filter(n => n.type === "aspect") || [];
   if (!aspectNodes.length) return null;
 
-  const topAspectY = Math.min(...aspectNodes.map(n => n.y));
-  const busY = topAspectY - 30;
+  if (type === "root") return null;
 
-  const xs = aspectNodes.map(n => n.x);
-  const minX = Math.min(...xs);
-  const maxX = Math.max(...xs);
-
-  // ----------------------------
-  // ROOT → BUS SYSTEM
-  // ----------------------------
-  if (type === "root") {
-    const root = from;
-    return (
-      <>
-        <line x1={root.x} y1={root.y + OFFSET} x2={root.x} y2={busY} stroke="#999" strokeWidth={2} />
-        <line x1={minX} y1={busY} x2={maxX} y2={busY} stroke="#999" strokeWidth={2} />
-        {aspectNodes.map(node => (
-          <line key={node.id} x1={node.x} y1={busY} x2={node.x} y2={node.y - OFFSET} stroke="#999" strokeWidth={2} />
-        ))}
-      </>
-    );
-  }
-
-  // ----------------------------
-  // HIERARCHY
-  // ----------------------------
+  // --------------------------------------------------
+  // HIERARCHY 
+  // --------------------------------------------------
   if (type === "hierarchy") {
     const aspect = from.aspect;
     const color = ASPECT_COLORS[aspect] || "#999";
     const lineX = from.x - NODE_WIDTH / 2 - 10;
-    const hy1 = from.y;
-    const hy2 = to.y;
 
     return (
       <>
-        <line x1={lineX} y1={hy1} x2={lineX} y2={hy2} stroke={color} strokeWidth={2} />
-        <line x1={lineX} y1={hy2} x2={to.x - NODE_WIDTH / 2} y2={hy2} stroke={color} strokeWidth={2} />
+        <line x1={lineX} y1={from.y} x2={lineX} y2={to.y} stroke={color} strokeWidth={3} />
+        <line x1={lineX} y1={to.y} x2={to.x - NODE_WIDTH / 2} y2={to.y} stroke={color} strokeWidth={3} />
       </>
     );
   }
 
-  // ----------------------------
-  // CROSS — S-kurve med relasjonsnavn midt på
-  // ----------------------------
-  if (type !== "hierarchy" && type !== "root") {
-    const cx1 = from.x + NODE_WIDTH / 2;
-    const cy1 = from.y;
-    const cx2 = to.x - NODE_WIDTH / 2;
-    const cy2 = to.y;
+  // --------------------------------------------------
+  // INTRA-ASPECT RELASJONER
+  // --------------------------------------------------
+  const sameAspect = from.aspect && to.aspect && from.aspect === to.aspect;
 
-    const cpx1 = cx1 + (cx2 - cx1) * 0.5;
-    const cpx2 = cx2 - (cx2 - cx1) * 0.5;
+  if (sameAspect) {
+    const startX = from.x + NODE_WIDTH / 2;
+    const startY = from.y;
+    const endX = to.x + NODE_WIDTH / 2;
+    const endY = to.y;
+    const OUT_OFFSET = 80;
+    const spread = (index % 5) * 20;
+    const sideX = startX + OUT_OFFSET + spread;
 
-    // ENDRING: midtpunkt på kurven for label
-    const midX = (cx1 + cx2) / 2;
-    const midY = (cy1 + cy2) / 2;
+    const strokeColor = getRelationColor(type);
+    const label = getRelationLabel(type);
+    const midY = (startY + endY) / 2;
 
     return (
       <>
-        {/* S-kurve */}
         <path
-          d={`M ${cx1} ${cy1} C ${cpx1} ${cy1} ${cpx2} ${cy2} ${cx2} ${cy2}`}
-          fill="none"
-          stroke="orange"
-          strokeWidth={1.5}
+          d={`M ${startX} ${startY} L ${sideX} ${startY} L ${sideX} ${endY} L ${endX} ${endY}`}
+          fill="none" stroke="transparent" strokeWidth={14}
+          onMouseEnter={() => setHoveredEdge(edgeId)}
+          onMouseLeave={() => setHoveredEdge(null)}
         />
-
-        {/* ENDRING: label boks midt på linjen */}
-        <rect
-          x={midX - 12}
-          y={midY - 10}
-          width={24}
-          height={20}
-          rx={3}
-          fill="white"
-          stroke="orange"
-          strokeWidth={1}
+        <path
+          d={`M ${startX} ${startY} L ${sideX} ${startY} L ${sideX} ${endY} L ${endX} ${endY}`}
+          fill="none" stroke={strokeColor}
+          strokeWidth={isHovered ? 6 : 3}
+          opacity={isHovered ? 1 : 0.35}
+          style={{ pointerEvents: "none" }}
         />
-        <text
-          x={midX}
-          y={midY}
-          textAnchor="middle"
-          dominantBaseline="middle"
-          fontSize="10"
-          fontWeight="bold"
-          fill="orange"
-        >
-          {type}
+        <rect x={sideX - 16} y={midY - 12} width={32} height={24} rx={4} fill="white" stroke={strokeColor} strokeWidth={1.5} />
+        <text x={sideX} y={midY} textAnchor="middle" dominantBaseline="middle" fontSize="12" fontWeight="bold" fill={strokeColor}>
+          {label}
         </text>
       </>
     );
   }
 
-  return null;
+  // --------------------------------------------------
+  // CROSS RELASJONER
+  // --------------------------------------------------
+  const cx1 = from.x + NODE_WIDTH / 2;
+  const cy1 = from.y;
+  const cx2 = to.x - NODE_WIDTH / 2;
+  const cy2 = to.y;
+
+  const SPACING = 15;
+  const offsetIndex = (index % 7) - 3;
+  const offsetY = offsetIndex * SPACING;
+  const offsetX = offsetIndex * 10;
+  const bend = 60;
+  const cpx1 = cx1 + bend + offsetX;
+  const cpx2 = cx2 - bend + offsetX;
+  const cpy1 = cy1 + offsetY;
+  const cpy2 = cy2 + offsetY;
+
+  const t = 0.5;
+  const midX =
+    Math.pow(1-t,3)*cx1 + 3*Math.pow(1-t,2)*t*cpx1 +
+    3*(1-t)*Math.pow(t,2)*cpx2 + Math.pow(t,3)*cx2;
+  const midY =
+    Math.pow(1-t,3)*cy1 + 3*Math.pow(1-t,2)*t*cpy1 +
+    3*(1-t)*Math.pow(t,2)*cpy2 + Math.pow(t,3)*cy2;
+
+  const strokeColor = getRelationColor(type);
+  const label = getRelationLabel(type);
+
+  return (
+    <>
+      <path
+        d={`M ${cx1} ${cy1} C ${cpx1} ${cpy1} ${cpx2} ${cpy2} ${cx2} ${cy2}`}
+        fill="none" stroke="transparent" strokeWidth={14}
+        onMouseEnter={() => setHoveredEdge(edgeId)}
+        onMouseLeave={() => setHoveredEdge(null)}
+      />
+      <path
+        d={`M ${cx1} ${cy1} C ${cpx1} ${cpy1} ${cpx2} ${cpy2} ${cx2} ${cy2}`}
+        fill="none" stroke={strokeColor}
+        strokeWidth={isHovered ? 6 : 3}
+        opacity={isHovered ? 1 : 0.25}
+        style={{ pointerEvents: "none" }}
+      />
+      <rect x={midX-16} y={midY-12} width={32} height={24} rx={4} fill="white" stroke={strokeColor} strokeWidth={1.5} opacity={isHovered ? 1 : 0.8} style={{ pointerEvents: "none" }} />
+      <text x={midX} y={midY} textAnchor="middle" dominantBaseline="middle" fontSize="12" fontWeight="bold" fill={strokeColor} style={{ pointerEvents: "none" }}>
+        {label}
+      </text>
+    </>
+  );
 }

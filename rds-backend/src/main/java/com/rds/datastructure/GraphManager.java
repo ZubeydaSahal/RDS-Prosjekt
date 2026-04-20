@@ -52,7 +52,14 @@ public class GraphManager {
                 LOGGER.warning("<GraphManager> Missing aspect for node id: " + id + ". Using aspectless constructor");
             }
 
+            // Don't add root to nodelist or break into peaces TODO: (hør med de andre om denne logikken)
+            if(aspect == "<root>"){
+                nodes.put(id, node);  // TEMP
+                return node;
+            }
+
             nodes.put(id, node);  // Add node to attribute 'nodes' (HashMap)
+            System.out.println("Just addded node: id="+id + ", nodes: "+ nodes.get(id));
 
             // ––––– find parent and create relation –––––
             int index = id.lastIndexOf(".");  // find index of last '.' – last node reference
@@ -64,7 +71,7 @@ public class GraphManager {
 
                 // ––––– If parent doesn't exist, create parent–––––
                 if (parent == null) {  // handles non declared parent – to be replaced check TODO
-                    System.out.print("\t");
+                    System.out.print("\t Parent = null");
                     createOrUpdateNode(parentId, node.getAspect(), null);  // parents and children share aspect
                 }
 
@@ -79,6 +86,7 @@ public class GraphManager {
             node.updateNode(metadata);  // Update varying fields (metadata is JSON or replaced with relevant fields (name..)
         }
 
+        System.out.println("Node just before return: " + node.getAspect());
         return node;
     }
 
@@ -166,16 +174,23 @@ public class GraphManager {
 
     
     public Set<Relation> getFilteredCrossRelations(Map<String, Boolean> filters) {
-    if (filters == null) return crossRelations;
+        if (filters == null) return crossRelations;
 
-    // Hvis rel_cross er false → returner tom liste
-    Boolean showCross = filters.get("cross");
-    if (showCross != null && !showCross) {
-        return new HashSet<>();
+        // Hvis rel_cross er false → returner tom liste
+        Boolean showCross = filters.get("cross");
+        if (showCross != null && !showCross) {
+            return new HashSet<>();
+        }
+
+        // Filtrer på spesifikke relasjonstyper (A, B osv.)
+        return crossRelations.stream()
+            .filter(r -> {
+                String type = r.getType();
+                Boolean show = filters.get(type);
+                return show == null || show; // vis hvis ikke eksplisitt skrudd av
+            })
+            .collect(Collectors.toSet());
     }
-
-    return crossRelations;
-}
 
     // filter for aspect
     public Map<String, Node> getFilteredNodesByAspect(Map<String, Boolean> filters) {

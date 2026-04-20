@@ -1,36 +1,28 @@
-export function layoutTree(graph) {
+export function layoutTree(graph, aspectOrder) {
 
   if (!graph || !graph.nodes || !graph.root) {
     console.log("Ugyldig graph");
     return { nodes: [], hierarchyEdges: [] };
   }
 
-  // ENDRING: hent collapsedNodes fra graph
   const collapsedNodes = graph.collapsedNodes || new Set();
-
   const nodes = [];
 
   const backendEdges = (graph.relations || []).filter(
     e => e.type !== "hierarchy"
   );
 
-  // ----------------------------
-  // ROOT
-  // ----------------------------
-  nodes.push({
-    ...graph.root,
-    x: 700,
-    y: 40,
-    type: "root"
-  });
+
+
 
   // ----------------------------
   // ASPEKTER
   // ----------------------------
   let aspects;
-
-  if (graph.aspectOrder && graph.aspectOrder.length) {
-    aspects = graph.aspectOrder
+  if (aspectOrder) {
+    console.log("===== ASpect order: "+aspectOrder + " ===============")
+    aspects = aspectOrder
+        //console.log(graph.aspects)
       .map(id => graph.aspects.find(a => a.id === id))
       .filter(Boolean);
   } else {
@@ -38,42 +30,102 @@ export function layoutTree(graph) {
   }
 
   const COLUMN_X = {};
+  let colSpacing = 350;
+
+  // ----------------------------
+  // NODE MAP – Sean moved up, to check node depth before spacing columns
+  // ----------------------------
+  let greatestDepth = 0;
+  let incrColBy = 20;
+
+  const nodeMap = {};
+  graph.nodes.forEach(n => {
+    // Find deepest node
+    if(n.depth > greatestDepth) {
+      greatestDepth = n.depth;  // replace 'greatestDepth'
+    }
+
+
+    console.log("Layout: L77 foreach – node: ", n)
+    console.log(n)
+    nodeMap[n.id] = { ...n, children: [] };
+  });
+
+  // =====  Column spacing incrementing ====
+  // Increase spacing between columns if node depth is greater than 5
+  if (greatestDepth > 1) {
+    if(greatestDepth > 50){
+      incrColBy = 30;
+    }
+      if (greatestDepth > 100) {
+        incrColBy = 40;  // increase spacing between columns with 40 for each depth}
+    }
+    // indent = 40 per child/generation 5*40 = 200 -> increament by 200 for each time to keep gap large enough
+    console.log("<><><> A node has more than level 5 depth <><><> \n'greatestDepth': " + greatestDepth)
+    //colSpacing = colSpacing + 200 * Math.floor(greatestDepth / 5)  // increase spacing between columns with 1.5 *
+    colSpacing = colSpacing + incrColBy * greatestDepth  // increase spacing between columns with 40 for each depth
+    console.log("colSpacing * 40 * "+ greatestDepth)
+
+  }
+
+
+  // ----------------------------
+  // ROOT
+  // ----------------------------
+  nodes.push({
+    ...graph.root,
+    x: 350 * 1.5 + (incrColBy * greatestDepth * 1.5),
+    y: 40,
+    type: "root"
+  });
 
   aspects.forEach((aspect, index) => {
-    COLUMN_X[aspect.id] = 150 + index * 350;
+    COLUMN_X[aspect.id] = 50 + index * colSpacing;
   });
+
+  // ----------------------------
+  //  NAVN PÅ ASPEKTER
+  // ----------------------------
+  const ASPECT_NAMES = {
+    "%": "Typeaspekt",
+    "=": "Funksjonsaspekt",
+    "-": "Produktaspekt",
+    "%%": "Typeaspekt (produkt)"
+  };
+
 
   // ----------------------------
   // ASPEKT HEADERS
   // ----------------------------
+  console.log("Aspects before ASPECT HEADERS: ", aspects)
+  console.log("'colSpacing' jsut before ASPECT HEADERS: "+ colSpacing)
   aspects.forEach((aspect) => {
     nodes.push({
       id: "aspect_" + aspect.id,
-      label: aspect.label,
+      label: ASPECT_NAMES[aspect.id] || aspect.label, 
       x: COLUMN_X[aspect.id],
       y: 120,
       type: "aspect"
     });
   });
+  console.log(aspects)
+
+
 
   // ----------------------------
-  // NODE MAP
-  // ----------------------------
-  const nodeMap = {};
-  graph.nodes.forEach(n => {
-    nodeMap[n.id] = { ...n, children: [] };
-  });
-
-  // ----------------------------
-  // PARENT LOGIKK
+  // RIKTIG PARENT LOGIKK
   // ----------------------------
   const generatedHierarchyEdges = [];
 
   graph.nodes.forEach(n => {
+
     const lastDotIndex = n.id.lastIndexOf(".");
-    if (lastDotIndex === -1) return;
+
+    if (lastDotIndex === -1) return; // ingen parent
 
     const parentId = n.id.substring(0, lastDotIndex);
+
+    // KUN hvis parent faktisk finnes
     if (!nodeMap[parentId]) return;
 
     nodeMap[parentId].children.push(nodeMap[n.id]);
@@ -92,19 +144,22 @@ export function layoutTree(graph) {
 
   aspects.forEach(a => {
     rootsByAspect[a.id] = graph.nodes.filter(n => {
+
       if (n.aspect !== a.id) return false;
-      const hasParent = generatedHierarchyEdges.some(e => e.to === n.id);
+
+      const hasParent = generatedHierarchyEdges.some(e =>
+        e.to === n.id
+      );
+
       return !hasParent;
     });
   });
 
   // ----------------------------
-  // LAYOUT MED COLLAPSE-STØTTE
+  // LAYOUT MED COLLASPE NODE
   // ----------------------------
-  const ROW_GAP = 70;
+  const ROW_GAP = 35;
   const INDENT = 40;
-
-  // Samle alle synlige kanter
   const visibleHierarchyEdges = [];
 
   aspects.forEach((aspect) => {
@@ -114,45 +169,42 @@ export function layoutTree(graph) {
     function dfs(node, depth) {
 
       const name = node.name || node.label || "";
+
       const label = node.id
         ? node.description
-          ? `${node.id} ${name} (${node.description})`
-          : `${node.id} ${name}`
+          ? `${node.aspect} ${node.code} ${name} (${node.description})`
+          : `${node.aspect} ${node.code} ${name}`
         : "";
 
-      const isCollapsed = collapsedNodes.has(node.id);
+        const isCollapsed = collapsedNodes.has(node.id);
 
       nodes.push({
         ...node,
         label,
-        x: COLUMN_X[aspect.id] + depth * INDENT,
+        x: COLUMN_X[aspect.id] + depth * 20,
         y: currentY,
-        // ENDRING: send med children og collapsed-state til Node.jsx
         children: node.children,
-        collapsed: isCollapsed
+        collapsed:isCollapsed
       });
 
       currentY += ROW_GAP;
 
-      // ENDRING: ikke tegn barn hvis node er kollapset
-      if (!isCollapsed) {
+        if (!isCollapsed) {
         node.children.forEach(child => {
-          // legg til kant kun hvis ikke kollapset
-          visibleHierarchyEdges.push({
-            from: node.id,
-            to: child.id,
-            type: "hierarchy"
-          });
+          visibleHierarchyEdges.push({ from: node.id, to: child.id, type: "hierarchy" });
           dfs(child, depth + 1);
         });
       }
     }
 
+      
     rootsByAspect[aspect.id].forEach(rootNode => {
       dfs(nodeMap[rootNode.id], 0);
     });
 
   });
+
+
 
   // ----------------------------
   // RETURN
@@ -161,6 +213,7 @@ export function layoutTree(graph) {
     nodes,
     hierarchyEdges: [
       ...visibleHierarchyEdges,
+      ...generatedHierarchyEdges,
       ...backendEdges
     ]
   };
