@@ -9,15 +9,17 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
+    padding: 0 12px;
+    height: 38px;
     background: white;
-    border: 1.5px solid #b8dce8;
+    border: 1px solid #b8dce8;
     border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 400;
     color: #374151;
     cursor: pointer;
     transition: border-color 0.15s;
+    box-sizing: border-box;
 }
 
 .fd-trigger:hover { border-color: #4da3c8; }

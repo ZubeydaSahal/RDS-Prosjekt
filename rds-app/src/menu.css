@@ -19,6 +19,7 @@
     display: flex;
     gap: 12px;
     align-items: center;
+    margin-left: -4cm;
 }
 .menu .right {
     display: flex;
@@ -33,15 +34,18 @@
 }
 
 .menu button {
-    padding: 8px 12px;
+    padding: 0 12px;
+    height: 38px;
     border-radius: 6px;
-    border: 1px solid #b8dce8; /*b8dce8, fd9f3f */
-    background: white; /* white,  fddbb9*/
+    border: 1px solid #b8dce8;
+    background: white;
     cursor: pointer;
     transition: all 0.15s ease;
     display: flex;
     align-items: center;
     gap: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
 }
 
 .menu button:hover {
@@ -64,16 +68,18 @@
 }
 
 .file-button {
-    padding: 8px 12px;
+    padding: 0 12px;
+    height: 38px;
     border-radius: 6px;
     border: 1px solid #b8dce8;
-    font-size: 13px;
+    font-size: 14px;
     cursor: pointer;
     background: white;
     transition: 0.15s;
     align-items: center;
     display: flex;
     gap: 6px;
+    box-sizing: border-box;
 }
 
 .file-button:hover { background: #dff0f5; }

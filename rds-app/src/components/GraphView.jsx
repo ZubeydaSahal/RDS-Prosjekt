@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { layoutTree } from "../graph/layout";
 import { transformGraph } from "./transformGraph";
 
@@ -16,98 +16,29 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
 
   const [fitView, setFitView] = useState(true);
   const [zoom, setZoom] = useState(1);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [collapsedNodes, setCollapsedNodes] = useState(new Set());
 
-  // Holder styr på hvilken edge som er hoveret
   const [hoveredEdge, setHoveredEdge] = useState(null);
+  const svgRef = useRef(null);
 
-
-  //  ===== Scroll / maneuver in image ====
-  const [isDragging, setIsDragging] = useState(false);
-  const [lastPos, setLastPos] = useState({ x: 0, y: 0 });
-
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    setLastPos({ x: e.clientX, y: e.clientY });
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-
-    const dx = e.clientX - lastPos.x;
-    const dy = e.clientY - lastPos.y;
-
-    setOffset(prev => ({
-      x: prev.x + dx,
-      y: prev.y + dy,
-    }));
-
-    setLastPos({ x: e.clientX, y: e.clientY });
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  // ----------------------------
-  // ZOOM 
-  // ----------------------------
-  const handleWheel = (e) => {
-    if (fitView) return;
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    //get mouse position
-    const rect = e.currentTarget.getBoundingClientRect();
-
-    // Mouse positiosn in box/container
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    // Zooming
-    const scaleFactor = 0.0015;
-    const newZoom = Math.min(3, Math.max(0.2, zoom - e.deltaY * scaleFactor));
-
-    const zoomRatio = newZoom / zoom;
-
-    // Adjust offset, so mouse is in center when zooming
-    const newOffset = {
-      x: mouseX - (mouseX - offset.x) * zoomRatio,
-      y: mouseY - (mouseY - offset.y) * zoomRatio,
-    };
-    setZoom(newZoom);
-    setOffset(newOffset);
-  };
-
-  // == Reset image when returning to fitView ==
+  // Ctrl+scroll for zoom, plain scroll navigerer native
   useEffect(() => {
-    if (fitView) {
-      setZoom(1);
-      setOffset({ x: 0, y: 0 });
-    }
+    const el = svgRef.current;
+    if (!el) return;
+    const handler = (e) => {
+      if (fitView) return;
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+      const scaleFactor = 0.005;
+      setZoom(prev => Math.min(3, Math.max(0.2, prev - e.deltaY * scaleFactor)));
+    };
+    el.addEventListener("wheel", handler, { passive: false });
+    return () => el.removeEventListener("wheel", handler);
   }, [fitView]);
 
-
-  // == Lock rest of site from scrolling on wheel action ==
   useEffect(() => {
-    const el = graphRef.current;
-    if (!el) return;
-
-    const wheelHandler = (e) => {
-      if (fitView)return;
-
-      e.preventDefault();
-      handleWheel(e);
-    };
-
-    el.addEventListener("wheel", wheelHandler, { passive: false });
-
-    return () => {
-      el.removeEventListener("wheel", wheelHandler);
-    };
-  }, [fitView, zoom, offset]);
+    if (fitView) setZoom(1);
+  }, [fitView]);
 
   // ----------------------------
   // COLLAPSE NODES
@@ -175,20 +106,13 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
       </button>
 
       <svg
-          width={fitView ? "100%" : width}
-          height="100%"
-          viewBox={fitView ? `${minX - padding} ${minY - padding} ${width} ${height}` : undefined}
-          /*onWheel={handleWheel}*/
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          preserveAspectRatio="xMidYMid meet"
+        ref={svgRef}
+        width={fitView ? "100%" : width * zoom}
+        height={fitView ? "100%" : height * zoom}
+        viewBox={`${minX - padding} ${minY - padding} ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
       >
-        <g style={{
-          transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
-          transformOrigin: "0 0"
-        }}>
+        <g>
 
           {/* BUS SYSTEM rot til aspekt-header */}
           {aspectNodes.length > 0 && (() => {
