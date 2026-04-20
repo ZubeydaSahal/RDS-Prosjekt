@@ -18,14 +18,14 @@ export default function Node({ node, onToggle, collapsed }) {
     if (!label) return { prefix: "", rest: "" };
 
     const parts = label.split(" ");
-    if (parts.length === 1) {
-      return { prefix: parts[0], rest: "" };
+    if (parts.length === 1) return { prefix: parts[0], rest: "" };
+
+    const aspectSymbols = ["=", "-", "%", "%%"];
+    if (aspectSymbols.includes(parts[0]) && parts.length >= 2) {
+      return { prefix: parts[0] + parts[1], rest: parts.slice(2).join(" ") };
     }
 
-    const prefix = parts.shift();
-    const rest = parts.join(" ");
-
-    return { prefix, rest };
+    return { prefix: parts[0], rest: parts.slice(1).join(" ") };
   }
 
   const { prefix, rest } = splitLabel(truncatedLabel);
@@ -138,20 +138,15 @@ export default function Node({ node, onToggle, collapsed }) {
   fontSize={isAspect ? 13 : FONT_SIZE}   
   fontFamily="Roboto, Segoe UI, Arial, sans-serif"
   fill={isRoot ? "#ffffff" : "#333"}
-  fontWeight={isAspect ? "700" : "400"}  
+  fontWeight="bold"
 >
   {isAspect || isRoot ? (
     node.label
   ) : (
     <>
-      <tspan fontWeight="600">
-        {prefix}
-      </tspan>
-
+      <tspan fontWeight="bold">{prefix}</tspan>
       {rest && (
-        <tspan dx="6" fontWeight="400">
-          {rest}
-        </tspan>
+        <tspan dx="6" fontWeight="normal">{rest}</tspan>
       )}
     </>
   )}

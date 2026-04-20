@@ -86,6 +86,16 @@ body {
 
 .aspect-item button { cursor: pointer; }
 
+/* #### FULLSCREEN #### */
+.fullscreen-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
 /* FOOTER */
 .footer {
   padding: 15px;
