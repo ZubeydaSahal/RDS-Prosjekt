@@ -43,7 +43,7 @@ export default function Node({ node, onToggle, collapsed }) {
   const FONT_SIZE = 11;
 
   // ----------------------------
-  // FARGER
+  // COLOR SETTINGS
   // ----------------------------
   const aspectColors = {
     "%": "#4da3ff",
@@ -111,7 +111,7 @@ export default function Node({ node, onToggle, collapsed }) {
       />
 
       {/* ----------------------------
-          FARGESTRIPE
+          COLOR STRIPE
       ---------------------------- */}
       {!isAspect && !isRoot && (
         <rect
@@ -124,7 +124,7 @@ export default function Node({ node, onToggle, collapsed }) {
       )}
 
       {/* ----------------------------
-          TEKST
+          TEXT
       ---------------------------- */}
       <text
       x={

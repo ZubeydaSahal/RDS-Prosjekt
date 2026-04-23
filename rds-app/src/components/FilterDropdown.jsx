@@ -57,7 +57,7 @@ export default function FilterDropdown({
       {open && (
         <div className="fd-dropdown">
 
-          {/* ASPEKTER */}
+          {/* ASPECTS */}
           <p className="fd-section-title">ASPECTS</p>
           <ul className="fd-list">
             {ASPECTS.map(({ symbol, label }) => (
@@ -77,7 +77,7 @@ export default function FilterDropdown({
 
           <div className="fd-divider" />
 
-          {/* RELASJONER — master toggle */}
+          {/* RELATIONS — master toggle */}
           <p className="fd-section-title">RELATIONS</p>
           <ul className="fd-list">
             <li>
@@ -92,7 +92,7 @@ export default function FilterDropdown({
             </li>
           </ul>
 
-          {/* RELASJONSTYPER — individuelle typer */}
+          {/* RELATION TYPES — individuelle typer */}
           {relationTypes.length > 0 && activeRelation.includes("cross") && (
             <>
               <div className="fd-divider" />
@@ -106,7 +106,7 @@ export default function FilterDropdown({
                         checked={activeRelation.includes(type)}
                         onChange={() => toggleRelation(type)}
                       />
-                      <span className="fd-label">{type === "ingen" ? "no type" : `|${type}|`}</span>
+                      <span className="fd-label">{type === "none" ? "no type" : `|${type}|`}</span>
                     </label>
                   </li>
                 ))}
