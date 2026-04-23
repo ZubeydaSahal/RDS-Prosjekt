@@ -127,22 +127,22 @@ export default function Node({ node, onToggle, collapsed }) {
           TEKST
       ---------------------------- */}
       <text
-  x={
-    isAspect || isRoot
-      ? node.x
-      : node.x - BOX_WIDTH / 2 + STRIPE_WIDTH + TEXT_PADDING
-  }
-  y={node.y}
-  textAnchor={isAspect || isRoot ? "middle" : "start"}
-  dominantBaseline="middle"
-  fontSize={isAspect ? 13 : FONT_SIZE}   
-  fontFamily="Roboto, Segoe UI, Arial, sans-serif"
-  fill={isRoot ? "#ffffff" : "#333"}
-  fontWeight="bold"
->
-  {isAspect || isRoot ? (
-    node.label
-  ) : (
+      x={
+        isAspect || isRoot
+          ? node.x
+          : node.x - BOX_WIDTH / 2 + STRIPE_WIDTH + TEXT_PADDING
+      }
+      y={node.y}
+      textAnchor={isAspect || isRoot ? "middle" : "start"}
+      dominantBaseline="middle"
+      fontSize={isAspect ? 13 : FONT_SIZE}   
+      fontFamily="Roboto, Segoe UI, Arial, sans-serif"
+      fill={isRoot ? "#ffffff" : "#333"}
+      fontWeight="bold"
+    >
+      {isAspect || isRoot ? (
+        node.label
+      ) : (
     <>
       <tspan fontWeight="bold">{prefix}</tspan>
       {rest && (
@@ -151,7 +151,7 @@ export default function Node({ node, onToggle, collapsed }) {
     </>
   )}
 </text>
-   {/* COLLAPSE/EXPAND KNAPP — bare på noder med barn */}
+   {/* COLLAPSE/EXPAND Button */}
       {hasChildren && !isRoot && !isAspect && (
         <g
           style={{ cursor: "pointer" }}
