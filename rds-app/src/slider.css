@@ -46,7 +46,7 @@
     flex: 1;
     min-width: 0;
     min-height: 0;
-    /*padding: 50px;*/
+    position: relative;
     overflow: hidden;
     touch-action: none; /*Prevents page scrolling when moving/zooming in graph image */
     background: white;

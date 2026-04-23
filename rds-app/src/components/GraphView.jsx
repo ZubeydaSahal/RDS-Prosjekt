@@ -36,6 +36,18 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
     return () => el.removeEventListener("wheel", handler);
   }, [fitView]);
 
+  // Hindrer at scroll i graf-boksen bobler opp til siden
+  useEffect(() => {
+    const container = graphRef.current;
+    if (!container) return;
+    const handler = (e) => {
+      if (fitView) return;
+      e.stopPropagation();
+    };
+    container.addEventListener("wheel", handler, { passive: true });
+    return () => container.removeEventListener("wheel", handler);
+  }, [fitView, graphRef]);
+
   useEffect(() => {
     if (fitView) setZoom(1);
   }, [fitView]);
@@ -94,12 +106,13 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
   const padding = 150;
   const width = maxX - minX + padding * 2;
   const height = maxY - minY + padding * 2;
+  const scrollExtra = fitView ? 0 : 800;
 
   return (
     <div
       ref={graphRef}
       className="graph-container"
-      style={{ overflow: fitView ? "hidden" : "auto" }}
+      style={{ overflow: fitView ? "hidden" : "auto", overscrollBehavior: fitView ? undefined : "contain" }}
     >
       <button className="scroll-mode" onClick={() => setFitView(!fitView)}>
         {fitView ? "Scroll mode" : "Fit to screen"}
@@ -108,8 +121,8 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
       <svg
         ref={svgRef}
         width={fitView ? "100%" : width * zoom}
-        height={fitView ? "100%" : height * zoom}
-        viewBox={`${minX - padding} ${minY - padding} ${width} ${height}`}
+        height={fitView ? "100%" : (height + scrollExtra) * zoom}
+        viewBox={`${minX - padding} ${minY - padding} ${width} ${height + scrollExtra}`}
         preserveAspectRatio="xMidYMid meet"
       >
         <g>
