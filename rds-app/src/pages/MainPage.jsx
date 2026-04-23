@@ -32,7 +32,7 @@ function MainPage() {
 
      const relationTypes = [
         ...new Set(allRelationTypes.filter(Boolean)),
-        ...(hasUntypedRelations ? ["ingen"] : []),
+        ...(hasUntypedRelations ? ["none"] : []),
     ];
 
 
@@ -76,14 +76,14 @@ function MainPage() {
                 body: text
             });
             if (!response.ok) {
-                setError("Ugyldig input.\nSørg for at linjene starter med %, = eller -");
+                setError("Invalid input.\nMake sure lines start with %, = or -");
                 return;
             }
             const graph = await response.json();
             setBackendGraph(graph);
         } catch (err) {
             console.error("Network error:", err);
-            setError("Noe gikk galt med serveren");
+            setError("Something went wrong with the server");
         }
     };
 
@@ -94,7 +94,7 @@ function MainPage() {
 
     const handleDownloadImage = async () => {
         const node = graphRef.current;
-        if (!node) { alert("Fant ikke grafen"); return; }
+        if (!node) { alert("Graph not found"); return; }
         try {
             const dataUrl = await toPng(node, { cacheBust: true, pixelRatio: 2 });
             const link = document.createElement("a");
@@ -102,7 +102,7 @@ function MainPage() {
             link.href = dataUrl;
             link.click();
         } catch (err) {
-            alert("Kunne ikke laste ned bilde");
+            alert("Could not download image");
         }
     };
 

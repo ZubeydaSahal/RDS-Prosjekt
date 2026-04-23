@@ -84,7 +84,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
   const visibleRelations = relations.filter(edge => {
     if (edge.type === "hierarchy") return true;
     if (!activeRelation.includes("cross")) return false;
-    const typeKey = edge.type ?? "ingen";
+    const typeKey = edge.type ?? "none";
     if (!activeRelation.includes(typeKey)) return false;
     return true;
   });
