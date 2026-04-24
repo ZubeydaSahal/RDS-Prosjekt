@@ -37,11 +37,19 @@ public class Node {
         // calculate level and code
         String[] parts = id.split("\\.");
         this.level = parts.length;
-        if(aspect!="<root>"){
+
+
+        // remove aspect for first level nodes
+        if (aspect.equals("<root>")){
+            this.level = 0;
+        }
+        if(level==1){
             this.code = parts[parts.length - 1].substring(aspect.length());
-        }else {
+        }
+        else {
             this.code = parts[parts.length - 1];
         }
+
 
     }
 
