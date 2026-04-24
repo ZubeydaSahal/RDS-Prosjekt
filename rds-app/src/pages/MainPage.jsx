@@ -15,7 +15,16 @@ function MainPage() {
     const [backendGraph, setBackendGraph] = useState(null);
     const [text, setText] = useState("");
     const [error, setError] = useState("");
+    const [fullscreen, setFullscreen] = useState(false);
     const graphRef = useRef(null);
+
+    useEffect(() => {
+        function handleKeyDown(e) {
+            if (e.key === "Escape" && fullscreen) setFullscreen(false);
+        }
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, [fullscreen]);
 
     // Hent unike relasjonstyper fra backendGraph
     const allRelationTypes = backendGraph ? (backendGraph.relationDTO || []).map(r => r.type) : [];
@@ -117,6 +126,36 @@ function MainPage() {
         reader.readAsText(file);
     };
 
+    if (fullscreen) {
+        return (
+            <div className="fullscreen-overlay">
+                <Menu
+                    activeAspect={activeAspect}
+                    setActiveAspect={setActiveAspect}
+                    activeRelation={activeRelation}
+                    setActiveRelation={setActiveRelation}
+                    relationTypes={relationTypes}
+                    onBuild={handleBuild}
+                    onDownloadImage={handleDownloadImage}
+                    onDownloadText={handleDownloadText}
+                    onUploadFile={handleFileUpload}
+                    onToggleFullscreen={() => setFullscreen(false)}
+                    isFullscreen={true}
+                />
+                {error && <div className="error-box">{error}</div>}
+                <SplitPane
+                    graph={backendGraph}
+                    graphRef={graphRef}
+                    aspectOrder={aspectOrder}
+                    activeRelation={activeRelation}
+                    text={text}
+                    setText={setText}
+                    onBuild={handleBuild}
+                />
+            </div>
+        );
+    }
+
     return (
         <div className="MainPage">
             <Navbar />
@@ -134,6 +173,7 @@ function MainPage() {
                         onDownloadImage={handleDownloadImage}
                         onDownloadText={handleDownloadText}
                         onUploadFile={handleFileUpload}
+                        onToggleFullscreen={() => setFullscreen(true)}
                     />
 
                     {error && <div className="error-box">{error}</div>}

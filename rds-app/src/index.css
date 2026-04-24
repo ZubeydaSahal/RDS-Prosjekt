@@ -10,7 +10,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px 30px;
-  background: #1e3a8a; /* 172141, 1d2868, 63c6f7, f7c113, 1d2868*/
+  background: #172141; /* 172141, 1d2868, 63c6f7, f7c113, 1d2868*/
   color: white;
 }
 
@@ -86,11 +86,21 @@ body {
 
 .aspect-item button { cursor: pointer; }
 
+/* #### FULLSCREEN #### */
+.fullscreen-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
 /* FOOTER */
 .footer {
   padding: 15px;
   padding-bottom: 20px;
   text-align: center;
-  background: #1e3a8a; /* 172141, 1d2868, 63c6f7, f7c113, 1d2868*/
+  background: #172141; /* 172141, 1d2868, 63c6f7, f7c113, 1d2868*/
   color: white;
-}
+} 
