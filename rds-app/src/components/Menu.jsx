@@ -37,7 +37,7 @@ function Menu({
 
 
 
-                <button className="primary" onClick={onBuild}>Bygg tre</button>
+                <button className="primary" onClick={onBuild}>Build Graph</button>
 
                 <button onClick={onDownloadText} title="Download Text">
                     <img src={TextDownload} alt="Download Text" height={24} width={24}/>
