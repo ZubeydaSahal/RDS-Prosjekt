@@ -49,6 +49,8 @@
     box-shadow: 0 8px 24px rgba(0,0,0,0.10);
     width: 240px;
     padding: 12px 0 8px;
+    max-height: 60vh;
+    overflow-y: auto;
 }
 
 .fd-section-title {

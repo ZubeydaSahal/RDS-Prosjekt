@@ -12,7 +12,7 @@ const ASPECT_COLORS = {
   "%%": "#a855f7",
 };
 
-export default function GraphView({ graph, graphRef, aspectOrder, activeRelation = [] }) {
+export default function GraphView({ graph, graphRef, aspectOrder, activeRelation = [], maxDepth = null }) {
 
   const [fitView, setFitView] = useState(true);
   const [zoom, setZoom] = useState(1);
@@ -71,8 +71,8 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
     if (!graph) return { nodes: [], hierarchyEdges: [] };
     const transformed = transformGraph(graph);
     if (!transformed) return { nodes: [], hierarchyEdges: [] };
-    return layoutTree({ ...transformed, collapsedNodes }, aspectOrder);
-  }, [graph, aspectOrder, collapsedNodes]);
+    return layoutTree({ ...transformed, collapsedNodes, maxDepth }, aspectOrder);
+  }, [graph, aspectOrder, collapsedNodes, maxDepth]);
 
   const nodes = layout.nodes || [];
   const relations = layout.hierarchyEdges || [];
