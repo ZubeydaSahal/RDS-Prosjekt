@@ -71,9 +71,9 @@ export default function Node({ node, onToggle, collapsed }) {
   const hasChildren = node.children && node.children.length > 0;
 
   //Collapse knapp poisjonering
-  const BTN_R = 8;
+  const BTN_R = 4;
   const btnX = node.x + BOX_WIDTH / 2 + BTN_R + 4;
-  const btnY = node.y; 
+  const btnY = node.y;
 
   return (
     <g>
@@ -158,15 +158,15 @@ export default function Node({ node, onToggle, collapsed }) {
           onMouseDown={(e) => e.stopPropagation()}
           onClick={() => onToggle && onToggle(node.id)}
         >
-          <circle cx={btnX} cy={btnY} r={BTN_R} fill="white" stroke={strokeColor} strokeWidth={1.5} />
+          <circle cx={btnX} cy={btnY} r={BTN_R} fill="white" stroke="#999" strokeWidth={1} />
           <text
             x={btnX}
             y={btnY}
             textAnchor="middle"
             dominantBaseline="middle"
-            fontSize="12"
+            fontSize="10"
             fontWeight="bold"
-            fill={strokeColor}
+            fill="#999"
           >
             {collapsed ? "+" : "−"}
           </text>
