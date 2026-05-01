@@ -76,7 +76,9 @@ function MainPage() {
                 body: text
             });
             if (!response.ok) {
-                setError("Invalid input.\nMake sure lines start with %, = or -");
+                if (!text.includes("<")) {
+                    setError("Invalid input. A topnode is required");
+                } 
                 return;
             }
             const graph = await response.json();
