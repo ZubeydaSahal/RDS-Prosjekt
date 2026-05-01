@@ -4,7 +4,7 @@ import { useState } from "react";
 const ASPECT_COLORS = {
   "=": "#f97316",
   "%": "#3b82f6",
-  "-": "#22c55e",
+  "-": "#6ccf4f",
   "%%": "#a855f7",
 };
 
