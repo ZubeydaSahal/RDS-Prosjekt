@@ -32,7 +32,7 @@ public class RdsController {
         graph.finalizeGraph();  // Connects root to aspects
 
 
-        // Bygg filter-maps fra query params
+        // Build filter maps from query parameters
         Map<String, Boolean> aspectFilters = buildFilter(allParams, "aspect_");
         Map<String, Boolean> relationFilters = buildFilter(allParams, "rel_");
 
@@ -58,6 +58,7 @@ public class RdsController {
         return gv;*/
     }
 
+    //Extracts filters from query parameters based on a given prefix (e.g., "aspect_" or "rel_")
     private Map<String, Boolean> buildFilter(Map<String, String> params, String prefix) {
         if (params == null) return null;
  
@@ -66,8 +67,8 @@ public class RdsController {
             if (entry.getKey().startsWith(prefix)) {
                 String raw = entry.getKey().substring(prefix.length());
  
-                // ENDRING: dekod URL-sikre nøkler tilbake til aspektsymboler
-                // PCTPCT må dekodes FØR PCT!
+                // Decode the URL sake keys back to aspect symbold
+                // PCTPCT must be decoded before PCT to avoid conflicts
                 String key = raw
                     .replace("PCTPCT", "%%")
                     .replace("PCT", "%")

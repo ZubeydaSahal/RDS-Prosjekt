@@ -87,10 +87,10 @@ export function layoutTree(graph, aspectOrder) {
   //  NAVN PÅ ASPEKTER
   // ----------------------------
   const ASPECT_NAMES = {
-    "%": "Typeaspekt",
-    "=": "Funksjonsaspekt",
-    "-": "Produktaspekt",
-    "%%": "Typeaspekt (produkt)"
+    "%": "Type aspect",
+    "=": "Function aspect",
+    "-": "Product aspect",
+    "%%": "Type aspect (product)"
   };
 
 
