@@ -6,6 +6,7 @@ export function layoutTree(graph, aspectOrder) {
   }
 
   const collapsedNodes = graph.collapsedNodes || new Set();
+  const maxDepth = graph.maxDepth ?? null;
   const nodes = [];
 
   const backendEdges = (graph.relations || []).filter(
@@ -189,7 +190,8 @@ export function layoutTree(graph, aspectOrder) {
 
       currentY += ROW_GAP;
 
-        if (!isCollapsed) {
+        const depthLimited = maxDepth !== null && depth >= maxDepth - 1;
+        if (!isCollapsed && !depthLimited) {
         node.children.forEach(child => {
           visibleHierarchyEdges.push({ from: node.id, to: child.id, type: "hierarchy" });
           dfs(child, depth + 1);

@@ -11,6 +11,8 @@ export default function FilterDropdown({
   activeAspect = [], setActiveAspect,
   activeRelation = [], setActiveRelation,
   relationTypes = [],
+  maxDepth, setMaxDepth,
+  graphMaxDepth = 0,
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -116,6 +118,29 @@ export default function FilterDropdown({
 
           {relationTypes.length === 0 && (
             <span className="fd-empty">No relations in the graph</span>
+          )}
+
+          <div className="fd-divider" />
+
+          {/* DEPTH */}
+          <p className="fd-section-title" style={{marginTop: 4}}>DEPTH</p>
+          {graphMaxDepth > 0 ? (
+            <ul className="fd-list">
+              {[null, ...Array.from({ length: graphMaxDepth }, (_, i) => i + 1)].map(d => (
+                <li key={d ?? "all"}>
+                  <label className="fd-item">
+                    <input
+                      type="checkbox"
+                      checked={maxDepth === d}
+                      onChange={() => setMaxDepth(maxDepth === d ? null : d)}
+                    />
+                    <span className="fd-label">{d === null ? "All levels" : `Level ${d}`}</span>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <span className="fd-empty">Build a graph to filter by depth</span>
           )}
 
         </div>

@@ -9,6 +9,7 @@ import Footer from "../components/Layout/Footer";
 function MainPage() {
 
     const [aspectOrder] = useState(["=", "-", "%", "%%"]);
+    const [maxDepth, setMaxDepth] = useState(null);
     const [activeAspect, setActiveAspect] = useState(["=", "%", "-", "%%"]);
     // ENDRING: starter med "cross" aktiv
     const [activeRelation, setActiveRelation] = useState(["cross"]);
@@ -25,6 +26,19 @@ function MainPage() {
         document.addEventListener("keydown", handleKeyDown);
         return () => document.removeEventListener("keydown", handleKeyDown);
     }, [fullscreen]);
+
+    // Beregn maks lokal dybde per aspektkolonne fra node-IDer (punktnotasjon)
+    const graphMaxDepth = (() => {
+        if (!backendGraph?.nodeDTO) return 0;
+        let globalMax = 0;
+        Object.entries(backendGraph.nodeDTO).forEach(([key, list]) => {
+            if (key === "<root>" || !Array.isArray(list) || list.length === 0) return;
+            const dotCounts = list.map(n => (n.id.match(/\./g) || []).length);
+            const colDepth = Math.max(...dotCounts) - Math.min(...dotCounts);
+            if (colDepth > globalMax) globalMax = colDepth;
+        });
+        return globalMax + 1;
+    })();
 
     // Hent unike relasjonstyper fra backendGraph
     const allRelationTypes = backendGraph ? (backendGraph.relationDTO || []).map(r => r.type) : [];
@@ -137,6 +151,9 @@ function MainPage() {
                     activeRelation={activeRelation}
                     setActiveRelation={setActiveRelation}
                     relationTypes={relationTypes}
+                    maxDepth={maxDepth}
+                    setMaxDepth={setMaxDepth}
+                    graphMaxDepth={graphMaxDepth}
                     onBuild={handleBuild}
                     onDownloadImage={handleDownloadImage}
                     onDownloadText={handleDownloadText}
@@ -150,6 +167,7 @@ function MainPage() {
                     graphRef={graphRef}
                     aspectOrder={aspectOrder}
                     activeRelation={activeRelation}
+                    maxDepth={maxDepth}
                     text={text}
                     setText={setText}
                     onBuild={handleBuild}
@@ -171,6 +189,9 @@ function MainPage() {
                         activeRelation={activeRelation}
                         setActiveRelation={setActiveRelation}
                         relationTypes={relationTypes}
+                        maxDepth={maxDepth}
+                        setMaxDepth={setMaxDepth}
+                        graphMaxDepth={graphMaxDepth}
                         onBuild={handleBuild}
                         onDownloadImage={handleDownloadImage}
                         onDownloadText={handleDownloadText}
@@ -185,6 +206,7 @@ function MainPage() {
                         graphRef={graphRef}
                         aspectOrder={aspectOrder}
                         activeRelation={activeRelation}
+                        maxDepth={maxDepth}
                         text={text}
                         setText={setText}
                         onBuild={handleBuild}
