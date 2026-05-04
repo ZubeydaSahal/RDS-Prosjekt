@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import com.rds.graph_view.DTO.*;
 import com.rds.datastructure.GraphTest;
+import java.util.ArrayList;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,17 +25,24 @@ public class RdsController {
 
     @PostMapping(value = "/parse", consumes = "text/plain", produces = "application/json")
     public GraphViewDTO parseRds(@RequestBody String rdsScript,
-                                  @RequestParam(required = false) Map<String, String> allParams) {
-
-        // Parse script and create datastructure 'GraphManager' instance
-        RdsParser parser = new RdsParser();
-        GraphManager graph = parser.parse(rdsScript);
-        graph.finalizeGraph();  // Connects root to aspects
-
+                                 @RequestParam(required = false) Map<String, String> allParams) {
 
         // Build filter maps from query parameters
         Map<String, Boolean> aspectFilters = buildFilter(allParams, "aspect_");
         Map<String, Boolean> relationFilters = buildFilter(allParams, "rel_");
+
+        // Create a list of active aspects
+        List<String> activeAspects = getActiveAspects(aspectFilters);
+        System.out.println("APECTS: \n");
+        for (String aspect : activeAspects){
+            System.out.println(aspect+", ");
+        }
+
+        // Parse script and create datastructure 'GraphManager' instance
+        RdsParser parser = new RdsParser();
+        GraphManager graph = parser.parse(rdsScript, activeAspects);
+        graph.finalizeGraph();  // Connects root to aspects
+
 
         // Create a view of the data for frontend (selected data)
         ViewBuilder viewBuilder = new ViewBuilder();
@@ -61,24 +69,40 @@ public class RdsController {
     //Extracts filters from query parameters based on a given prefix (e.g., "aspect_" or "rel_")
     private Map<String, Boolean> buildFilter(Map<String, String> params, String prefix) {
         if (params == null) return null;
- 
+
         Map<String, Boolean> filter = new HashMap<>();
         for (Map.Entry<String, String> entry : params.entrySet()) {
             if (entry.getKey().startsWith(prefix)) {
                 String raw = entry.getKey().substring(prefix.length());
- 
+
                 // Decode the URL sake keys back to aspect symbold
                 // PCTPCT must be decoded before PCT to avoid conflicts
                 String key = raw
-                    .replace("PCTPCT", "%%")
-                    .replace("PCT", "%")
-                    .replace("EQ", "=")
-                    .replace("DASH", "-");
- 
+                        .replace("PCTPCT", "%%")
+                        .replace("PCT", "%")
+                        .replace("EQ", "=")
+                        .replace("DASH", "-");
+
                 filter.put(key, Boolean.parseBoolean(entry.getValue()));
             }
         }
         return filter.isEmpty() ? null : filter;
     }
+    // Get aspects
+    private List<String> getActiveAspects(Map<String, Boolean> aspectFilters) {
+        List<String> activeAspects = new ArrayList<>();
+        if (aspectFilters != null) {
+            for (Map.Entry<String, Boolean> entry : aspectFilters.entrySet()) {
+                if (entry.getValue()) {  // If aspect is active (true)
+                    activeAspects.add(entry.getKey());
+                }
+            }
+        }
+        return activeAspects;
+    }
 
 }
+
+
+
+

@@ -4,7 +4,7 @@ import { transformGraph } from "./transformGraph";
 
 import Node from "./Node";
 import Edge from "./Edge";
-import {aspectLineColour, ASPECTS} from "../config/aspects.js";
+import {aspectLineColour, ASPECTS} from "../../../config/aspects.ts";
 
 //
 const ASPECT_COLORS = aspectLineColour

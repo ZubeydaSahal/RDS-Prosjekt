@@ -1,11 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 
-const ASPECTS = [
+import {aspectLabelsArray} from "../../../config/aspects.js";
+
+const ASPECTS = aspectLabelsArray;
+
+    /*[
   { symbol: "=",  label: "Function aspect" },
   { symbol: "%",  label: "Type aspect for function aspect" },
   { symbol: "-",  label: "Product aspect" },
   { symbol: "%%", label: "Type aspect for product aspect" },
-];
+];*/
 
 export default function FilterDropdown({
   activeAspect = [], setActiveAspect,

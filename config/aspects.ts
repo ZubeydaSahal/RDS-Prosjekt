@@ -39,6 +39,12 @@ export const getAspectLabels = Object.fromEntries(
     ])
 );
 
+// AspectLabelsArray – used in filterdropdown [{symbol : "aspect", label : "aspectname"}, {}...]
+export const aspectLabelsArray = Object.entries(ASPECTS).map(([symbol, data]) => ({
+    symbol,
+    label: data.label,
+}));
+
 // Aspect line colour
 export const aspectLineColour = Object.fromEntries(
     Object.entries(ASPECTS).map(([symbol, data]) => [
@@ -63,6 +69,17 @@ export const aspectNodeColour = Object.fromEntries(
     ])
 );
 
+// Export to JSON - for backend use
+export function exportAspectsForBackend() {
+    return Object.fromEntries(
+        Object.entries(ASPECTS).map(([key, value]) => [
+            key,
+            {
+                label: value.label
+            }
+        ])
+    );
+}
 
 
 

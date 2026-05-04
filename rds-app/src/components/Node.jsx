@@ -1,4 +1,4 @@
-import {aspectHeaderColour, aspectNodeColour, getAspectSymbols} from "../config/aspects.js";
+import {aspectHeaderColour, aspectNodeColour, getAspectSymbols} from "../../../config/aspects.ts";
 
 export default function Node({ node, onToggle, collapsed }) {
 

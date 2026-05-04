@@ -1,3 +1,5 @@
+import {getAspectLabels, getAspectSymbols} from "../../../config/aspects.ts";
+
 export function layoutTree(graph, aspectOrder) {
 
   if (!graph || !graph.nodes || !graph.root) {
@@ -87,12 +89,14 @@ export function layoutTree(graph, aspectOrder) {
   // ----------------------------
   //  NAVN PÅ ASPEKTER
   // ----------------------------
-  const ASPECT_NAMES = {
+  const ASPECT_NAMES = getAspectLabels;
+  /*Erstattet av config
+      {
     "%": "Type aspect",
     "=": "Function aspect",
     "-": "Product aspect",
     "%%": "Type aspect (product)"
-  };
+  };*/
 
 
   // ----------------------------

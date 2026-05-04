@@ -165,7 +165,7 @@ function MainPage() {
                 <SplitPane
                     graph={backendGraph}
                     graphRef={graphRef}
-                    aspectOrder={aspectOrder}
+                    aspectOrder={activeAspect}
                     activeRelation={activeRelation}
                     maxDepth={maxDepth}
                     text={text}

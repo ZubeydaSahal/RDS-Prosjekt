@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {aspectLineColour} from "../config/aspects.js";
+import {aspectLineColour} from "../../../config/aspects.ts";
 
 
 const ASPECT_COLORS = aspectLineColour;

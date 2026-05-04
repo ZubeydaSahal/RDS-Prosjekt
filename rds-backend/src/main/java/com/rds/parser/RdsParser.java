@@ -13,9 +13,11 @@ import java.util.regex.Pattern;
 //the function NodeChecker and RelationChecker are placeholders.
 public class RdsParser {
     private boolean topNodeDeclared = false;
+    private List<String> aspectList = new ArrayList<>();
 
     // receives the whole script as a string, splits it into lines and processes each line according to the RDS syntax rules.
-    public GraphManager parse(String script){
+    public GraphManager parse(String script, List<String>aspects){
+        aspectList = aspects;
         GraphManager graphManager = new GraphManager();
         System.out.println("<Parse> Script: \n" + script + "\n");
         String[] lines = script.split("\\r?\\n");
@@ -251,12 +253,24 @@ public class RdsParser {
     // Check aspect from first symbol
     private String checkAspect(String line) {
 
+        // Sort aspectlist, to check for "%%" before "%"
+        aspectList.sort((a, b) -> Integer.compare(b.length(), a.length()));
+
+
+        System.out.println("AspectS: ");
+        for(String aspect : aspectList){
+            System.out.println(aspect+", ");
+            if (line.startsWith(aspect))return aspect;
+        }
+        throw new IllegalArgumentException("invalid aspect symbol or missing aspect symbol: " + line);
+
+        /* Replaced with config
         if (line.startsWith("%%")) return "%%";
         else if (line.startsWith("-")) return "-";
         else if (line.startsWith("=")) return "=";
         else if (line.startsWith("%")) return "%";
-        else if (line.startsWith("$")) return "$";
-        else throw new IllegalArgumentException("invalid aspect symbol or missing aspect symbol: " + line);
+        else if (line.startsWith("$")) return "$";*/
+
 
         //char first = line.charAt(0);
 
