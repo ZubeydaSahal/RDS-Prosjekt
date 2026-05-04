@@ -1,15 +1,14 @@
 import { useState } from "react";
 
+
 const ASPECT_COLORS = {
   "=": "#f97316",
   "%": "#3b82f6",
-  "-": "#22c55e",
+  "-": "#6ccf4f",
   "%%": "#a855f7",
 };
 
-// Genererer en unik farge per relasjonstype.
-// Bruker gullforholdet (137.508°) for å spre fargetoner jevnt,
-// slik at selv veldig like typenavn får svært ulike farger.
+// Generates unique color per relation type using a has of the type string.
 function getRelationColor(type) {
   if (!type) return "#94a3b8";
   let hash = 0;
@@ -21,7 +20,7 @@ function getRelationColor(type) {
   return `hsl(${hue}, 65%, 48%)`;
 }
 
-// ENDRING: viser "——" for relasjoner uten type
+// Relations without a type are displayed as --
 function getRelationLabel(type) {
   if (!type) return "——";
   return `|${type}|`;

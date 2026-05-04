@@ -43,7 +43,7 @@ export default function Node({ node, onToggle, collapsed }) {
   const FONT_SIZE = 11;
 
   // ----------------------------
-  // FARGER
+  // COLOR SETTINGS
   // ----------------------------
   const aspectColors = {
     "%": "#4da3ff",
@@ -71,9 +71,9 @@ export default function Node({ node, onToggle, collapsed }) {
   const hasChildren = node.children && node.children.length > 0;
 
   //Collapse knapp poisjonering
-  const BTN_R = 8;
+  const BTN_R = 4;
   const btnX = node.x + BOX_WIDTH / 2 + BTN_R + 4;
-  const btnY = node.y; 
+  const btnY = node.y;
 
   return (
     <g>
@@ -111,7 +111,7 @@ export default function Node({ node, onToggle, collapsed }) {
       />
 
       {/* ----------------------------
-          FARGESTRIPE
+          COLOR STRIPE
       ---------------------------- */}
       {!isAspect && !isRoot && (
         <rect
@@ -124,25 +124,25 @@ export default function Node({ node, onToggle, collapsed }) {
       )}
 
       {/* ----------------------------
-          TEKST
+          TEXT
       ---------------------------- */}
       <text
-  x={
-    isAspect || isRoot
-      ? node.x
-      : node.x - BOX_WIDTH / 2 + STRIPE_WIDTH + TEXT_PADDING
-  }
-  y={node.y}
-  textAnchor={isAspect || isRoot ? "middle" : "start"}
-  dominantBaseline="middle"
-  fontSize={isAspect ? 13 : FONT_SIZE}   
-  fontFamily="Roboto, Segoe UI, Arial, sans-serif"
-  fill={isRoot ? "#ffffff" : "#333"}
-  fontWeight="bold"
->
-  {isAspect || isRoot ? (
-    node.label
-  ) : (
+      x={
+        isAspect || isRoot
+          ? node.x
+          : node.x - BOX_WIDTH / 2 + STRIPE_WIDTH + TEXT_PADDING
+      }
+      y={node.y}
+      textAnchor={isAspect || isRoot ? "middle" : "start"}
+      dominantBaseline="middle"
+      fontSize={isAspect ? 13 : FONT_SIZE}   
+      fontFamily="Roboto, Segoe UI, Arial, sans-serif"
+      fill={isRoot ? "#ffffff" : "#333"}
+      fontWeight="bold"
+    >
+      {isAspect || isRoot ? (
+        node.label
+      ) : (
     <>
       <tspan fontWeight="bold">{prefix}</tspan>
       {rest && (
@@ -151,22 +151,22 @@ export default function Node({ node, onToggle, collapsed }) {
     </>
   )}
 </text>
-   {/* COLLAPSE/EXPAND KNAPP — bare på noder med barn */}
+   {/* COLLAPSE/EXPAND Button */}
       {hasChildren && !isRoot && !isAspect && (
         <g
           style={{ cursor: "pointer" }}
           onMouseDown={(e) => e.stopPropagation()}
           onClick={() => onToggle && onToggle(node.id)}
         >
-          <circle cx={btnX} cy={btnY} r={BTN_R} fill="white" stroke={strokeColor} strokeWidth={1.5} />
+          <circle cx={btnX} cy={btnY} r={BTN_R} fill="white" stroke="#999" strokeWidth={1} />
           <text
             x={btnX}
             y={btnY}
             textAnchor="middle"
             dominantBaseline="middle"
-            fontSize="12"
+            fontSize="10"
             fontWeight="bold"
-            fill={strokeColor}
+            fill="#999"
           >
             {collapsed ? "+" : "−"}
           </text>

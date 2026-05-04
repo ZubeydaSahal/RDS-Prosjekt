@@ -8,6 +8,9 @@ function Menu({
   activeRelation,
   setActiveRelation,
   relationTypes = [],
+  maxDepth,
+  setMaxDepth,
+  graphMaxDepth = 0,
   onBuild,
   onDownloadImage,
   onDownloadText,
@@ -33,6 +36,9 @@ function Menu({
                     activeRelation={activeRelation}
                     setActiveRelation={setActiveRelation}
                     relationTypes={relationTypes}
+                    maxDepth={maxDepth}
+                    setMaxDepth={setMaxDepth}
+                    graphMaxDepth={graphMaxDepth}
                 />
 
 

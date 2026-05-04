@@ -9,6 +9,7 @@ import Footer from "../components/Layout/Footer";
 function MainPage() {
 
     const [aspectOrder] = useState(["=", "-", "%", "%%"]);
+    const [maxDepth, setMaxDepth] = useState(null);
     const [activeAspect, setActiveAspect] = useState(["=", "%", "-", "%%"]);
     // ENDRING: starter med "cross" aktiv
     const [activeRelation, setActiveRelation] = useState(["cross"]);
@@ -26,13 +27,26 @@ function MainPage() {
         return () => document.removeEventListener("keydown", handleKeyDown);
     }, [fullscreen]);
 
+    // Beregn maks lokal dybde per aspektkolonne fra node-IDer (punktnotasjon)
+    const graphMaxDepth = (() => {
+        if (!backendGraph?.nodeDTO) return 0;
+        let globalMax = 0;
+        Object.entries(backendGraph.nodeDTO).forEach(([key, list]) => {
+            if (key === "<root>" || !Array.isArray(list) || list.length === 0) return;
+            const dotCounts = list.map(n => (n.id.match(/\./g) || []).length);
+            const colDepth = Math.max(...dotCounts) - Math.min(...dotCounts);
+            if (colDepth > globalMax) globalMax = colDepth;
+        });
+        return globalMax + 1;
+    })();
+
     // Hent unike relasjonstyper fra backendGraph
     const allRelationTypes = backendGraph ? (backendGraph.relationDTO || []).map(r => r.type) : [];
     const hasUntypedRelations = allRelationTypes.some(t => !t);
 
      const relationTypes = [
         ...new Set(allRelationTypes.filter(Boolean)),
-        ...(hasUntypedRelations ? ["ingen"] : []),
+        ...(hasUntypedRelations ? ["none"] : []),
     ];
 
 
@@ -76,14 +90,16 @@ function MainPage() {
                 body: text
             });
             if (!response.ok) {
-                setError("Ugyldig input.\nSørg for at linjene starter med %, = eller -");
+                if (!text.includes("<")) {
+                    setError("Invalid input. A topnode is required");
+                } 
                 return;
             }
             const graph = await response.json();
             setBackendGraph(graph);
         } catch (err) {
             console.error("Network error:", err);
-            setError("Noe gikk galt med serveren");
+            setError("Something went wrong with the server");
         }
     };
 
@@ -94,7 +110,7 @@ function MainPage() {
 
     const handleDownloadImage = async () => {
         const node = graphRef.current;
-        if (!node) { alert("Fant ikke grafen"); return; }
+        if (!node) { alert("Graph not found"); return; }
         try {
             const dataUrl = await toPng(node, { cacheBust: true, pixelRatio: 2 });
             const link = document.createElement("a");
@@ -102,7 +118,7 @@ function MainPage() {
             link.href = dataUrl;
             link.click();
         } catch (err) {
-            alert("Kunne ikke laste ned bilde");
+            alert("Could not download image");
         }
     };
 
@@ -135,6 +151,9 @@ function MainPage() {
                     activeRelation={activeRelation}
                     setActiveRelation={setActiveRelation}
                     relationTypes={relationTypes}
+                    maxDepth={maxDepth}
+                    setMaxDepth={setMaxDepth}
+                    graphMaxDepth={graphMaxDepth}
                     onBuild={handleBuild}
                     onDownloadImage={handleDownloadImage}
                     onDownloadText={handleDownloadText}
@@ -148,6 +167,7 @@ function MainPage() {
                     graphRef={graphRef}
                     aspectOrder={aspectOrder}
                     activeRelation={activeRelation}
+                    maxDepth={maxDepth}
                     text={text}
                     setText={setText}
                     onBuild={handleBuild}
@@ -169,6 +189,9 @@ function MainPage() {
                         activeRelation={activeRelation}
                         setActiveRelation={setActiveRelation}
                         relationTypes={relationTypes}
+                        maxDepth={maxDepth}
+                        setMaxDepth={setMaxDepth}
+                        graphMaxDepth={graphMaxDepth}
                         onBuild={handleBuild}
                         onDownloadImage={handleDownloadImage}
                         onDownloadText={handleDownloadText}
@@ -183,6 +206,7 @@ function MainPage() {
                         graphRef={graphRef}
                         aspectOrder={aspectOrder}
                         activeRelation={activeRelation}
+                        maxDepth={maxDepth}
                         text={text}
                         setText={setText}
                         onBuild={handleBuild}

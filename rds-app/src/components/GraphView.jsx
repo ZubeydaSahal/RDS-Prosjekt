@@ -8,11 +8,11 @@ import Edge from "./Edge";
 const ASPECT_COLORS = {
   "=": "#f97316",
   "%": "#3b82f6",
-  "-": "#22c55e",
+  "-": "#6ccf4f",
   "%%": "#a855f7",
 };
 
-export default function GraphView({ graph, graphRef, aspectOrder, activeRelation = [] }) {
+export default function GraphView({ graph, graphRef, aspectOrder, activeRelation = [], maxDepth = null }) {
 
   const [fitView, setFitView] = useState(true);
   const [zoom, setZoom] = useState(1);
@@ -71,8 +71,8 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
     if (!graph) return { nodes: [], hierarchyEdges: [] };
     const transformed = transformGraph(graph);
     if (!transformed) return { nodes: [], hierarchyEdges: [] };
-    return layoutTree({ ...transformed, collapsedNodes }, aspectOrder);
-  }, [graph, aspectOrder, collapsedNodes]);
+    return layoutTree({ ...transformed, collapsedNodes, maxDepth }, aspectOrder);
+  }, [graph, aspectOrder, collapsedNodes, maxDepth]);
 
   const nodes = layout.nodes || [];
   const relations = layout.hierarchyEdges || [];
@@ -84,7 +84,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
   const visibleRelations = relations.filter(edge => {
     if (edge.type === "hierarchy") return true;
     if (!activeRelation.includes("cross")) return false;
-    const typeKey = edge.type ?? "ingen";
+    const typeKey = edge.type ?? "none";
     if (!activeRelation.includes(typeKey)) return false;
     return true;
   });
@@ -130,16 +130,16 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
           {/* BUS SYSTEM rot til aspekt-header */}
           {aspectNodes.length > 0 && (() => {
             const xs = aspectNodes.map(n => n.x);
-            const minBusX = Math.min(...xs);
-            const maxBusX = Math.max(...xs);
+            const minBusX = Math.min(...xs, rootNode ? rootNode.x : Infinity);
+            const maxBusX = Math.max(...xs, rootNode ? rootNode.x : -Infinity);
             return (
               <>
                 {rootNode && (
-                  <line x1={rootNode.x} y1={rootNode.y + 20} x2={rootNode.x} y2={busY - 60} stroke="#999" strokeWidth={2} />
+                  <line x1={rootNode.x} y1={rootNode.y + 11} x2={rootNode.x} y2={busY - 60} stroke="#999" strokeWidth={2} />
                 )}
                 <line x1={minBusX} y1={busY - 60} x2={maxBusX} y2={busY - 60} stroke="#999" strokeWidth={2} />
                 {aspectNodes.map(node => (
-                  <line key={node.id} x1={node.x} y1={busY - 60} x2={node.x} y2={node.y - 20} stroke="#999" strokeWidth={2} />
+                  <line key={node.id} x1={node.x} y1={busY - 60} x2={node.x} y2={node.y - 11} stroke="#999" strokeWidth={2} />
                 ))}
               </>
             );
