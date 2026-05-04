@@ -91,7 +91,8 @@ export function layoutTree(graph, aspectOrder) {
     "%": "Type aspect",
     "=": "Function aspect",
     "-": "Product aspect",
-    "%%": "Type aspect (product)"
+    "%%": "Type aspect (product)",
+    "#": "Other aspect"
   };
 
 

@@ -252,6 +252,7 @@ public class RdsParser {
     private String checkAspect(String line) {
 
         if (line.startsWith("%%")) return "%%";
+        else if (line.startsWith("#")) return "#";
         else if (line.startsWith("-")) return "-";
         else if (line.startsWith("=")) return "=";
         else if (line.startsWith("%")) return "%";

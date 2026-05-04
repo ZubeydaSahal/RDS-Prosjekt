@@ -8,7 +8,7 @@ import Footer from "../components/Layout/Footer";
 
 function MainPage() {
 
-    const [aspectOrder] = useState(["=", "-", "%", "%%"]);
+    const [aspectOrder] = useState(["=", "-", "%", "%%", "#"]);
     const [maxDepth, setMaxDepth] = useState(null);
     const [activeAspect, setActiveAspect] = useState(["=", "%", "-", "%%"]);
     // ENDRING: starter med "cross" aktiv

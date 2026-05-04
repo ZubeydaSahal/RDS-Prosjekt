@@ -6,6 +6,7 @@ const ASPECT_COLORS = {
   "%": "#3b82f6",
   "-": "#6ccf4f",
   "%%": "#a855f7",
+  "#": "#6ccf8f"
 };
 
 // Generates unique color per relation type using a has of the type string.

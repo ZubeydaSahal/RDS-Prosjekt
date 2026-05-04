@@ -20,7 +20,7 @@ export default function Node({ node, onToggle, collapsed }) {
     const parts = label.split(" ");
     if (parts.length === 1) return { prefix: parts[0], rest: "" };
 
-    const aspectSymbols = ["=", "-", "%", "%%"];
+    const aspectSymbols = ["=", "-", "%", "%%", "#"];
     if (aspectSymbols.includes(parts[0]) && parts.length >= 2) {
       return { prefix: parts[0] + parts[1], rest: parts.slice(2).join(" ") };
     }
