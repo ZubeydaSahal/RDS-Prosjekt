@@ -2,40 +2,67 @@
 export const ASPECTS = {
     "=": {
         label: "Function aspect",
-        color: "#f97316",
-        nodeColor: "#ff8c5a",
-        headerColor: "#ffd6bf",
+        lineColour: "#f97316",
+        nodeColour: "#ff8c5a",
+        headerColour: "#ffd6bf",
     },
     "%": {
         label: "Type aspect",
-        color: "#3b82f6",
-        nodeColor: "#4da3ff",
-        headerColor: "#cfe8ff",
+        lineColour: "#3b82f6", /* Aspect relation line colour*/
+        nodeColour: "#4da3ff", /* Aspect child colour*/
+        headerColour: "#cfe8ff",  /* Aspect header colour*/
     },
     "-": {
         label: "Product aspect",
-        color: "#6ccf4f",
-        nodeColor: "#6ccf4f", /* Det var disse steinar kommenterte på  */
-        headerColor: "#dff5dc",
+        lineColour: "#6ccf4f",
+        nodeColour: "#6ccf4f", /* Det var disse steinar kommenterte på  */
+        headerColour: "#dff5dc",
     },
     "%%": {
         label: "Type aspect (product)",
-        color: "#a855f7",
-        nodeColor: "#9b8cff",
-        headerColor: "#e6ddff",
+        lineColour: "#a855f7",
+        nodeColour: "#9b8cff",
+        headerColour: "#e6ddff",
     },
 } as const;
 
 /* "Getters" for attributes / values */
 
-// Aspect list with symbols
-export const aspectSymbols = Object.keys(ASPECTS)
+// Aspect list with symbols {"=", "-"..}
+export const getAspectSymbols = Object.keys(ASPECTS)
 
-// Aspect labels / names
-export const aspectLabels = Object.entries(ASPECTS).map(([symbol, data]) => ({
-    symbol,
-    label: data.label,
-}));
+// Aspect list with labels / names mapped to symbol {"=" : "function aspect", "-" : ...}
+export const getAspectLabels = Object.fromEntries(
+    Object.entries(ASPECTS).map(([symbol, data]) => [
+        symbol,
+        data.label,
+    ])
+);
+
+// Aspect line colour
+export const aspectLineColour = Object.fromEntries(
+    Object.entries(ASPECTS).map(([symbol, data]) => [
+        symbol,
+        data.lineColour,
+    ])
+);
+
+// Aspect headercolour
+export const aspectHeaderColour = Object.fromEntries(
+    Object.entries(ASPECTS).map(([symbol, data]) => [
+        symbol,
+        data.headerColour,
+    ])
+);
+
+// Aspect headercolour
+export const aspectNodeColour = Object.fromEntries(
+    Object.entries(ASPECTS).map(([symbol, data]) => [
+        symbol,
+        data.nodeColour,
+    ])
+);
+
 
 
 

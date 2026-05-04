@@ -4,14 +4,18 @@ import { transformGraph } from "./transformGraph";
 
 import Node from "./Node";
 import Edge from "./Edge";
+import {aspectLineColour, ASPECTS} from "../config/aspects.js";
 
 //
-const ASPECT_COLORS = {
+const ASPECT_COLORS = aspectLineColour
+    /*
+     Erstattet av config
+    .{
   "=": "#f97316",
   "%": "#3b82f6",
   "-": "#6ccf4f",
   "%%": "#a855f7",
-};
+};*/
 
 export default function GraphView({ graph, graphRef, aspectOrder, activeRelation = [], maxDepth = null }) {
 
