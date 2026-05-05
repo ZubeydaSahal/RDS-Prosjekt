@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import {aspectLabelsArray} from "../../../config/aspects.js";
 
 const ASPECTS = aspectLabelsArray;
-
+console.log("(FilterDropdown) AspectLabelsArray: "+ASPECTS)
     /*[
   { symbol: "=",  label: "Function aspect" },
   { symbol: "%",  label: "Type aspect for function aspect" },

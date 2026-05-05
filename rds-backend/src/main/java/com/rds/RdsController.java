@@ -12,6 +12,7 @@ import java.util.*;
 import com.rds.graph_view.DTO.*;
 import com.rds.datastructure.GraphTest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class RdsController {
         Map<String, Boolean> relationFilters = buildFilter(allParams, "rel_");
 
         // Debug print
-        getActiveAspects(aspectFilters);
+        //getActiveAspects(aspectFilters);
 
         // Convert allAspect to List
         ObjectMapper mapper = new ObjectMapper();

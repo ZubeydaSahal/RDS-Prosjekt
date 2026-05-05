@@ -1,4 +1,4 @@
-import {useState, useRef, useEffect, act} from "react";
+import { useState, useRef, useEffect } from "react";
 import { toPng } from "html-to-image";
 
 import SplitPane from "../components/SplitPane";
@@ -10,7 +10,7 @@ import {getAspectSymbols} from "../../../config/aspects.ts";
 
 function MainPage() {
 
-
+    const [aspectOrder] = useState(getAspectSymbols);
     const [maxDepth, setMaxDepth] = useState(null);
     const [activeAspect, setActiveAspect] = useState(getAspectSymbols);
     // ENDRING: starter med "cross" aktiv
@@ -76,8 +76,19 @@ function MainPage() {
         try {
             const params = new URLSearchParams();
 
+            // Get all aspects
+            const allAspects = aspectOrder; //getAspectSymbols;
+
+            // add bool value for each aspect (show/don't show)
+            allAspects.forEach(a => {
+                const value = activeAspect.includes(a) ? "true" : "false";
+                params.append(`aspect_${a}`, value);
+            });
+
             // List of all aspects from config
             params.append("allAspects", JSON.stringify(getAspectSymbols));
+
+            console.log("(MainPage) params: "+params.toString());
 
             console.log("\n\n'getAspectSymbols': "+ getAspectSymbols)
             console.log("\n'ActiveAspects': "+ activeAspect)
@@ -104,13 +115,13 @@ function MainPage() {
                 },
                 body: text
             });
-            /*const paramParts = [];
+
+            /*
+            const paramParts = [];
             const encodeAspectKey = (a) => a.replace(/%/g, "%25").replace(/=/g, "%3D");
-            const allAspects = activeAspect; // ["=", "%", "-", "%%"];
-            console.log("\n\n\n\n\n\n\n\n====2 AspECT SYMBOLS =====: " +allAspects);
+            const allAspects = ["=", "%", "-", "%%"];
             allAspects.forEach(a => {
                 paramParts.push(`aspect_${encodeAspectKey(a)}=${activeAspect.includes(a) ? "true" : "false"}`);
-                console.log(a)
             });
             console.log("Etter push encode"+allAspects)
             // Send cross-filter (master toggle)
@@ -126,6 +137,7 @@ function MainPage() {
                 headers: { "content-type": "text/plain", "Accept": "application/json" },
                 body: text
             });*/
+
             if (!response.ok) {
                 if (!text.includes("<")) {
                     setError("Invalid input. A topnode is required");
@@ -202,7 +214,7 @@ function MainPage() {
                 <SplitPane
                     graph={backendGraph}
                     graphRef={graphRef}
-                    aspectOrder={activeAspect}
+                    aspectOrder={aspectOrder}
                     activeRelation={activeRelation}
                     maxDepth={maxDepth}
                     text={text}
@@ -242,7 +254,7 @@ function MainPage() {
                     <SplitPane
                         graph={backendGraph}
                         graphRef={graphRef}
-                        aspectOrder={activeAspect}
+                        aspectOrder={aspectOrder}
                         activeRelation={activeRelation}
                         maxDepth={maxDepth}
                         text={text}
