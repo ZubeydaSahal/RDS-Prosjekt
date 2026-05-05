@@ -13,7 +13,7 @@ function MainPage() {
     const [aspectOrder] = useState(getAspectSymbols);
     const [maxDepth, setMaxDepth] = useState(null);
     const [activeAspect, setActiveAspect] = useState(getAspectSymbols);
-    // ENDRING: starter med "cross" aktiv
+    //Starter with  "cross" active
     const [activeRelation, setActiveRelation] = useState(["cross"]);
     const [backendGraph, setBackendGraph] = useState(null);
     const [text, setText] = useState("");
