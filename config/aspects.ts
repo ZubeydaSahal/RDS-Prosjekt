@@ -30,11 +30,11 @@ export const ASPECTS = {
         nodeColour: "#a8ffe7",
         headerColour: "#b3ffeb",
     },
-    "TE": {
-        label: "aspeoduct)",
-        lineColour: "#a855f7",
-        nodeColour: "#9b8cff",
-        headerColour: "#e6ddff",
+    "$": {
+        label: "Process)",
+        lineColour: "#ff3838",
+        nodeColour: "#ff6c6c",
+        headerColour: "#ff9f9f",
     },
 
 } as const;

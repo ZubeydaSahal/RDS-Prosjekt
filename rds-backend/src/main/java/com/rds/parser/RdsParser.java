@@ -24,6 +24,9 @@ public class RdsParser {
         int lineNumber = 0;
         Pattern pattern = Pattern.compile("\\|\\||\\|[^|]+\\||/");
 
+        // Counter for commented lines
+        int nmbrCommented = 0;
+
         // 1. it checks if the topNode is declared or not in the first line
         // 2. checks the line for explicit relation being declared
         // 3. checks the line for which aspect the line belongs to, stores it, then removes the symbol.
@@ -33,6 +36,10 @@ public class RdsParser {
             String trimmedLine = line.trim();
             System.out.print("\n<Parse> Line " + lineNumber + ": ");
             if (trimmedLine.isEmpty()) continue;
+            if (line.startsWith("\\")) {
+                nmbrCommented ++;
+                continue;
+            }
 
             // Check for top node declaration
             try{
@@ -117,7 +124,8 @@ public class RdsParser {
             }
         
         }
-      
+
+        System.out.println("Number of commented out lines: "+nmbrCommented);
         return graphManager;
         
         }

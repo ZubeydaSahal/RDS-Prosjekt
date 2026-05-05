@@ -205,7 +205,7 @@ public class GraphManager {
 
 
                     if (show == null) {
-                        System.out.println("(GM) Show == null -> True");
+                        System.out.println("(GM) Show == null -> True , aspect: "+aspect+", node: "+node.getId());
                         return true;
                     }
 
