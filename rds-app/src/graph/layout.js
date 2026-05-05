@@ -1,3 +1,5 @@
+import {getAspectLabels} from "../../../config/aspects.ts";
+
 export function layoutTree(graph, aspectOrder) {
 
   if (!graph || !graph.nodes || !graph.root) {
@@ -21,7 +23,7 @@ export function layoutTree(graph, aspectOrder) {
   // ----------------------------
   let aspects;
   if (aspectOrder) {
-    console.log("===== ASpect order: "+aspectOrder + " ===============")
+    console.log(" (Layout.js) ASpect order: "+aspectOrder)
     aspects = aspectOrder
         //console.log(graph.aspects)
       .map(id => graph.aspects.find(a => a.id === id))
@@ -87,12 +89,14 @@ export function layoutTree(graph, aspectOrder) {
   // ----------------------------
   //  NAVN PÅ ASPEKTER
   // ----------------------------
-  const ASPECT_NAMES = {
+  const ASPECT_NAMES = getAspectLabels;
+  /*Erstattet av config
+      {
     "%": "Type aspect",
     "=": "Function aspect",
     "-": "Product aspect",
     "%%": "Type aspect (product)"
-  };
+  };*/
 
 
   // ----------------------------

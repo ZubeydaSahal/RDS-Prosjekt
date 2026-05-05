@@ -4,13 +4,19 @@ import { transformGraph } from "./transformGraph";
 
 import Node from "./Node";
 import Edge from "./Edge";
+import {aspectLineColour, getAspectSymbols} from "../../../config/aspects.ts";
 
-const ASPECT_COLORS = {
+
+//
+const ASPECT_COLORS = aspectLineColour
+    /*
+     Erstattet av config
+    .{
   "=": "#f97316",
   "%": "#3b82f6",
   "-": "#6ccf4f",
   "%%": "#a855f7",
-};
+};*/
 
 export default function GraphView({ graph, graphRef, aspectOrder, activeRelation = [], maxDepth = null }) {
 
@@ -71,6 +77,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
     if (!graph) return { nodes: [], hierarchyEdges: [] };
     const transformed = transformGraph(graph);
     if (!transformed) return { nodes: [], hierarchyEdges: [] };
+    console.log("Aspect order before layOutTree: "+aspectOrder)
     return layoutTree({ ...transformed, collapsedNodes, maxDepth }, aspectOrder);
   }, [graph, aspectOrder, collapsedNodes, maxDepth]);
 
