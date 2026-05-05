@@ -29,30 +29,30 @@ public class RdsController {
 
         System.out.println("(controller) All aspects: " +allAspects);
 
+        // Build filter maps from query parameters
+        Map<String, Boolean> aspectFilters = buildFilter(allParams, "aspect_");
+        Map<String, Boolean> relationFilters = buildFilter(allParams, "rel_");
+
+        // Debug print
+        getActiveAspects(aspectFilters);
+
         // Convert allAspect to List
         ObjectMapper mapper = new ObjectMapper();
         List<String> aspectList = Arrays.asList(
                 mapper.readValue(allAspects, String[].class)
         );
 
-
-
-
         // Parse script and create datastructure 'GraphManager' instance
         RdsParser parser = new RdsParser();
         GraphManager graph = parser.parse(rdsScript, aspectList);
         graph.finalizeGraph();  // Connects root to aspects
 
-        // Build filter maps from query parameters
+        /*// Build filter maps from query parameters
         Map<String, Boolean> aspectFilters = buildFilter(allParams, "aspect_");
         Map<String, Boolean> relationFilters = buildFilter(allParams, "rel_");
 
-        // Create a list of active aspects
-        List<String> activeAspects = getActiveAspects(aspectFilters);
-        System.out.println("3 (Controller)Aspects: ");
-        for (String a : activeAspects) {
-            System.out.println(a+", ");
-        }
+        // Debug print
+        getActiveAspects(aspectFilters);*/
 
         // Create a view of the data for frontend (selected data)
         ViewBuilder viewBuilder = new ViewBuilder();
@@ -74,18 +74,16 @@ public class RdsController {
         Map<String, Boolean> filter = new HashMap<>();
         for (Map.Entry<String, String> entry : params.entrySet()) {
             if (entry.getKey().startsWith(prefix)) {
-                System.out.println("Started with pref: "+ prefix);
                 String raw = entry.getKey().substring(prefix.length());
 
                 // Decode the URL sake keys back to aspect symbold
                 // PCTPCT must be decoded before PCT to avoid conflicts
-                System.out.println("Raw: " +raw);
                 String key = raw;
                         /*.replace("PCTPCT", "%%")
                         .replace("PCT", "%")
                         .replace("EQ", "=")
                         .replace("DASH", "-");*/
-                System.out.println("Key: "+key);
+                System.out.println("(buildFilter) Key: "+key+", Value: "+entry.getValue());
                 filter.put(key, Boolean.parseBoolean(entry.getValue()));
             }
         }
@@ -96,10 +94,9 @@ public class RdsController {
 
         List<String> activeAspects = new ArrayList<>();
         if (aspectFilters != null) {
+            System.out.println("Active aspects: ");
             for (Map.Entry<String, Boolean> entry : aspectFilters.entrySet()) {
-                if (entry.getValue()) {  // If aspect is active (true)
-                    activeAspects.add(entry.getKey());
-                }
+                System.out.println("Aspect: "+ entry.getKey()+", Val: "+entry.getValue());
             }
         }
         System.out.println("5 (Controlller)Active aspects (before return) "+activeAspects);

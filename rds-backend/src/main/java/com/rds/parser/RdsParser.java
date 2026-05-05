@@ -18,10 +18,6 @@ public class RdsParser {
     // receives the whole script as a string, splits it into lines and processes each line according to the RDS syntax rules.
     public GraphManager parse(String script, List<String>aspects){
         aspectList = aspects;
-        System.out.println("(Parser) aspectList:");
-        for(String aspe : aspectList){
-            System.out.println(aspe);
-        }
         GraphManager graphManager = new GraphManager();
         System.out.println("<Parse> Script: \n" + script + "\n");
         String[] lines = script.split("\\r?\\n");
