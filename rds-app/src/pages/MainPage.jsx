@@ -27,7 +27,7 @@ function MainPage() {
         return () => document.removeEventListener("keydown", handleKeyDown);
     }, [fullscreen]);
 
-    // Beregn maks lokal dybde per aspektkolonne fra node-IDer (punktnotasjon)
+    // Calculate max local depth per aspect column from node IDs (dot notation)
     const graphMaxDepth = (() => {
         if (!backendGraph?.nodeDTO) return 0;
         let globalMax = 0;
@@ -40,7 +40,7 @@ function MainPage() {
         return globalMax + 1;
     })();
 
-    // Hent unike relasjonstyper fra backendGraph
+    // Gets unique aspect types from backendGraph
     const allRelationTypes = backendGraph ? (backendGraph.relationDTO || []).map(r => r.type) : [];
     const hasUntypedRelations = allRelationTypes.some(t => !t);
 
@@ -50,7 +50,7 @@ function MainPage() {
     ];
 
 
-    // Når ny graf lastes — legg til alle relasjonstyper som aktive (behold "cross")
+    // When a new graph is loaded, add all relation types as active (keep "cross")
     useEffect(() => {
         if (relationTypes.length > 0) {
             setActiveRelation(prev => {
@@ -77,9 +77,9 @@ function MainPage() {
             allAspects.forEach(a => {
                 paramParts.push(`aspect_${encodeAspectKey(a)}=${activeAspect.includes(a) ? "true" : "false"}`);
             });
-            // Send cross-filter (master toggle)
+            // Sends cross-filter (master toggle)
             paramParts.push(`rel_cross=${activeRelation.includes("cross") ? "true" : "false"}`);
-            // Send individuelle relasjonstyper (A, B osv.) for kjente typer
+            // Sends individual relation types (A, B etc.) for known types
             relationTypes.forEach(type => {
                 paramParts.push(`rel_${type}=${activeRelation.includes(type) ? "true" : "false"}`);
             });
@@ -101,22 +101,61 @@ function MainPage() {
         }
     };
 
-    // Auto-rebuild når filter endres
+    // Auto-rebuild when filter changes 
     useEffect(() => {
     if (backendGraph) handleBuild();
 }, [activeAspect]); // bare aspekt trigger backend
 
     const handleDownloadImage = async () => {
-        const node = graphRef.current;
-        if (!node) { alert("Graph not found"); return; }
+        const container = graphRef.current;
+        if (!container) return;
+        const svg = container.querySelector("svg");
+        if (!svg) { alert("Graph not found"); return; }
+
+        const pixelRatio = 2;
+        const scrollX = container.scrollLeft;
+        const scrollY = container.scrollTop;
+        const visibleW = container.clientWidth;
+        const visibleH = container.clientHeight;
+
+        const origW = svg.getAttribute("width");
+        const origH = svg.getAttribute("height");
+        const svgPixelW = parseFloat(origW);
+        const svgPixelH = parseFloat(origH);
+        const isScrollMode = !isNaN(svgPixelW) && (svgPixelW > visibleW + 1 || svgPixelH > visibleH + 1);
+
+        let tempDiv = null;
         try {
-            const dataUrl = await toPng(node, { cacheBust: true, pixelRatio: 2 });
+            let target = container;
+
+            if (isScrollMode) {
+                const vb = svg.viewBox.baseVal;
+                const scaleX = vb.width / svgPixelW;
+                const scaleY = vb.height / svgPixelH;
+
+                const clone = svg.cloneNode(true);
+                clone.setAttribute("viewBox",
+                    `${vb.x + scrollX * scaleX} ${vb.y + scrollY * scaleY} ${visibleW * scaleX} ${visibleH * scaleY}`
+                );
+                clone.setAttribute("width", String(visibleW));
+                clone.setAttribute("height", String(visibleH));
+
+                tempDiv = document.createElement("div");
+                tempDiv.style.cssText = `position:fixed;top:0;left:0;width:${visibleW}px;height:${visibleH}px;overflow:hidden;background:white;z-index:-999;pointer-events:none;`;
+                tempDiv.appendChild(clone);
+                document.body.appendChild(tempDiv);
+                target = tempDiv;
+            }
+
+            const dataUrl = await toPng(target, { cacheBust: true, pixelRatio, width: visibleW, height: visibleH });
             const link = document.createElement("a");
             link.download = "graph.png";
             link.href = dataUrl;
             link.click();
         } catch (err) {
             alert("Could not download image");
+        } finally {
+            if (tempDiv) document.body.removeChild(tempDiv);
         }
     };
 
