@@ -1,4 +1,4 @@
-import {getAspectLabels, getAspectSymbols} from "../../../config/aspects.ts";
+import {getAspectLabels} from "../../../config/aspects.ts";
 
 export function layoutTree(graph, aspectOrder) {
 

@@ -24,12 +24,25 @@ export const ASPECTS = {
         nodeColour: "#9b8cff",
         headerColour: "#e6ddff",
     },
+    "TE": {
+        label: "aspeoduct)",
+        lineColour: "#a855f7",
+        nodeColour: "#9b8cff",
+        headerColour: "#e6ddff",
+    },
+    "#": {
+        label: "Other",
+        lineColour: "#000",
+        nodeColour: "#000",
+        headerColour: "#000",
+    },
 } as const;
 
 /* "Getters" for attributes / values */
 
 // Aspect list with symbols {"=", "-"..}
 export const getAspectSymbols = Object.keys(ASPECTS)
+
 
 // Aspect list with labels / names mapped to symbol {"=" : "function aspect", "-" : ...}
 export const getAspectLabels = Object.fromEntries(

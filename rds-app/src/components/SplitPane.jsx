@@ -3,6 +3,7 @@ import InputPanel from "./InputPanel";
 import GraphView from "./GraphView";
 
 function SplitPane({ graph, graphRef, aspectOrder, activeRelation, maxDepth, text, setText, onBuild }) {
+    console.log("SplitPane 'AspectOrder': "+aspectOrder)
     const [leftWidth, setLeftWidth] = useState(40);
 
     const handleDrag = (e) => {

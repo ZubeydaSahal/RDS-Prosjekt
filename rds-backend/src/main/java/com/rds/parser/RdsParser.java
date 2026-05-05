@@ -257,10 +257,10 @@ public class RdsParser {
         aspectList.sort((a, b) -> Integer.compare(b.length(), a.length()));
 
 
-        System.out.println("AspectS: ");
-        for(String aspect : aspectList){
-            System.out.println(aspect+", ");
-            if (line.startsWith(aspect))return aspect;
+        System.out.println("4 (PArser) Aspects : ");
+        for(String asp : aspectList){
+            System.out.println(asp+", ");
+            if (line.startsWith(asp))return asp;
         }
         throw new IllegalArgumentException("invalid aspect symbol or missing aspect symbol: " + line);
 

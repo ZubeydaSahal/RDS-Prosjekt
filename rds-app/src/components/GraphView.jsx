@@ -19,6 +19,7 @@ const ASPECT_COLORS = aspectLineColour
 
 export default function GraphView({ graph, graphRef, aspectOrder, activeRelation = [], maxDepth = null }) {
 
+  console.log("GraphView 'AspectOrder': "+aspectOrder)
   const [fitView, setFitView] = useState(true);
   const [zoom, setZoom] = useState(1);
   const [collapsedNodes, setCollapsedNodes] = useState(new Set());

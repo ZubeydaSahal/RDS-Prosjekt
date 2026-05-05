@@ -6,11 +6,13 @@ import Menu from "../components/Menu";
 import Navbar from "../components/Layout/Navbar";
 import Footer from "../components/Layout/Footer";
 
+import {ASPECTS, getAspectLabels, getAspectSymbols} from "../../../config/aspects.ts";
+
 function MainPage() {
 
-    const [aspectOrder] = useState(["=", "-", "%", "%%"]);
+
     const [maxDepth, setMaxDepth] = useState(null);
-    const [activeAspect, setActiveAspect] = useState(["=", "%", "-", "%%"]);
+    const [activeAspect, setActiveAspect] = useState(getAspectSymbols);
     // ENDRING: starter med "cross" aktiv
     const [activeRelation, setActiveRelation] = useState(["cross"]);
     const [backendGraph, setBackendGraph] = useState(null);
@@ -73,10 +75,13 @@ function MainPage() {
         try {
             const paramParts = [];
             const encodeAspectKey = (a) => a.replace(/%/g, "%25").replace(/=/g, "%3D");
-            const allAspects = ["=", "%", "-", "%%"];
+            const allAspects = activeAspect; // ["=", "%", "-", "%%"];
+            console.log("\n\n\n\n\n\n\n\n====2 AspECT SYMBOLS =====: " +allAspects);
             allAspects.forEach(a => {
                 paramParts.push(`aspect_${encodeAspectKey(a)}=${activeAspect.includes(a) ? "true" : "false"}`);
+                console.log(a)
             });
+            console.log("Etter push encode"+allAspects)
             // Send cross-filter (master toggle)
             paramParts.push(`rel_cross=${activeRelation.includes("cross") ? "true" : "false"}`);
             // Send individuelle relasjonstyper (A, B osv.) for kjente typer
@@ -84,6 +89,7 @@ function MainPage() {
                 paramParts.push(`rel_${type}=${activeRelation.includes(type) ? "true" : "false"}`);
             });
             const paramString = paramParts.join("&");
+            console.log("ParamString: "+paramString)
             const response = await fetch(`http://localhost:8080/parse?${paramString}`, {
                 method: "POST",
                 headers: { "content-type": "text/plain", "Accept": "application/json" },
@@ -176,6 +182,7 @@ function MainPage() {
         );
     }
 
+    console.log("MainPage over SplitPane 'AspectOrder': "+activeAspect)
     return (
         <div className="MainPage">
             <Navbar />
@@ -204,7 +211,7 @@ function MainPage() {
                     <SplitPane
                         graph={backendGraph}
                         graphRef={graphRef}
-                        aspectOrder={aspectOrder}
+                        aspectOrder={activeAspect}
                         activeRelation={activeRelation}
                         maxDepth={maxDepth}
                         text={text}
