@@ -24,18 +24,19 @@ export const ASPECTS = {
         nodeColour: "#9b8cff",
         headerColour: "#e6ddff",
     },
+    "#": {
+        label: "Other",
+        lineColour: "#00ffbd",
+        nodeColour: "#a8ffe7",
+        headerColour: "#b3ffeb",
+    },
     "TE": {
         label: "aspeoduct)",
         lineColour: "#a855f7",
         nodeColour: "#9b8cff",
         headerColour: "#e6ddff",
     },
-    "#": {
-        label: "Other",
-        lineColour: "#000",
-        nodeColour: "#000",
-        headerColour: "#000",
-    },
+
 } as const;
 
 /* "Getters" for attributes / values */
