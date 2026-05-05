@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import {useState, useRef, useEffect, act} from "react";
 import { toPng } from "html-to-image";
 
 import SplitPane from "../components/SplitPane";
@@ -21,6 +21,7 @@ function MainPage() {
     const [fullscreen, setFullscreen] = useState(false);
     const graphRef = useRef(null);
 
+    console.log("activeAspects from state: "+activeAspect)
     useEffect(() => {
         function handleKeyDown(e) {
             if (e.key === "Escape" && fullscreen) setFullscreen(false);
@@ -76,8 +77,10 @@ function MainPage() {
             const params = new URLSearchParams();
 
             // List of all aspects from config
-            params.append("allAspects", JSON.stringify(activeAspect));
+            params.append("allAspects", JSON.stringify(getAspectSymbols));
 
+            console.log("\n\n'getAspectSymbols': "+ getAspectSymbols)
+            console.log("\n'ActiveAspects': "+ activeAspect)
             activeAspect.forEach(a => {
                 params.append(`aspect_${a}`, "true");
             });

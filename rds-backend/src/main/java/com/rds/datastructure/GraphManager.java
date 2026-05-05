@@ -202,8 +202,10 @@ public class GraphManager {
 
                     String aspect = node.getAspect();
                     Boolean show = filters.get(aspect);
+                    System.out.println("\n(GM) Key: "+entry.getKey()+", value:"+ entry.getValue());
 
                     if (show == null) {
+                        System.out.println("(GM) Show == null -> True");
                         return true;
                     }
 

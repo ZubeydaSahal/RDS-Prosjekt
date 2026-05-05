@@ -27,7 +27,7 @@ public class RdsController {
 
 
 
-        System.out.println("All aspects: " +allAspects);
+        System.out.println("(controller) All aspects: " +allAspects);
 
         // Convert allAspect to List
         ObjectMapper mapper = new ObjectMapper();

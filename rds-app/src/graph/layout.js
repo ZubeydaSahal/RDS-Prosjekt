@@ -23,7 +23,7 @@ export function layoutTree(graph, aspectOrder) {
   // ----------------------------
   let aspects;
   if (aspectOrder) {
-    console.log("===== ASpect order: "+aspectOrder + " ===============")
+    console.log(" (Layout.js) ASpect order: "+aspectOrder)
     aspects = aspectOrder
         //console.log(graph.aspects)
       .map(id => graph.aspects.find(a => a.id === id))

@@ -18,6 +18,10 @@ public class RdsParser {
     // receives the whole script as a string, splits it into lines and processes each line according to the RDS syntax rules.
     public GraphManager parse(String script, List<String>aspects){
         aspectList = aspects;
+        System.out.println("(Parser) aspectList:");
+        for(String aspe : aspectList){
+            System.out.println(aspe);
+        }
         GraphManager graphManager = new GraphManager();
         System.out.println("<Parse> Script: \n" + script + "\n");
         String[] lines = script.split("\\r?\\n");
@@ -106,6 +110,7 @@ public class RdsParser {
                         trimmedLine = trimmedLine.substring(aspect.length()).trim();
 
                         // Normal RDS line
+                        System.out.println("Aspect: "+aspect);
                         System.out.println("detected node: " + trimmedLine + "\n\t>>'parse' calling 'CheckNodes'");
                         CheckNodes(trimmedLine, aspect, graphManager);
 
@@ -252,14 +257,14 @@ public class RdsParser {
 
     // Check aspect from first symbol
     private String checkAspect(String line) {
+        System.out.println("REACHed checkAspect");
 
         // Sort aspectlist, to check for "%%" before "%"
         aspectList.sort((a, b) -> Integer.compare(b.length(), a.length()));
 
 
-        System.out.println("4 (PArser) Aspects : ");
         for(String asp : aspectList){
-            System.out.println(asp+", ");
+            System.out.println("(CheckAsp): "+asp);
             if (line.startsWith(asp))return asp;
         }
         throw new IllegalArgumentException("invalid aspect symbol or missing aspect symbol: " + line);
