@@ -6,11 +6,13 @@ import Menu from "../components/Menu";
 import Navbar from "../components/Layout/Navbar";
 import Footer from "../components/Layout/Footer";
 
+import {getAspectSymbols} from "../../../config/aspects.ts";
+
 function MainPage() {
 
-    const [aspectOrder] = useState(["=", "-", "%", "%%"]);
+    const [aspectOrder] = useState(getAspectSymbols);
     const [maxDepth, setMaxDepth] = useState(null);
-    const [activeAspect, setActiveAspect] = useState(["=", "%", "-", "%%"]);
+    const [activeAspect, setActiveAspect] = useState(getAspectSymbols);
     // ENDRING: starter med "cross" aktiv
     const [activeRelation, setActiveRelation] = useState(["cross"]);
     const [backendGraph, setBackendGraph] = useState(null);
@@ -19,6 +21,7 @@ function MainPage() {
     const [fullscreen, setFullscreen] = useState(false);
     const graphRef = useRef(null);
 
+    console.log("activeAspects from state: "+activeAspect)
     useEffect(() => {
         function handleKeyDown(e) {
             if (e.key === "Escape" && fullscreen) setFullscreen(false);
@@ -71,26 +74,74 @@ function MainPage() {
             return;
         }
         try {
+            const params = new URLSearchParams();
+
+            // Get all aspects
+            const allAspects = aspectOrder; //getAspectSymbols;
+
+            // add bool value for each aspect (show/don't show)
+            allAspects.forEach(a => {
+                const value = activeAspect.includes(a) ? "true" : "false";
+                params.append(`aspect_${a}`, value);
+            });
+
+            // List of all aspects from config
+            params.append("allAspects", JSON.stringify(getAspectSymbols));
+
+            console.log("(MainPage) params: "+params.toString());
+
+            console.log("\n\n'getAspectSymbols': "+ getAspectSymbols)
+            console.log("\n'ActiveAspects': "+ activeAspect)
+            activeAspect.forEach(a => {
+                params.append(`aspect_${a}`, "true");
+            });
+
+            // Send cross-filter (master toggle)
+            params.append("rel_cross", activeRelation.includes("cross"));
+
+            // Send individuelle relasjonstyper (A, B osv.) for kjente typer
+            relationTypes.forEach(type => {
+                params.append(`rel_${type}`, activeRelation.includes(type));
+            });
+
+            const url = `http://localhost:8080/parse?${params.toString()}`;
+            console.log("URL:", url);
+
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "content-type": "text/plain",
+                    "Accept": "application/json"
+                },
+                body: text
+            });
+
+            /*
             const paramParts = [];
             const encodeAspectKey = (a) => a.replace(/%/g, "%25").replace(/=/g, "%3D");
             const allAspects = ["=", "%", "-", "%%"];
             allAspects.forEach(a => {
                 paramParts.push(`aspect_${encodeAspectKey(a)}=${activeAspect.includes(a) ? "true" : "false"}`);
             });
-            // Sends cross-filter (master toggle)
+            console.log("Etter push encode"+allAspects)
+            // Send cross-filter (master toggle)
             paramParts.push(`rel_cross=${activeRelation.includes("cross") ? "true" : "false"}`);
             // Sends individual relation types (A, B etc.) for known types
             relationTypes.forEach(type => {
                 paramParts.push(`rel_${type}=${activeRelation.includes(type) ? "true" : "false"}`);
             });
             const paramString = paramParts.join("&");
+            console.log("ParamString: "+paramString)
             const response = await fetch(`http://localhost:8080/parse?${paramString}`, {
                 method: "POST",
                 headers: { "content-type": "text/plain", "Accept": "application/json" },
                 body: text
-            });
+            });*/
+
             if (!response.ok) {
-                setError("Invalid input.\nMake sure lines start with %, = or -");
+                if (!text.includes("<")) {
+                    setError("Invalid input. A topnode is required");
+                } 
                 return;
             }
             const graph = await response.json();
@@ -213,6 +264,7 @@ function MainPage() {
         );
     }
 
+    console.log("MainPage over SplitPane 'AspectOrder': "+activeAspect)
     return (
         <div className="MainPage">
             <Navbar />

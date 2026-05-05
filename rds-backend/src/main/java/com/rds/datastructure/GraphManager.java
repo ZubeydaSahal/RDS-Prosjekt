@@ -59,7 +59,7 @@ public class GraphManager {
             }
 
             nodes.put(id, node);  // Add node to attribute 'nodes' (HashMap)
-            System.out.println("Just addded node: id="+id + ", nodes: "+ nodes.get(id));
+            System.out.println("Just addded node: id="+id + ", nodes");
 
             // ––––– find parent and create relation –––––
             int index = id.lastIndexOf(".");  // find index of last '.' – last node reference
@@ -85,8 +85,6 @@ public class GraphManager {
         if(metadata!=null){
             node.updateNode(metadata);  // Update varying fields (metadata is JSON or replaced with relevant fields (name..)
         }
-
-        System.out.println("Node just before return: " + node.getAspect());
         return node;
     }
 
@@ -205,7 +203,9 @@ public class GraphManager {
                     String aspect = node.getAspect();
                     Boolean show = filters.get(aspect);
 
+
                     if (show == null) {
+                        System.out.println("(GM) Show == null -> True , aspect: "+aspect+", node: "+node.getId());
                         return true;
                     }
 
