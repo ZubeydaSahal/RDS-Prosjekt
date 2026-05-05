@@ -1,4 +1,4 @@
-import {getAspectLabels} from "../../../config/aspects.ts";
+import {getAspectLabels, getAspectSymbols} from "../../../config/aspects.ts";
 
 export function layoutTree(graph, aspectOrder) {
 
@@ -77,10 +77,12 @@ export function layoutTree(graph, aspectOrder) {
   // ----------------------------
   nodes.push({
     ...graph.root,
-    x: 350 * 1.5 + (incrColBy * greatestDepth * 1.5),
+    //x: 350 * 1.5 + (incrColBy * greatestDepth * 1.5),
+    x: 50 +(colSpacing * (aspects.length-1)/2),
     y: 40,
     type: "root"
   });
+  //alert(incrColBy * greatestDepth)
 
   aspects.forEach((aspect, index) => {
     COLUMN_X[aspect.id] = 50 + index * colSpacing;

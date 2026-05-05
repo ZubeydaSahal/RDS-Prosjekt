@@ -6,17 +6,17 @@ export const ASPECTS = {
         nodeColour: "#ff8c5a",
         headerColour: "#ffd6bf",
     },
-    "%": {
-        label: "Type aspect",
-        lineColour: "#3b82f6", /* Aspect relation line colour*/
-        nodeColour: "#4da3ff", /* Aspect child colour*/
-        headerColour: "#cfe8ff",  /* Aspect header colour*/
-    },
     "-": {
         label: "Product aspect",
         lineColour: "#6ccf4f",
         nodeColour: "#6ccf4f", /* Det var disse steinar kommenterte på  */
         headerColour: "#dff5dc",
+    },
+    "%": {
+        label: "Type aspect",
+        lineColour: "#3b82f6", /* Aspect relation line colour*/
+        nodeColour: "#4da3ff", /* Aspect child colour*/
+        headerColour: "#cfe8ff",  /* Aspect header colour*/
     },
     "%%": {
         label: "Type aspect (product)",
