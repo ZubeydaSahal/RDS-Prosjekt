@@ -6,7 +6,7 @@ import Menu from "../components/Menu";
 import Navbar from "../components/Layout/Navbar";
 import Footer from "../components/Layout/Footer";
 
-import {ASPECTS, getAspectLabels, getAspectSymbols} from "../../../config/aspects.ts";
+import {getAspectSymbols} from "../../../config/aspects.ts";
 
 function MainPage() {
 
@@ -73,7 +73,35 @@ function MainPage() {
             return;
         }
         try {
-            const paramParts = [];
+            const params = new URLSearchParams();
+
+            // List of all aspects from config
+            params.append("allAspects", JSON.stringify(activeAspect));
+
+            activeAspect.forEach(a => {
+                params.append(`aspect_${a}`, "true");
+            });
+
+            // Send cross-filter (master toggle)
+            params.append("rel_cross", activeRelation.includes("cross"));
+
+            // Send individuelle relasjonstyper (A, B osv.) for kjente typer
+            relationTypes.forEach(type => {
+                params.append(`rel_${type}`, activeRelation.includes(type));
+            });
+
+            const url = `http://localhost:8080/parse?${params.toString()}`;
+            console.log("URL:", url);
+
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "content-type": "text/plain",
+                    "Accept": "application/json"
+                },
+                body: text
+            });
+            /*const paramParts = [];
             const encodeAspectKey = (a) => a.replace(/%/g, "%25").replace(/=/g, "%3D");
             const allAspects = activeAspect; // ["=", "%", "-", "%%"];
             console.log("\n\n\n\n\n\n\n\n====2 AspECT SYMBOLS =====: " +allAspects);
@@ -94,7 +122,7 @@ function MainPage() {
                 method: "POST",
                 headers: { "content-type": "text/plain", "Accept": "application/json" },
                 body: text
-            });
+            });*/
             if (!response.ok) {
                 if (!text.includes("<")) {
                     setError("Invalid input. A topnode is required");

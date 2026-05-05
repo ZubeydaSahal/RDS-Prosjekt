@@ -7,14 +7,11 @@ import com.rds.graph_view.ViewBuilder;
 import com.rds.parser.RdsParser;
 import com.rds.datastructure.Relation;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 import com.rds.graph_view.DTO.*;
 import com.rds.datastructure.GraphTest;
-import java.util.ArrayList;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.*;
@@ -25,11 +22,26 @@ public class RdsController {
 
     @PostMapping(value = "/parse", consumes = "text/plain", produces = "application/json")
     public GraphViewDTO parseRds(@RequestBody String rdsScript,
-                                 @RequestParam(required = false) Map<String, String> allParams) {
+                                 @RequestParam(required = false) Map<String, String> allParams,
+                                @RequestParam(required = false) String allAspects) throws JsonProcessingException {
 
 
 
-        testTing(allParams);
+        System.out.println("All aspects: " +allAspects);
+
+        // Convert allAspect to List
+        ObjectMapper mapper = new ObjectMapper();
+        List<String> aspectList = Arrays.asList(
+                mapper.readValue(allAspects, String[].class)
+        );
+
+
+
+
+        // Parse script and create datastructure 'GraphManager' instance
+        RdsParser parser = new RdsParser();
+        GraphManager graph = parser.parse(rdsScript, aspectList);
+        graph.finalizeGraph();  // Connects root to aspects
 
         // Build filter maps from query parameters
         Map<String, Boolean> aspectFilters = buildFilter(allParams, "aspect_");
@@ -42,25 +54,10 @@ public class RdsController {
             System.out.println(a+", ");
         }
 
-        // Parse script and create datastructure 'GraphManager' instance
-        RdsParser parser = new RdsParser();
-        GraphManager graph = parser.parse(rdsScript, activeAspects);
-        graph.finalizeGraph();  // Connects root to aspects
-
-
         // Create a view of the data for frontend (selected data)
         ViewBuilder viewBuilder = new ViewBuilder();
         GraphViewDTO graphViewDTO = viewBuilder.buildView(graph, aspectFilters, relationFilters);
 
-        // Debugging
-        //Debugging
-        /*try {
-            String json = mapper.writerWithDefaultPrettyPrinter()
-                    .writeValueAsString(graphViewDTO);
-            System.out.println("JSON: "+json);
-        }catch (JsonProcessingException e){
-            e.printStackTrace();
-        }*/
 
         return graphViewDTO;
 
@@ -107,14 +104,6 @@ public class RdsController {
         }
         System.out.println("5 (Controlller)Active aspects (before return) "+activeAspects);
         return activeAspects;
-    }
-    public void testTing(Map<String, String> allParams){
-        System.out.println("(Console) Print allPAram");
-        for (Map.Entry<String, String> entry : allParams.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            System.out.println("Key: " + key + ", val: " + value);
-        }
     }
 
 }
