@@ -17,6 +17,7 @@ export default function FilterDropdown({
   relationTypes = [],
   maxDepth, setMaxDepth,
   graphMaxDepth = 0,
+    toggleName, setToggleName
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -146,6 +147,19 @@ export default function FilterDropdown({
           ) : (
             <span className="fd-empty">Build a graph to filter by depth</span>
           )}
+
+          {/* Toggle names */}
+          <p className="fd-section-title" style={{marginTop: 4}}>Show names</p>
+              <ul className="fd-list">
+                  <label className="fd-item">
+                    <input
+                        type="checkbox"
+                        checked={toggleName}
+                        onChange={() => setToggleName(!toggleName) && alert("toggled to: "+setToggleName)}
+                    />
+                  </label>
+
+              </ul>
 
         </div>
       )}
