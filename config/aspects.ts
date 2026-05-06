@@ -27,9 +27,9 @@ export const ASPECTS = {
     /* Not ordered yet */
     "#": {
         label: "Other",
-        lineColour: "#00ffbd",
-        nodeColour: "#a8ffe7",
-        headerColour: "#b3ffeb",
+        lineColour: "#ff00c3",
+        nodeColour: "#fa67d8",
+        headerColour: "#f8b0e4",
     },
     "$": {
         label: "Process",
