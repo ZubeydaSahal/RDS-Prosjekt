@@ -24,6 +24,7 @@ export const ASPECTS = {
         nodeColour: "#9b8cff",
         headerColour: "#e6ddff",
     },
+    /* Not ordered yet */
     "#": {
         label: "Other",
         lineColour: "#00ffbd",
@@ -31,11 +32,23 @@ export const ASPECTS = {
         headerColour: "#b3ffeb",
     },
     "$": {
-        label: "Process)",
+        label: "Process",
         lineColour: "#ff3838",
         nodeColour: "#ff6c6c",
         headerColour: "#ff9f9f",
     },
+    "+": {
+        label: "Location aspect (point)",
+        lineColour: "#facc15",
+        nodeColour: "#ffe066",
+        headerColour: "#fff5b1"
+    },
+    "++": {
+        label: "Location aspect (site)",
+        lineColour: "#10b981",   /* klar teal/grønn-blå som skiller seg fra alle andre */
+        nodeColour: "#4fd1c5",   /* lysere teal for noden */
+        headerColour: "#c7f2ef"  /* veldig lys teal for header */
+    }
 
 } as const;
 
