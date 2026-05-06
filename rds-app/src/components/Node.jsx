@@ -1,6 +1,6 @@
 import {aspectHeaderColour, aspectNodeColour, getAspectSymbols} from "../../../config/aspects.ts";
 
-export default function Node({ node, onToggle, collapsed }) {
+export default function Node({ node, onToggle, collapsed, toggleName }) {
 
   // ----------------------------
   // TRUNCATE TEKST (…)
@@ -86,6 +86,7 @@ export default function Node({ node, onToggle, collapsed }) {
   const btnX = node.x + BOX_WIDTH / 2 + BTN_R + 4;
   const btnY = node.y;
 
+  console.log(toggleName)
   return (
     <g>
 
@@ -151,12 +152,12 @@ export default function Node({ node, onToggle, collapsed }) {
       fill={isRoot ? "#ffffff" : "#333"}
       fontWeight="bold"
     >
-      {isAspect || isRoot ? (
+      {(isAspect || isRoot) ? (
         node.label
       ) : (
     <>
       <tspan fontWeight="bold">{prefix}</tspan>
-      {rest && (
+      {toggleName &&rest && (
         <tspan dx="6" fontWeight="normal">{rest}</tspan>
       )}
     </>

@@ -18,7 +18,7 @@ const ASPECT_COLORS = aspectLineColour
   "%%": "#a855f7",
 };*/
 
-export default function GraphView({ graph, graphRef, aspectOrder, activeRelation = [], maxDepth = null }) {
+export default function GraphView({ graph, graphRef, aspectOrder, activeRelation = [], maxDepth = null, toggleName }) {
   aspectOrder = getAspectSymbols;
   console.log("GraphView 'AspectOrder': "+aspectOrder)
   const [fitView, setFitView] = useState(true);
@@ -225,6 +225,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
                 node={node}
                 onToggle={handleToggle}
                 collapsed={collapsedNodes.has(node.id)}
+                toggleName={toggleName}
               />
             ))}
           </g>

@@ -20,6 +20,7 @@ function MainPage() {
     const [error, setError] = useState("");
     const [fullscreen, setFullscreen] = useState(false);
     const graphRef = useRef(null);
+    const [toggleName, setToggleName] = useState(true)
 
     console.log("activeAspects from state: "+activeAspect)
     useEffect(() => {
@@ -209,6 +210,8 @@ function MainPage() {
                     onUploadFile={handleFileUpload}
                     onToggleFullscreen={() => setFullscreen(false)}
                     isFullscreen={true}
+                    setToggleName = {setToggleName}
+                    toggleName = {toggleName}
                 />
                 {error && <div className="error-box">{error}</div>}
                 <SplitPane
@@ -220,6 +223,7 @@ function MainPage() {
                     text={text}
                     setText={setText}
                     onBuild={handleBuild}
+                    toggleName={toggleName}
                 />
             </div>
         );
@@ -247,6 +251,8 @@ function MainPage() {
                         onDownloadText={handleDownloadText}
                         onUploadFile={handleFileUpload}
                         onToggleFullscreen={() => setFullscreen(true)}
+                        setToggleName = {setToggleName}
+                        toggleName = {toggleName}
                     />
 
                     {error && <div className="error-box">{error}</div>}
@@ -260,6 +266,7 @@ function MainPage() {
                         text={text}
                         setText={setText}
                         onBuild={handleBuild}
+                        toggleName={toggleName}
                     />
 
                 </div>
