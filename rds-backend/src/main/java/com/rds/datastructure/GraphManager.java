@@ -203,7 +203,9 @@ public class GraphManager {
                     String aspect = node.getAspect();
                     Boolean show = filters.get(aspect);
 
+
                     if (show == null) {
+                        System.out.println("(GM) Show == null -> True , aspect: "+aspect+", node: "+node.getId());
                         return true;
                     }
 

@@ -17,6 +17,8 @@ function Menu({
   onUploadFile,
   onToggleFullscreen,
   isFullscreen = false,
+    setToggleName,
+    toggleName
 }) {
     return (
         <div className="menu">
@@ -39,6 +41,8 @@ function Menu({
                     maxDepth={maxDepth}
                     setMaxDepth={setMaxDepth}
                     graphMaxDepth={graphMaxDepth}
+                    toggleName={toggleName}
+                    setToggleName={setToggleName}
                 />
 
 

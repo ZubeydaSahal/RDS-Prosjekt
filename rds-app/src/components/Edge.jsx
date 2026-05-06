@@ -1,13 +1,15 @@
 import { useState } from "react";
+import {aspectLineColour} from "../../../config/aspects.ts";
 
 
-const ASPECT_COLORS = {
-  "=": "#f97316",
+const ASPECT_COLORS = aspectLineColour;
+/* Erstattet av config
+    {
+  "=": "#000000",
   "%": "#3b82f6",
   "-": "#6ccf4f",
   "%%": "#a855f7",
-  "#": "#6ccf8f"
-};
+};*/
 
 // Generates unique color per relation type using a has of the type string.
 function getRelationColor(type) {
@@ -57,8 +59,8 @@ export default function Edge({
 
     return (
       <>
-        <line x1={lineX} y1={from.y} x2={lineX} y2={to.y} stroke={color} strokeWidth={3} />
-        <line x1={lineX} y1={to.y} x2={to.x - NODE_WIDTH / 2} y2={to.y} stroke={color} strokeWidth={3} />
+        <line x1={lineX} y1={from.y} x2={lineX} y2={to.y} stroke={color} strokeWidth={2} />
+        <line x1={lineX} y1={to.y} x2={to.x - NODE_WIDTH / 2} y2={to.y} stroke={color} strokeWidth={2} />
       </>
     );
   }

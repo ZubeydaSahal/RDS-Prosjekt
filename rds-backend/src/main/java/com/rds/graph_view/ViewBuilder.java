@@ -135,13 +135,13 @@ public class ViewBuilder {
             List<NodeDTO> aspectList = entry.getValue();
             sum += aspectList.size();
             System.out.println("'"+aspect + "': "+ aspectList.size()); //temp komm ut
-            for (NodeDTO node : aspectList){
+            /*for (NodeDTO node : aspectList){
                 //System.out.println(node.getId());  // To print each node
                 if (node.getName()!=null){
                     nameCounter++;
                     System.out.println(node.getName());
                 }
-            }
+            }*/
             //System.out.println("\n\n");
         }
         // printe antall relasjoner:
@@ -160,8 +160,8 @@ public class ViewBuilder {
         }*/
 
         // printe hele objektet som sendes (GraphViewDTO)
-        System.out.println("Aspects: "+graphViewDTO.getNodeDTO());
-        System.out.println("Relations: "+graphViewDTO.getRelationDTO());
+        /*System.out.println("Aspects: "+graphViewDTO.getNodeDTO());
+        System.out.println("Relations: "+graphViewDTO.getRelationDTO());*/
         //System.out.println("GetRelations: "+graphViewDTO.getRelations());
 
         ObjectMapper mapper = new ObjectMapper();

@@ -1,4 +1,6 @@
-export default function Node({ node, onToggle, collapsed }) {
+import {aspectHeaderColour, aspectNodeColour, getAspectSymbols} from "../../../config/aspects.ts";
+
+export default function Node({ node, onToggle, collapsed, toggleName }) {
 
   // ----------------------------
   // TRUNCATE TEKST (…)
@@ -20,7 +22,7 @@ export default function Node({ node, onToggle, collapsed }) {
     const parts = label.split(" ");
     if (parts.length === 1) return { prefix: parts[0], rest: "" };
 
-    const aspectSymbols = ["=", "-", "%", "%%", "#"];
+    const aspectSymbols = getAspectSymbols;  // Erstattet av config ["=", "-", "%", "%%"];
     if (aspectSymbols.includes(parts[0]) && parts.length >= 2) {
       return { prefix: parts[0] + parts[1], rest: parts.slice(2).join(" ") };
     }
@@ -45,19 +47,24 @@ export default function Node({ node, onToggle, collapsed }) {
   // ----------------------------
   // COLOR SETTINGS
   // ----------------------------
-  const aspectColors = {
+  const aspectColors = aspectNodeColour;
+  /*
+  Erstattet av config
+  {
     "%": "#4da3ff",
     "=": "#ff8c5a",
     "-": "#6ccf4f",
     "%%": "#9b8cff"
-  };
+  };*/
 
-  const aspectHeaderColors = {
+  const aspectHeaderColors = aspectHeaderColour;
+  /* Erstattet av config
+  {
     "%": "#cfe8ff",
     "=": "#ffd6bf",
     "-": "#dff5dc",
     "%%": "#e6ddff"
-  };
+  };*/
 
   const aspect = node.aspect;
   const strokeColor = aspectColors[aspect] || "#999";
@@ -67,14 +74,19 @@ export default function Node({ node, onToggle, collapsed }) {
   // ----------------------------
   const isAspect = node.id?.startsWith("aspect_");
   const isRoot = node.type === "root";
-  const aspectKey = isAspect ? node.id.replace("aspect_", "") : null;
+  //const aspectKey = isAspect ? node.id.replace("aspect_", "") : null;
+  const aspectKey = isAspect
+      ? node.id.replace("aspect_", "")
+      : node.aspect;
   const hasChildren = node.children && node.children.length > 0;
+
 
   //Collapse knapp poisjonering
   const BTN_R = 4;
   const btnX = node.x + BOX_WIDTH / 2 + BTN_R + 4;
   const btnY = node.y;
 
+  console.log(toggleName)
   return (
     <g>
 
@@ -103,7 +115,7 @@ export default function Node({ node, onToggle, collapsed }) {
           isRoot
             ? "#1e3a8a"
             : isAspect
-            ? "#bbb"
+            ? aspectColors[aspectKey]||"#000"
             : strokeColor
         }
 
@@ -140,12 +152,12 @@ export default function Node({ node, onToggle, collapsed }) {
       fill={isRoot ? "#ffffff" : "#333"}
       fontWeight="bold"
     >
-      {isAspect || isRoot ? (
+      {(isAspect || isRoot) ? (
         node.label
       ) : (
     <>
       <tspan fontWeight="bold">{prefix}</tspan>
-      {rest && (
+      {toggleName &&rest && (
         <tspan dx="6" fontWeight="normal">{rest}</tspan>
       )}
     </>

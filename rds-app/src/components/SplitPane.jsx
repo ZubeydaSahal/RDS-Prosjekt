@@ -2,7 +2,8 @@ import { useState } from "react";
 import InputPanel from "./InputPanel";
 import GraphView from "./GraphView";
 
-function SplitPane({ graph, graphRef, aspectOrder, activeRelation, maxDepth, text, setText, onBuild }) {
+function SplitPane({ graph, graphRef, aspectOrder, activeRelation, maxDepth, text, setText, onBuild, toggleName}) {
+    console.log("SplitPane 'AspectOrder': "+aspectOrder)
     const [leftWidth, setLeftWidth] = useState(40);
 
     const handleDrag = (e) => {
@@ -44,7 +45,7 @@ function SplitPane({ graph, graphRef, aspectOrder, activeRelation, maxDepth, tex
 
             {/* Right side */}
             <div className="split-right">
-                <GraphView graph={graph} graphRef={graphRef} aspectOrder={aspectOrder} activeRelation={activeRelation} maxDepth={maxDepth} />
+                <GraphView graph={graph} graphRef={graphRef} aspectOrder={aspectOrder} activeRelation={activeRelation} maxDepth={maxDepth} toggleName={toggleName} />
             </div>
 
         </div>
