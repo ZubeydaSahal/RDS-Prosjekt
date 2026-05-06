@@ -3,6 +3,7 @@
 package com.rds.parser;
 
 import com.rds.datastructure.GraphManager;
+import com.rds.exceptions.ParseException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +121,10 @@ public class RdsParser {
                     }
                 }
             } catch (Exception e) {
-                System.out.println("<PARSER ERR>Error  line " + lineNumber + ": " + e.getMessage());
+                System.out.println("<Parser> Error  line " + lineNumber + ": " + e.getMessage());
+                throw new com.rds.exceptions.ParseException(
+                        "Error in input line: "+ lineNumber + ": "+e.getMessage(), lineNumber
+                );
             }
         
         }
@@ -271,7 +275,8 @@ public class RdsParser {
             System.out.println("(CheckAsp): "+asp);
             if (line.startsWith(asp))return asp;
         }
-        throw new IllegalArgumentException("invalid aspect symbol or missing aspect symbol: " + line);
+        throw new ParseException("No valid aspect detected");  // input line number
+        //throw new IllegalArgumentException("invalid aspect symbol or missing aspect symbol: " + line);
 
         /* Replaced with config
         if (line.startsWith("%%")) return "%%";
