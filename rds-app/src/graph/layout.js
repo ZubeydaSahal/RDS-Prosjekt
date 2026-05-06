@@ -3,7 +3,7 @@ import {getAspectLabels, getAspectSymbols} from "../../../config/aspects.ts";
 export function layoutTree(graph, aspectOrder) {
 
   if (!graph || !graph.nodes || !graph.root) {
-    console.log("Ugyldig graph");
+    console.log("Invalid graph");
     return { nodes: [], hierarchyEdges: [] };
   }
 
@@ -23,9 +23,7 @@ export function layoutTree(graph, aspectOrder) {
   // ----------------------------
   let aspects;
   if (aspectOrder) {
-    console.log(" (Layout.js) ASpect order: "+aspectOrder)
     aspects = aspectOrder
-        //console.log(graph.aspects)
       .map(id => graph.aspects.find(a => a.id === id))
       .filter(Boolean);
   } else {
@@ -48,9 +46,6 @@ export function layoutTree(graph, aspectOrder) {
       greatestDepth = n.depth;  // replace 'greatestDepth'
     }
 
-
-    console.log("Layout: L77 foreach – node: ", n)
-    console.log(n)
     nodeMap[n.id] = { ...n, children: [] };
   });
 
@@ -64,10 +59,8 @@ export function layoutTree(graph, aspectOrder) {
         incrColBy = 40;  // increase spacing between columns with 40 for each depth}
     }
     // indent = 40 per child/generation 5*40 = 200 -> increament by 200 for each time to keep gap large enough
-    console.log("<><><> A node has more than level 5 depth <><><> \n'greatestDepth': " + greatestDepth)
     //colSpacing = colSpacing + 200 * Math.floor(greatestDepth / 5)  // increase spacing between columns with 1.5 *
     colSpacing = colSpacing + incrColBy * greatestDepth  // increase spacing between columns with 40 for each depth
-    console.log("colSpacing * 40 * "+ greatestDepth)
 
   }
 
@@ -104,8 +97,6 @@ export function layoutTree(graph, aspectOrder) {
   // ----------------------------
   // ASPEKT HEADERS
   // ----------------------------
-  console.log("Aspects before ASPECT HEADERS: ", aspects)
-  console.log("'colSpacing' jsut before ASPECT HEADERS: "+ colSpacing)
   aspects.forEach((aspect) => {
     nodes.push({
       id: "aspect_" + aspect.id,
@@ -115,7 +106,6 @@ export function layoutTree(graph, aspectOrder) {
       type: "aspect"
     });
   });
-  console.log(aspects)
 
 
 

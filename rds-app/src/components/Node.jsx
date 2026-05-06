@@ -86,7 +86,6 @@ export default function Node({ node, onToggle, collapsed, toggleName }) {
   const btnX = node.x + BOX_WIDTH / 2 + BTN_R + 4;
   const btnY = node.y;
 
-  console.log(toggleName)
   return (
     <g>
 

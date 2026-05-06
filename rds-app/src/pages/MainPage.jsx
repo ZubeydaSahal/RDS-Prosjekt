@@ -22,7 +22,6 @@ function MainPage() {
     const graphRef = useRef(null);
     const [toggleName, setToggleName] = useState(true)
 
-    console.log("activeAspects from state: "+activeAspect)
     useEffect(() => {
         function handleKeyDown(e) {
             if (e.key === "Escape" && fullscreen) setFullscreen(false);
@@ -91,8 +90,6 @@ function MainPage() {
 
             console.log("(MainPage) params: "+params.toString());
 
-            console.log("\n\n'getAspectSymbols': "+ getAspectSymbols)
-            console.log("\n'ActiveAspects': "+ activeAspect)
             activeAspect.forEach(a => {
                 params.append(`aspect_${a}`, "true");
             });
@@ -140,16 +137,19 @@ function MainPage() {
             });*/
 
             if (!response.ok) {
-                if (!text.includes("<")) {
+                const errObject = await response.json();
+                throw errObject;
+
+                /*if (!text.includes("<")) {
                     setError("Invalid input. A topnode is required");
-                } 
-                return;
+                }*/
+                //return;
             }
             const graph = await response.json();
             setBackendGraph(graph);
         } catch (err) {
             console.error("Network error:", err);
-            setError("Something went wrong with the server");
+            setError("Backend response error:\n"+err.message);
         }
     };
 
@@ -268,7 +268,7 @@ function MainPage() {
         );
     }
 
-    console.log("MainPage over SplitPane 'AspectOrder': "+activeAspect)
+
     return (
         <div className="MainPage">
             <Navbar />

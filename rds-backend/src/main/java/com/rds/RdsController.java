@@ -90,18 +90,15 @@ public class RdsController {
         }
         return filter.isEmpty() ? null : filter;
     }
-    // Get aspects
-    private List<String> getActiveAspects(Map<String, Boolean> aspectFilters) {
+    // Generate error responses
+    public class ErrorResponse {
+        public String code;
+        public String message;
 
-        List<String> activeAspects = new ArrayList<>();
-        if (aspectFilters != null) {
-            System.out.println("Active aspects: ");
-            for (Map.Entry<String, Boolean> entry : aspectFilters.entrySet()) {
-                System.out.println("Aspect: "+ entry.getKey()+", Val: "+entry.getValue());
-            }
+        public ErrorResponse(String code, String message) {
+            this.code = code;
+            this.message = message;
         }
-        System.out.println("5 (Controlller)Active aspects (before return) "+activeAspects);
-        return activeAspects;
     }
 
 }
