@@ -5,6 +5,7 @@ package com.rds.parser;
 import com.rds.datastructure.GraphManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -135,7 +136,9 @@ public class RdsParser {
     //build a full id  for each node and creats  relation between them 
 
     private void CheckNodes(String trimmedLine, String aspect, GraphManager graphManager) {
-        String[] nodes = trimmedLine.split("\\.");
+        // String[] nodes = trimmedLine.split("\\.|(?=" + aspect + ")");
+        String[] nodes = trimmedLine.split("\\.|" + aspect);
+        System.out.println("LIST OF NODES: " + Arrays.toString(nodes));
         String previousFullId = null; // keeps truck of previous id
         String currentFullId=""; //keeps truck of the id being built
 

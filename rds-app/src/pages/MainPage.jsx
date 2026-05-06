@@ -104,8 +104,8 @@ function MainPage() {
             relationTypes.forEach(type => {
                 params.append(`rel_${type}`, activeRelation.includes(type));
             });
-
-            const url = `http://localhost:8080/parse?${params.toString()}`;
+             const url = 'http://localhost:8080/parse?${params.toString()}';
+            // const url = `/parse?${params.toString()}`;
             console.log("URL:", url);
 
             const response = await fetch(url, {
