@@ -141,7 +141,8 @@ public class RdsParser {
 
     private void CheckNodes(String trimmedLine, String aspect, GraphManager graphManager) {
         // String[] nodes = trimmedLine.split("\\.|(?=" + aspect + ")");
-        String[] nodes = trimmedLine.split("\\.|" + aspect);
+        String escapedAspect = escapeRegex(aspect);
+        String[] nodes = trimmedLine.split("\\.|" + escapedAspect);
         System.out.println("LIST OF NODES: " + Arrays.toString(nodes));
         String previousFullId = null; // keeps truck of previous id
         String currentFullId=""; //keeps truck of the id being built
@@ -248,6 +249,9 @@ public class RdsParser {
         RelationChecker(leftNodeAspect + leftSide, leftNodeAspect, rightNodeAspect + rightSide, rightNodeAspect, relationName, graphmanger);
         
     }
+    private String escapeRegex(String str){
+        return Pattern.quote(str);
+    }
 
     private void CheckForTopNode(String trimmedLine, GraphManager graphManager) {
         if (trimmedLine.startsWith("<") && trimmedLine.endsWith(">")) {
@@ -280,6 +284,7 @@ public class RdsParser {
         }
         throw new ParseException("No valid aspect detected");  // input line number
         //throw new IllegalArgumentException("invalid aspect symbol or missing aspect symbol: " + line);
+
 
         /* Replaced with config
         if (line.startsWith("%%")) return "%%";
