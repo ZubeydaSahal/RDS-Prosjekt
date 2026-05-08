@@ -29,7 +29,7 @@ function Menu({
             <div className="center">
                 <label className="file-button" title="Upload text">
                     <img src={TextUpload} alt="Upload text" height={24} width={24}/>
-                    <span>Upload text</span>
+                    <span>Open file</span>
                     <input type="file" onChange={onUploadFile}/>
                 </label>
                 <FilterDropdown
@@ -51,12 +51,12 @@ function Menu({
 
                 <button onClick={onDownloadText} title="Download Text">
                     <img src={TextDownload} alt="Download Text" height={24} width={24}/>
-                    <span>Download Text</span>
+                    <span>Save Text</span>
                 </button>
 
                 <button onClick={onDownloadImage} title="Download Graph">
                     <img src={imageDownload} alt="Download Graph" height={24} width={24}/>
-                    <span>Download Graph</span>
+                    <span>Save Graph</span>
                 </button>
             </div>
             <div className="right">
