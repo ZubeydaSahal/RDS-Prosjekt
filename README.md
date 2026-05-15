@@ -13,6 +13,7 @@ cd rds-backend
 
 **Åpne webapplikasjonen**
 *Kjører som regel på "http://localhost:5173/"*
+
 <img width="331" height="143" alt="image" src="https://github.com/user-attachments/assets/690c01aa-5fb7-42eb-b5ff-3e18764b1e8b" />
  
 
