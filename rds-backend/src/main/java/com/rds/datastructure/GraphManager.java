@@ -52,7 +52,7 @@ public class GraphManager {
                 LOGGER.warning("<GraphManager> Missing aspect for node id: " + id + ". Using aspectless constructor");
             }
 
-            // Don't add root to nodelist or break into peaces TODO: (hør med de andre om denne logikken)
+            // Don't add root to nodelist or break into peaces
             if(aspect == "<root>"){
                 nodes.put(id, node);  // TEMP
                 return node;
@@ -70,7 +70,7 @@ public class GraphManager {
                 Node parent = nodes.get(parentId);  // Try to fetch parent from 'nodes'
 
                 // ––––– If parent doesn't exist, create parent–––––
-                if (parent == null) {  // handles non declared parent – to be replaced check TODO
+                if (parent == null) {  // handles non declared parent
                     System.out.print("\t Parent = null");
                     createOrUpdateNode(parentId, node.getAspect(), null);  // parents and children share aspect
                 }
@@ -108,7 +108,7 @@ public class GraphManager {
 
         // ––––– Create relation –––––
 
-        Relation relation = new Relation(nodeA, nodeB, type);  // TODO: Sikre at relasjonen ikke eksisterer invers
+        Relation relation = new Relation(nodeA, nodeB, type);  
 
 
         // ––––– Store relations –––––
@@ -170,6 +170,7 @@ public class GraphManager {
         }
     }
 
+    
     
     public Set<Relation> getFilteredCrossRelations(Map<String, Boolean> filters) {
         if (filters == null) return crossRelations;

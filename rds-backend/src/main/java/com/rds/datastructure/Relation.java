@@ -1,6 +1,5 @@
 package com.rds.datastructure;
 
-// TODO: sikre at type kan være null
 
 public class Relation {
     // Connected nodes
@@ -34,8 +33,7 @@ public class Relation {
 
     // Return other node in a
     public Node getOtherNode(Node current){
-        // TODO: returnerer 2. node i 1. relasjon en node deltar i, kan være flere for current
-        // SEan debugger "Error  line 3: Cannot invoke "String.equals(Object)" because "type" is null"
+        //debugger "Error  line 3: Cannot invoke "String.equals(Object)" because "type" is null"
         if(type==null) {
             System.out.println("<Relation> inneholder equals");
         }

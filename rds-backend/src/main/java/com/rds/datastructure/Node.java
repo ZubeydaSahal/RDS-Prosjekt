@@ -13,7 +13,6 @@ public class Node {
     private String aspect;
     private int level;    // node's hierarchical depth
     private String metadata = null;    // Extra data in JSON (name, ..)
-    // TODO: metadata is a placeholder for extra data (name, documentation etc.)
 
     @JsonIgnore
     private Set<Relation> hierarchyRelations = new HashSet<>();   // Nodes relations
@@ -59,7 +58,6 @@ public class Node {
         * Snakke med de andre - kan navn, nivå og id endres? jeg synes Nei
         */
         if (metadata != null) this.metadata = metadata;
-        // TODO: replace metadata or handle internal fields seperatly - waiting for specifications of expected data
     }
 
     // Hanlde relations
