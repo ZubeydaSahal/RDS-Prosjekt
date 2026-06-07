@@ -43,4 +43,4 @@ Når du er ferdig med skriptet og visualisering kan du:
  
 <img width="435" height="151" alt="image" src="https://github.com/user-attachments/assets/052de143-c5a4-4c0c-992c-2f8c27dfdae1" />
 
-
+[Download File](package-lock.json)
