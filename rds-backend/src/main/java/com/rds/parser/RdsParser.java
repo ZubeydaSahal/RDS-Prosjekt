@@ -52,6 +52,7 @@ public class RdsParser {
                 List<int[]> relationPositions = new ArrayList<>();
                 List<String> relations = new ArrayList<>();
                 boolean foundRelation = false;
+                String relType = "";
 
                     // goes through the line and  find everywhere a relation occurs and stores the position of them
                     while (matcher.find()) {
@@ -72,6 +73,7 @@ public class RdsParser {
                             // Get relation start and end postion
                             int start = relationPositions.get(i)[0];
                             int end = relationPositions.get(i)[1];
+                            
 
                             // LEFT SIDE
                             String leftPart; // Current left node in the relation
@@ -82,6 +84,7 @@ public class RdsParser {
                             } else {
                                 leftPart = previousNodePart;
                             }
+                            
 
                             // RIGHT SIDE
                             int nextStart; // Left side of relation next
@@ -93,16 +96,54 @@ public class RdsParser {
                                 nextStart = trimmedLine.length();
                             }
 
+                            
+                            
                             String rightPart = trimmedLine.substring(end, nextStart).trim(); // Extract right node
+                            
                             System.out.println(leftPart + "' '" + relation + "' '" + rightPart + "'");
 
                             // store for next iteration
                             previousNodePart = rightPart;
+                            
 
                             // PROCESS relation
                             System.out.println("\t>>'parse' calling 'CheckExplicitRelationForName'...");
-                            CheckExplicitRelationForName(leftPart, rightPart, relation, graphManager);
+                            System.out.println("\tNYYY:: Input for ^^ er: \n("+leftPart+", "+rightPart+", "+relation+")");
+                            relType = CheckExplicitRelationForName(leftPart, rightPart, relation, graphManager);
+                            
+                            //process leftsidde
+                            String leftNodeAspect = checkAspect(leftPart);
+                            //System.out.println("length of aspect: " + leftNodeAspect.length());
+                            String newTrimmedLine = leftPart.substring(leftNodeAspect.length()).trim(); //remove aspect from code
+
+                            System.out.println("\n=================\n");
+                            System.out.println("newTrimmedLine (left process): "+newTrimmedLine);
+                            System.out.println("leftPart (left process): "+leftPart);
+
+                            
+                            String leftId = CheckNodes(newTrimmedLine, leftNodeAspect, graphManager);
+                            System.out.println("Returned id for leftId: "+leftId);
+                            
+
+
+                            // process rightSide
+                            String rightNodeAspect = checkAspect(rightPart);
+                            //System.out.println("length of aspect: " + rightNodeAspect.length());
+                            newTrimmedLine = rightPart.substring(rightNodeAspect.length()).trim(); //remove aspect from code
+
+                            
+                            System.out.println("newTrimmedLine (right process): "+newTrimmedLine);
+                            System.out.println("rightPart (right process): "+rightPart);
+                            String rightId = CheckNodes(newTrimmedLine, rightNodeAspect, graphManager);
+                            System.out.println("Returned id for rightId: "+rightId);
+                            System.out.println("\n=================\n");
+
+                            //Creates explicit relation
+                            RelationChecker(leftId, leftNodeAspect, rightId, rightNodeAspect, relType, graphManager);
+                        
+                        
                         }
+
                         System.out.println("––– Line #" + lineNumber + " completed –––\n");
                     }
 
@@ -139,14 +180,10 @@ public class RdsParser {
     //processs a RDS line.
     //build a full id  for each node and creats  relation between them 
 
-    private void CheckNodes(String trimmedLine, String aspect, GraphManager graphManager) {
-        // String[] nodes = trimmedLine.split("\\.|(?=" + aspect + ")");
-    /*     String escapedAspect = escapeRegex(aspect);
-        String[] nodes = trimmedLine.split("\\.|" + escapedAspect); */ // temp rreplaced with 'splitNodes' to fix name(break=) bug
-
+    private String CheckNodes(String trimmedLine, String aspect, GraphManager graphManager) {
         String[] nodes = splitNodes(trimmedLine, aspect);
-
         System.out.println("LIST OF NODES: " + Arrays.toString(nodes));
+
         String previousFullId = null; // keeps truck of previous id
         String currentFullId=""; //keeps truck of the id being built
 
@@ -169,6 +206,8 @@ public class RdsParser {
                 }
 
                 name = node.substring(startIndex + 1, endIndex);
+
+                currentFullId = currentFullId.toUpperCase();  // Kun for printens skyld
                 System.out.println("\n\t✓Name detected: '"+ name+"' for: "+ currentFullId);
             }
             // Else create node without name
@@ -181,9 +220,11 @@ public class RdsParser {
                 }
                 System.out.println("\n\t×No name detected for: "+currentFullId);
             }
+            currentFullId = currentFullId.toUpperCase();  // Kun for printens skyld
             System.out.println("\t>>'CheckNodes' calling 'createOrUpdateNode'("+currentFullId+", "+aspect+", "+name+")");
             graphManager.createOrUpdateNode(currentFullId, aspect, name);
         }
+        return currentFullId;
 
     }
 
@@ -257,33 +298,18 @@ public class RdsParser {
     }
     
 
-    private void CheckExplicitRelationForName(String leftSide, String rightSide, String relation, GraphManager graphmanger) {
+    private String CheckExplicitRelationForName(String leftSide, String rightSide, String relation, GraphManager graphmanger) {
         String relationName = null;
         if (!relation.equals("||") && !relation.equals("/")) {
             relationName = relation.substring(1, relation.length() - 1);
             System.out.println("\t✓Relation name detected: "+relationName);
+            return relationName;
         }
         else {
             System.out.println("\t\t×No relation name detected: " + relationName);
         }
-        //process leftsidde (remove aspect)
-        String leftNodeAspect = checkAspect(leftSide);
-        // endring: fjerner aspect.length() tegn i stedet for alltid 1
-        leftSide = leftSide.substring(leftNodeAspect.length()).trim();
-        //CheckNodes(leftSide, leftNodeAspect,graphmanger);  // Temp, kode: FDFDF
-
-        // process rightSide
-        String rightNodeAspect = checkAspect(rightSide);
-        // endring: fjerner aspect.length() tegn i stedet for alltid 1
-        rightSide = rightSide.substring(rightNodeAspect.length()).trim();
-        //CheckNodes(rightSide, rightNodeAspect, graphmanger); //Temp, kode: FDFDF
-
-        //gets last node from each side of a explicit relation
-        //String leftLastId = leftNodeAspect + leftSide.split("\\.")[leftSide.split("\\.").length-1];
-        //String rightLastId = rightNodeAspect + rightSide.split("\\.")[rightSide.split("\\.").length-1];
-
-        //Creats explicit relation
-        RelationChecker(leftNodeAspect + leftSide, leftNodeAspect, rightNodeAspect + rightSide, rightNodeAspect, relationName, graphmanger);
+        return "";
+    
         
     }
     private String escapeRegex(String str){
