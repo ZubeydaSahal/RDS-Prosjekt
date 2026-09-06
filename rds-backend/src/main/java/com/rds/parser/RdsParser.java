@@ -39,7 +39,7 @@ public class RdsParser {
             System.out.print("\n<Parse> Line " + lineNumber + ": ");
             if (trimmedLine.isEmpty()) continue;
             if (line.startsWith("\\")) {
-                nmbrCommented ++;
+                nmbrCommented ++;  // Statistic counter
                 continue;
             }
 
@@ -53,13 +53,13 @@ public class RdsParser {
                 List<String> relations = new ArrayList<>();
                 boolean foundRelation = false;
 
-                    // goes through the line and find everywhere a relation occurs and stores the position of them
+                    // goes through the line and  find everywhere a relation occurs and stores the position of them
                     while (matcher.find()) {
                         foundRelation = true;
                         relationPositions.add(new int[]{matcher.start(), matcher.end()});
                         relations.add(matcher.group());
                     }
-                    //if matcher.find() do find relations it will send data of the two nodes and the relation between them for processing.
+                    //if matcher.find() does find relations it will send data of the two nodes and the relation between them for processing.
                     if (!relations.isEmpty()) {
                         String previousNodePart = null; // Might be redundant
                         System.out.print("detected cross relations\n\tInput: " + line + "\n");
@@ -108,11 +108,11 @@ public class RdsParser {
 
                     // IF line declares a node, not a relation
                     if (!foundRelation) {
-                        // check for aspect and remove aspect symbol
+                        // check for aspect and extract aspect symbol
                         String aspect = checkAspect(trimmedLine);
                         // endring: fjerner aspect.length() tegn i stedet for alltid 1
                         System.out.println("length of aspect: " + aspect.length());
-                        trimmedLine = trimmedLine.substring(aspect.length()).trim();
+                        trimmedLine = trimmedLine.substring(aspect.length()).trim(); //remove aspect from code
 
                         // Normal RDS line
                         System.out.println("Aspect: "+aspect);
@@ -141,8 +141,11 @@ public class RdsParser {
 
     private void CheckNodes(String trimmedLine, String aspect, GraphManager graphManager) {
         // String[] nodes = trimmedLine.split("\\.|(?=" + aspect + ")");
-        String escapedAspect = escapeRegex(aspect);
-        String[] nodes = trimmedLine.split("\\.|" + escapedAspect);
+    /*     String escapedAspect = escapeRegex(aspect);
+        String[] nodes = trimmedLine.split("\\.|" + escapedAspect); */ // temp rreplaced with 'splitNodes' to fix name(break=) bug
+
+        String[] nodes = splitNodes(trimmedLine, aspect);
+
         System.out.println("LIST OF NODES: " + Arrays.toString(nodes));
         String previousFullId = null; // keeps truck of previous id
         String currentFullId=""; //keeps truck of the id being built
@@ -181,29 +184,63 @@ public class RdsParser {
             System.out.println("\t>>'CheckNodes' calling 'createOrUpdateNode'("+currentFullId+", "+aspect+", "+name+")");
             graphManager.createOrUpdateNode(currentFullId, aspect, name);
         }
-            // ––––––––––––––––
 
+    }
 
+    private String[] splitNodes(String line, String aspect) {
+    /* New linesplitting parser, to handle aspects in names (name=), so they do not create a separate node 
+    * Flow:
+    For each character in line 'c'
+    - Check if in name -> increase 'isParenthesis'. if mulitple embedded parantheses, equal number of ')' needed to reach 0
+    - Check for . and aspect IF isParenthesis == 0 -> meaning not in  a parenthesis
+    - 
+    */
+    List<String> nodes = new ArrayList<>();
 
+    StringBuilder current = new StringBuilder();
+    int isParentheses = 0;
 
-/*
-            // -- Sean removed 9.4 12.00 - GraphManager handles non-existing parents
-            if(currentFullId.isEmpty()){
-                currentFullId = aspect + id;
-            } else {
-                currentFullId = currentFullId + "." + id;
-            }
+    for (int i = 0; i < line.length(); i++) {
+        char c = line.charAt(i);
 
-            NodeChecker(currentFullId, aspect, name, graphManager); //creats or update node in graph manager
-
-            // implicit relationship between nodes
-            if (previousFullId != null){
-                RelationChecker(previousFullId, aspect, currentFullId, aspect, "hierarchy", graphManager);
-                System.out.println("1. Implicit create relation child: "+currentFullId + " og parent: "+ previousFullId);
-            }
-            previousFullId = currentFullId; //update previousid
-            */
+        // Start/end name ()
+        if (c == '(') {
+            isParentheses++;
+            current.append(c);
         }
+        else if (c == ')') {
+            isParentheses--;
+            current.append(c);
+        }
+
+        // Separate node by "." or aspect, if not in a parenthesis
+        else if (isParentheses == 0 &&
+                 (c == '.' || line.startsWith(aspect, i))) {
+
+            if (current.length() > 0) {
+                nodes.add(current.toString());
+                current.setLength(0);
+            }
+
+            // Hvis vi fant aspect, hopp over det
+            if (line.startsWith(aspect, i)) {
+                i += aspect.length() - 1;
+            }
+        }
+        else {
+            //Appends character to current name 
+            current.append(c);
+        }
+    }
+
+    // Add last node to nodes
+    if (current.length() > 0) {
+        nodes.add(current.toString());
+    }
+
+    return nodes.toArray(new String[0]);
+}
+
 
     //creats relation bewteen nodes in graphmanger
     //creats nodes only when nodes exist
@@ -272,7 +309,7 @@ public class RdsParser {
 
     // Check aspect from first symbol
     private String checkAspect(String line) {
-        System.out.println("REACHed checkAspect");
+        System.out.println("<PARSER> reached checkAspect. Input is: \n"+line);
 
         // Sort aspectlist, to check for "%%" before "%"
         aspectList.sort((a, b) -> Integer.compare(b.length(), a.length()));
