@@ -109,7 +109,7 @@ export default function Edge({
   // --------------------------------------------------
   // CROSS RELASJONER
   // --------------------------------------------------
-  const cx1 = from.x + NODE_WIDTH / 2;
+/*   const cx1 = from.x + NODE_WIDTH / 2;
   const cy1 = from.y;
   const cx2 = to.x - NODE_WIDTH / 2;
   const cy2 = to.y;
@@ -122,7 +122,34 @@ export default function Edge({
   const cpx1 = cx1 + bend + offsetX;
   const cpx2 = cx2 - bend + offsetX;
   const cpy1 = cy1 + offsetY;
-  const cpy2 = cy2 + offsetY;
+  const cpy2 = cy2 + offsetY; */ // Tester alternativ for å fikse relasjon visualisering
+
+
+// Find visually left and right node
+
+const leftNode = from.x <= to.x ? from : to;
+const rightNode = from.x <= to.x ? to : from;
+
+const cx1 = leftNode.x + NODE_WIDTH / 2;
+const cy1 = leftNode.y;
+
+const cx2 = rightNode.x - NODE_WIDTH / 2;
+const cy2 = rightNode.y;
+
+const SPACING = 15;
+const offsetIndex = (index % 7) - 3;
+const offsetY = offsetIndex * SPACING;
+const offsetX = offsetIndex * 10;
+
+const bend = 60;
+
+const cpx1 = cx1 + bend + offsetX;
+const cpx2 = cx2 - bend + offsetX;
+
+const cpy1 = cy1 + offsetY;
+const cpy2 = cy2 + offsetY;
+
+
 
   const t = 0.5;
   const midX =
