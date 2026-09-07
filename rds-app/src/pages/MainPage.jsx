@@ -21,6 +21,7 @@ function MainPage() {
     const [fullscreen, setFullscreen] = useState(false);
     const graphRef = useRef(null);
     const [toggleName, setToggleName] = useState(true)
+    //const rootName = "";
 
     useEffect(() => {
         function handleKeyDown(e) {
@@ -35,7 +36,11 @@ function MainPage() {
         if (!backendGraph?.nodeDTO) return 0;
         let globalMax = 0;
         Object.entries(backendGraph.nodeDTO).forEach(([key, list]) => {
-            if (key === "<root>" || !Array.isArray(list) || list.length === 0) return;
+
+            if (key === "<root>" || !Array.isArray(list) || list.length === 0){ 
+                
+                return;}
+
             const dotCounts = list.map(n => (n.id.match(/\./g) || []).length);
             const colDepth = Math.max(...dotCounts) - Math.min(...dotCounts);
             if (colDepth > globalMax) globalMax = colDepth;
@@ -201,9 +206,22 @@ function MainPage() {
 
             const dataUrl = await toPng(target, { cacheBust: true, pixelRatio, width: visibleW, height: visibleH });
             const link = document.createElement("a");
-            link.download = "graph.png";
-            link.href = dataUrl;
-            link.click();
+
+            // Fetch timestamp
+            const now = new Date();
+            const timestamp =
+                now.getFullYear() + "-" +
+                String(now.getMonth() + 1).padStart(2, "0") + "-" +
+                String(now.getDate()).padStart(2, "0") + "_" +
+                String(now.getHours()).padStart(2, "0") + "-" +
+                String(now.getMinutes()).padStart(2, "0");
+
+            // Fetch root name
+            const rootName = backendGraph.nodeDTO["<root>"][0].id || "RDSscript"; // RDSscript as defaultif error fetvching rootname
+
+                link.download = `${rootName}_${timestamp}.png` // Create filename using rootname and timestamp
+                link.href = dataUrl;
+                link.click();
         } catch (err) {
             alert("Could not download image");
         } finally {
@@ -215,8 +233,25 @@ function MainPage() {
         const blob = new Blob([text], { type: "text/plain" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
+
+    // Fetch timestamp
+    const now = new Date();
+    const timestamp =
+        now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, "0") + "-" +
+        String(now.getDate()).padStart(2, "0") + "_" +
+        String(now.getHours()).padStart(2, "0") + "-" +
+        String(now.getMinutes()).padStart(2, "0");
+
+        // Fetch root name
+        const rootName = backendGraph.nodeDTO["<root>"][0].id || "RDSscript"; // RDSscript as defaultif error fetvching rootname
+
+        
         link.href = url;
-        link.download = "RDSscript.txt";
+        link.download = `${rootName}_${timestamp}.txt` // Create filename using rootname and timestamp
+    
+
+
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
