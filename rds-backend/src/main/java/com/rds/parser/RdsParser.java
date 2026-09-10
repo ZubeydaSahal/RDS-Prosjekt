@@ -345,7 +345,7 @@ public class RdsParser {
             System.out.println("(CheckAsp): "+asp);
             if (line.startsWith(asp))return asp;
         }
-        throw new ParseException("No valid aspect detected, input: "+line);  // input line number
+        throw new ParseException("No valid aspect detected");  // input line number
         //throw new IllegalArgumentException("invalid aspect symbol or missing aspect symbol: " + line);
 
 
