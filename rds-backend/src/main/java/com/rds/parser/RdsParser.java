@@ -165,7 +165,7 @@ public class RdsParser {
             } catch (Exception e) {
                 System.out.println("<Parser> Error  line " + lineNumber + ": " + e.getMessage());
                 throw new com.rds.exceptions.ParseException(
-                        "Error in input line: "+ lineNumber + ": "+e.getMessage(), lineNumber
+                        "Error in input line "+ lineNumber + " '"+line+"'\n" +e.getMessage(), lineNumber
                 );
             }
         
