@@ -42,7 +42,7 @@ export default function Edge({
 
   if (!from || !to) return null;
 
-  const NODE_WIDTH = 160;
+  const NODE_WIDTH = 190;
 
   const aspectNodes = allNodes?.filter(n => n.type === "aspect") || [];
   if (!aspectNodes.length) return null;
