@@ -56,7 +56,7 @@ function Menu({
 
                 <button onClick={onDownloadImage} title="Download Graph">
                     <img src={imageDownload} alt="Download Graph" height={24} width={24}/>
-                    <span>Save Graph</span>
+                    <span>Save Diagram</span>
                 </button>
             </div>
             <div className="right">
