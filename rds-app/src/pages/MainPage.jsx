@@ -163,6 +163,7 @@ function MainPage() {
     if (backendGraph) handleBuild();
 }, [activeAspect]); // bare aspekt trigger backend
 
+    /* Download Image button functionality */
     const handleDownloadImage = async () => {
         const container = graphRef.current;
         if (!container) return;
@@ -214,7 +215,8 @@ function MainPage() {
                 String(now.getMonth() + 1).padStart(2, "0") + "-" +
                 String(now.getDate()).padStart(2, "0") + "_" +
                 String(now.getHours()).padStart(2, "0") + "-" +
-                String(now.getMinutes()).padStart(2, "0");
+                String(now.getMinutes()).padStart(2, "0") + "-" +
+                String(now.getSeconds()).padStart(2, "0");
 
             // Fetch root name
             const rootName = backendGraph.nodeDTO["<root>"][0].id || "RDSscript"; // RDSscript as defaultif error fetvching rootname
@@ -229,10 +231,12 @@ function MainPage() {
         }
     };
 
+    /* Download Text button functionality */
     const handleDownloadText = () => {
         const blob = new Blob([text], { type: "text/plain" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
+
 
     // Fetch timestamp
     const now = new Date();
@@ -241,7 +245,8 @@ function MainPage() {
         String(now.getMonth() + 1).padStart(2, "0") + "-" +
         String(now.getDate()).padStart(2, "0") + "_" +
         String(now.getHours()).padStart(2, "0") + "-" +
-        String(now.getMinutes()).padStart(2, "0");
+        String(now.getMinutes()).padStart(2, "0") + "-" +
+        String(now.getSeconds()).padStart(2, "0");
 
         // Fetch root name
         const rootName = backendGraph.nodeDTO["<root>"][0].id || "RDSscript"; // RDSscript as defaultif error fetvching rootname
@@ -257,6 +262,42 @@ function MainPage() {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
     };
+
+    /* Dowload Graph-object button functionality */
+    const handleDownloadGraphObject = () => {
+    if (!backendGraph) return;
+
+    const graph = JSON.stringify(backendGraph, null, 2);
+
+    const blob = new Blob([graph], {
+        type: "application/json"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    // Timestamp
+    const now = new Date();
+    const timestamp =
+        now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, "0") + "-" +
+        String(now.getDate()).padStart(2, "0") + "_" +
+        String(now.getHours()).padStart(2, "0") + "-" +
+        String(now.getMinutes()).padStart(2, "0") + "-" +
+        String(now.getSeconds()).padStart(2, "0");
+
+    // Root name
+    const rootName = backendGraph?.nodeDTO?.["<root>"]?.[0]?.id || "GraphObject";
+
+    link.href = url;
+    link.download = `${rootName}_${timestamp}.json`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+};
 
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
@@ -281,6 +322,7 @@ function MainPage() {
                     onBuild={handleBuild}
                     onDownloadImage={handleDownloadImage}
                     onDownloadText={handleDownloadText}
+                    onDownloadGraphObject={handleDownloadGraphObject}
                     onUploadFile={handleFileUpload}
                     onToggleFullscreen={() => setFullscreen(false)}
                     isFullscreen={true}
@@ -323,6 +365,7 @@ function MainPage() {
                         onBuild={handleBuild}
                         onDownloadImage={handleDownloadImage}
                         onDownloadText={handleDownloadText}
+                        onDownloadGraphObject={handleDownloadGraphObject}
                         onUploadFile={handleFileUpload}
                         onToggleFullscreen={() => setFullscreen(true)}
                         setToggleName = {setToggleName}
@@ -350,5 +393,4 @@ function MainPage() {
         </div>
     );
 }
-
 export default MainPage;

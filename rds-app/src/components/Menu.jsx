@@ -14,6 +14,7 @@ function Menu({
   onBuild,
   onDownloadImage,
   onDownloadText,
+  onDownloadGraphObject,
   onUploadFile,
   onToggleFullscreen,
   isFullscreen = false,
@@ -54,9 +55,15 @@ function Menu({
                     <span>Save Text</span>
                 </button>
 
-                <button onClick={onDownloadImage} title="Download Graph">
-                    <img src={imageDownload} alt="Download Graph" height={24} width={24}/>
+                <button onClick={onDownloadImage} title="Download Diagram">
+                    <img src={imageDownload} alt="Download Diagram" height={24} width={24}/>
                     <span>Save Diagram</span>
+                </button>
+
+                {/* Temporarily added 'save graph-object' */}
+                <button onClick={onDownloadGraphObject} title="Download Graph-object">
+                    <img src={imageDownload} alt="Download Graph-object" height={24} width={24}/>
+                    <span>Save Graph-object</span>
                 </button>
             </div>
             <div className="right">
