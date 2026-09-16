@@ -269,9 +269,7 @@ function MainPage() {
 
     const graph = JSON.stringify(backendGraph, null, 2);
 
-    const blob = new Blob([graph], {
-        type: "application/json"
-    });
+    const blob = new Blob([graph], { type: "text/plain" });
 
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -290,7 +288,7 @@ function MainPage() {
     const rootName = backendGraph?.nodeDTO?.["<root>"]?.[0]?.id || "GraphObject";
 
     link.href = url;
-    link.download = `${rootName}_${timestamp}.json`;
+    link.download = `${rootName}_${timestamp}.txt`;
 
     document.body.appendChild(link);
     link.click();
