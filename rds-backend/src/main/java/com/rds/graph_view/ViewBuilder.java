@@ -168,7 +168,7 @@ public class ViewBuilder {
         try {
             String json = mapper.writerWithDefaultPrettyPrinter()
                     .writeValueAsString(graphViewDTO);
-            System.out.println("JSON: "+json);
+            //System.out.println("JSON: "+json);
         }catch (JsonProcessingException e){
             e.printStackTrace();
         }

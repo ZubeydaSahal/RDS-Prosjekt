@@ -24,7 +24,7 @@ public class RdsParser {
         System.out.println("<Parse> Script: \n" + script + "\n");
         String[] lines = script.split("\\r?\\n");
         int lineNumber = 0;
-        Pattern pattern = Pattern.compile("\\|\\||\\|[^|]+\\||/");
+        //Pattern pattern = Pattern.compile("\\|\\||\\|[^|]+\\||/");
 
         // Counter for commented lines
         int nmbrCommented = 0;
@@ -38,6 +38,8 @@ public class RdsParser {
             String trimmedLine = line.trim();
             System.out.print("\n<Parse> Line " + lineNumber + ": ");
             if (trimmedLine.isEmpty()) continue;
+
+
             if (line.startsWith("\\")) {
                 nmbrCommented ++;  // Statistic counter
                 continue;
@@ -46,36 +48,31 @@ public class RdsParser {
             // Check for top node declaration
             try{
             if (!topNodeDeclared) {CheckForTopNode(trimmedLine,graphManager);}
-            else {
-                // check for relationship
-                Matcher matcher = pattern.matcher(trimmedLine);
-                List<int[]> relationPositions = new ArrayList<>();
-                List<String> relations = new ArrayList<>();
-                boolean foundRelation = false;
-                String relType = "";
 
-                    // goes through the line and  find everywhere a relation occurs and stores the position of them
-                    while (matcher.find()) {
-                        foundRelation = true;
-                        relationPositions.add(new int[]{matcher.start(), matcher.end()});
-                        relations.add(matcher.group());
-                    }
+            else {
+                List<RelationMatch> relations = findRelations(trimmedLine);
+                    
                     //if matcher.find() does find relations it will send data of the two nodes and the relation between them for processing.
                     if (!relations.isEmpty()) {
-                        String previousNodePart = null; // Might be redundant
                         System.out.print("detected cross relations\n\tInput: " + line + "\n");
 
-                        for (int i = 0; i < relations.size(); i++) {
-                            String relation = relations.get(i);
-                            System.out.println("Matched relation: " + relation);
-                            System.out.print("\n\t•Relation #" + (i + 1) + ": ");
+                        String previousNodePart = null;
 
+                        for (int i = 0; i < relations.size(); i++) {
+                            RelationMatch relationMatch = relations.get(i);
+                            String relation = relationMatch.relation;
+                            System.out.println("Matched relation: " + relation);
+
+                            System.out.print(
+                                    "\n\t•Relation #" + (i + 1) + ": "
+                            );
+                            
                             // Get relation start and end postion
-                            int start = relationPositions.get(i)[0];
-                            int end = relationPositions.get(i)[1];
+                            int start = relationMatch.start;
+                            int end = relationMatch.end;
                             
 
-                            // LEFT SIDE
+                            // ======== LEFT SIDE ========
                             String leftPart; // Current left node in the relation
 
                             // if left node is null -> Start from the beginning og the line
@@ -86,12 +83,12 @@ public class RdsParser {
                             }
                             
 
-                            // RIGHT SIDE
+                            // ======== RIGHT SIDE ========
                             int nextStart; // Left side of relation next
 
                             // Check edge case
                             if (i + 1 < relations.size()) {
-                                nextStart = relationPositions.get(i + 1)[0];
+                                nextStart = relations.get(i + 1).start;
                             } else {
                                 nextStart = trimmedLine.length();
                             }
@@ -109,34 +106,19 @@ public class RdsParser {
                             // PROCESS relation
                             System.out.println("\t>>'parse' calling 'CheckExplicitRelationForName'...");
                             System.out.println("\tNYYY:: Input for ^^ er: \n("+leftPart+", "+rightPart+", "+relation+")");
-                            relType = CheckExplicitRelationForName(leftPart, rightPart, relation, graphManager);
+                            String relType = CheckExplicitRelationForName(leftPart, rightPart, relation, graphManager);
                             
                             //process leftsidde
                             String leftNodeAspect = checkAspect(leftPart);
-                            //System.out.println("length of aspect: " + leftNodeAspect.length());
-                            String newTrimmedLine = leftPart.substring(leftNodeAspect.length()).trim(); //remove aspect from code
-
-                            System.out.println("\n=================\n");
-                            System.out.println("newTrimmedLine (left process): "+newTrimmedLine);
-                            System.out.println("leftPart (left process): "+leftPart);
+                            String leftNodeLine = leftPart.substring(leftNodeAspect.length()).trim(); //remove aspect from code
+                            String leftId = CheckNodes(leftNodeLine, leftNodeAspect, graphManager);
 
                             
-                            String leftId = CheckNodes(newTrimmedLine, leftNodeAspect, graphManager);
-                            System.out.println("Returned id for leftId: "+leftId);
-                            
-
-
                             // process rightSide
                             String rightNodeAspect = checkAspect(rightPart);
-                            //System.out.println("length of aspect: " + rightNodeAspect.length());
-                            newTrimmedLine = rightPart.substring(rightNodeAspect.length()).trim(); //remove aspect from code
+                            String rightNodeLine = rightPart.substring(rightNodeAspect.length()).trim(); //remove aspect from code                                                        
+                            String rightId = CheckNodes(rightNodeLine, rightNodeAspect, graphManager);
 
-                            
-                            System.out.println("newTrimmedLine (right process): "+newTrimmedLine);
-                            System.out.println("rightPart (right process): "+rightPart);
-                            String rightId = CheckNodes(newTrimmedLine, rightNodeAspect, graphManager);
-                            System.out.println("Returned id for rightId: "+rightId);
-                            System.out.println("\n=================\n");
 
                             //Creates explicit relation
                             RelationChecker(leftId, leftNodeAspect, rightId, rightNodeAspect, relType, graphManager);
@@ -147,11 +129,10 @@ public class RdsParser {
                         System.out.println("––– Line #" + lineNumber + " completed –––\n");
                     }
 
-                    // IF line declares a node, not a relation
-                    if (!foundRelation) {
+                    // Node line (no relaton)
+                    else{                    
                         // check for aspect and extract aspect symbol
                         String aspect = checkAspect(trimmedLine);
-                        // endring: fjerner aspect.length() tegn i stedet for alltid 1
                         System.out.println("length of aspect: " + aspect.length());
                         trimmedLine = trimmedLine.substring(aspect.length()).trim(); //remove aspect from code
 
@@ -175,8 +156,245 @@ public class RdsParser {
         return graphManager;
         
         }
+    /*
+     * Represents one explicit relation found in a line.
+     *
+     * Example:
+     *
+     * =A1/=B1
+     *
+     * relation = "/"
+     * start    = position of "/"
+     * end      = position immediately after "/"
+     */
+    private static class RelationMatch {
 
-    
+        private final int start;
+        private final int end;
+        private final String relation;
+
+
+        private RelationMatch(
+                int start,
+                int end,
+                String relation
+        ) {
+
+            this.start = start;
+            this.end = end;
+            this.relation = relation;
+        }
+    }
+
+
+
+    /*
+     * Finds explicit relations in a line.
+     *
+     * Supported relations:
+     *
+     * /
+     * ||
+     * |Type|
+     *
+     *
+     * IMPORTANT:
+     *
+     * Relations are only detected when parenthesisDepth == 0.
+     *
+     * Therefore:
+     *
+     * =A1(test/name)
+     *
+     * "/" is ordinary text.
+     *
+     *
+     * =A1(test/name)/=B1
+     *
+     * the second "/" is a relation.
+     */
+    private List<RelationMatch> findRelations(String line) {
+
+        List<RelationMatch> relations =
+                new ArrayList<>();
+
+
+        int parenthesisDepth = 0;
+
+
+        for (int i = 0; i < line.length(); i++) {
+
+            char c = line.charAt(i);
+
+
+            // -----------------------------------------
+            // ENTER NAME
+            // -----------------------------------------
+
+            if (c == '(') {
+
+                parenthesisDepth++;
+
+                continue;
+            }
+
+
+            // -----------------------------------------
+            // EXIT NAME
+            // -----------------------------------------
+
+            if (c == ')') {
+
+                parenthesisDepth--;
+
+                if (parenthesisDepth < 0) {
+
+                    throw new ParseException(
+                            "Unexpected closing parenthesis ')'"
+                    );
+                }
+
+                continue;
+            }
+
+
+            // -----------------------------------------
+            // IGNORE EVERYTHING INSIDE NAME
+            // -----------------------------------------
+
+            if (parenthesisDepth > 0) {
+                continue;
+            }
+
+
+            // -----------------------------------------
+            // RELATION: ||
+            // -----------------------------------------
+
+            if (line.startsWith("||", i)) {
+
+                relations.add(
+                        new RelationMatch(
+                                i,
+                                i + 2,
+                                "||"
+                        )
+                );
+
+
+                // Skip second |
+                i++;
+
+                continue;
+            }
+
+
+            // -----------------------------------------
+            // RELATION: /
+            // -----------------------------------------
+
+            if (c == '/') {
+
+                relations.add(
+                        new RelationMatch(
+                                i,
+                                i + 1,
+                                "/"
+                        )
+                );
+
+                continue;
+            }
+
+
+            // -----------------------------------------
+            // RELATION: |Type|
+            // -----------------------------------------
+
+            if (c == '|') {
+
+                int endIndex =
+                        findClosingRelationBar(
+                                line,
+                                i + 1
+                        );
+
+
+                if (endIndex == -1) {
+
+                    throw new ParseException(
+                            "Missing closing '|' for relation"
+                    );
+                }
+
+
+                String relation =
+                        line.substring(
+                                i,
+                                endIndex + 1
+                        );
+
+
+                relations.add(
+                        new RelationMatch(
+                                i,
+                                endIndex + 1,
+                                relation
+                        )
+                );
+
+
+                // Skip entire relation
+                i = endIndex;
+            }
+        }
+
+
+        // Check that all parentheses were closed
+        if (parenthesisDepth != 0) {
+
+            throw new ParseException(
+                    "Missing closing parenthesis ')'"
+            );
+        }
+
+
+        return relations;
+    }
+
+
+
+    /*
+     * Finds the closing | for a named relation.
+     *
+     * Example:
+     *
+     * |ConnectedTo|
+     *
+     * The first "|" has already been found.
+     */
+    private int findClosingRelationBar(
+            String line,
+            int startIndex
+    ) {
+
+        for (
+                int i = startIndex;
+                i < line.length();
+                i++
+        ) {
+
+            if (line.charAt(i) == '|') {
+
+                return i;
+            }
+        }
+
+
+        return -1;
+    }
+
+
     //processs a RDS line.
     //build a full id  for each node and creats  relation between them 
 
@@ -189,27 +407,36 @@ public class RdsParser {
 
         // for each node in line, check if it has a name // TO BE REMOVED: and then check the relationship between them
         for (String node : nodes){
-            String id;
             String name = null;
 
-            // Check node for name
-            if (node.contains("(") && node.contains(")")) {
+            // If node has a name
+            if (node.contains("(")) {
                 int startIndex = node.indexOf("(");
-                int endIndex = node.indexOf(")");
+                int endIndex = findMatchingParenthesis(node, startIndex);
 
-                // Extract id and name and update
-                // endring: lagt til aspect + på første node
-                if(!currentFullId.isEmpty()) {
-                    currentFullId = currentFullId + "." + node.substring(0, startIndex).trim();
-                }else {
-                    currentFullId = aspect + node.substring(0, startIndex).trim();
+                // If number of parenthesis add up (found last parenthesis) – build string
+                if (endIndex >= 0) {
+                    // Build full ID
+                    if (!currentFullId.isEmpty()) {
+                        currentFullId = currentFullId + "." + node.substring(0, startIndex).trim();
+                    } else {
+                        currentFullId = aspect + node.substring(0, startIndex).trim();
+                    }
+
+                    // Extract complete name
+                    name = node.substring(startIndex + 1, endIndex);
+
+                    currentFullId = currentFullId.toUpperCase();
+
+                    System.out.println(
+                        "\n\t✓Name detected: '" + name + "' for: " + currentFullId
+                    );
                 }
-
-                name = node.substring(startIndex + 1, endIndex);
-
-                currentFullId = currentFullId.toUpperCase();  // Kun for printens skyld
-                System.out.println("\n\t✓Name detected: '"+ name+"' for: "+ currentFullId);
+                else{
+                    throw new ParseException("Missing closing parenthesis ')' – numbers of parenthesis do not match");
+                }
             }
+            
             // Else create node without name
             else {
                 if(!currentFullId.isEmpty()){
@@ -228,8 +455,32 @@ public class RdsParser {
 
     }
 
+    private int findMatchingParenthesis(String text, int startIndex) {
+    int depth = 0;
+
+    for (int i = startIndex; i < text.length(); i++) {
+        char c = text.charAt(i);
+
+        if (c == '(') {
+            depth++;
+        } 
+        else if (c == ')') {
+            depth--;
+
+            if (depth == 0) {
+                return i;
+            }
+        }
+    }
+
+    // No matching closing parenthesis
+    return -1;
+}
+
+
     private String[] splitNodes(String line, String aspect) {
     /* New linesplitting parser, to handle aspects in names (name=), so they do not create a separate node 
+    * Purpose: splits aa.bb.cc into nodes [aa, bb, cc]
     * Flow:
     For each character in line 'c'
     - Check if in name -> increase 'isParenthesis'. if mulitple embedded parantheses, equal number of ')' needed to reach 0
@@ -255,22 +506,23 @@ public class RdsParser {
         }
 
         // Separate node by "." or aspect, if not in a parenthesis
-        else if (isParentheses == 0 &&
-                 (c == '.' || line.startsWith(aspect, i))) {
+        else if (isParentheses == 0 && (c == '.' || line.startsWith(aspect, i))) {        
 
+            // Split by '.'
             if (current.length() > 0) {
                 nodes.add(current.toString());
                 current.setLength(0);
             }
 
-            // Hvis vi fant aspect, hopp over det
+            // Split by aspect symbol(s)
             if (line.startsWith(aspect, i)) {
                 i += aspect.length() - 1;
             }
         }
+
+        //Appends character to current node level (eg. y to b for 'ax.by.cx' | w to by(t for ax.by(two))
         else {
-            //Appends character to current name 
-            current.append(c);
+            current.append(c); // append to node level referance
         }
     }
 
@@ -346,46 +598,7 @@ public class RdsParser {
             if (line.startsWith(asp))return asp;
         }
         throw new ParseException("No valid aspect detected");  // input line number
-        //throw new IllegalArgumentException("invalid aspect symbol or missing aspect symbol: " + line);
-
-
-        /* Replaced with config
-        if (line.startsWith("%%")) return "%%";
-        else if (line.startsWith("#")) return "#";
-        else if (line.startsWith("-")) return "-";
-        else if (line.startsWith("=")) return "=";
-        else if (line.startsWith("%")) return "%";
-        else if (line.startsWith("$")) return "$";*/
-
-
-        //char first = line.charAt(0);
-
-//        return switch () {
-//            case '-' -> "-";
-//            case '=' -> "=";
-//            case '%' -> "%";
-//            case '$' -> "$";
-//            default -> throw new RuntimeException("Invalid aspect symbol. " + line );
-//        };
+        
     }    
-
-    // check if explicit relationship has a name
-    /*private String checkExplicitRelationName(String line) {
-        // Named relation has pattern ||NAME||
-        int first = line.indexOf("||");
-        int second = line.indexOf("||", first + 2);
-
-        if (first != -1 && second != -1) {
-
-            String between = line.substring(first + 2, second).trim();
-
-            if (!between.isEmpty()) {
-                return between;
-            }
-        }
-
-        return null;
-    }
-     */
 
 }
