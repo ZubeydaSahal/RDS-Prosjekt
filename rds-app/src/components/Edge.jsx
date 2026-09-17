@@ -55,7 +55,7 @@ export default function Edge({
   if (type === "hierarchy") {
     const aspect = from.aspect;
     const color = ASPECT_COLORS[aspect] || "#999";
-    const lineX = from.x - NODE_WIDTH / 2 - 10;
+    const lineX = from.x - NODE_WIDTH / 2+5;
 
     return (
       <>
