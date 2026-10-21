@@ -1,22 +1,10 @@
 /* ASPECT VARIABLES */
 export const ASPECTS = {
-        "%%": {
-        label: "Type aspect (function)",
-        lineColour: "#a855f7",
-        nodeColour: "#9b8cff",
-        headerColour: "#e6ddff",
-    },
-    "=": {
-        label: "Function aspect",
-        lineColour: "#f97316",
-        nodeColour: "#ff8c5a",
-        headerColour: "#ffd6bf",
-    },
-    "==": {
-        label: "Location aspect (point)",
-        lineColour: "#facc15",
-        nodeColour: "#ffe066",
-        headerColour: "#fff5b1"
+        "%": {
+        label: "Type aspect (product)",
+        lineColour: "#3b82f6", /* Aspect relation line colour*/
+        nodeColour: "#4da3ff", /* Aspect child colour*/
+        headerColour: "#cfe8ff",  /* Aspect header colour*/
     },
     "-": {
         label: "Product aspect",
@@ -24,12 +12,26 @@ export const ASPECTS = {
         nodeColour: "#6ccf4f", /* Det var disse steinar kommenterte på  */
         headerColour: "#dff5dc",
     },
-    "%": {
-        label: "Type aspect (product)",
-        lineColour: "#3b82f6", /* Aspect relation line colour*/
-        nodeColour: "#4da3ff", /* Aspect child colour*/
-        headerColour: "#cfe8ff",  /* Aspect header colour*/
+    "=": {
+        label: "Function aspect",
+        lineColour: "#f97316",
+        nodeColour: "#ff8c5a",
+        headerColour: "#ffd6bf",
     },
+    "%%": {
+        label: "Type aspect (function)",
+        lineColour: "#a855f7",
+        nodeColour: "#9b8cff",
+        headerColour: "#e6ddff",
+    },
+    "==": {
+        label: "Location aspect (point)",
+        lineColour: "#facc15",
+        nodeColour: "#ffe066",
+        headerColour: "#fff5b1"
+    },
+    
+    
     "++": {
         label: "Location aspect (site)",
         lineColour: "#10b981",   /* klar teal/grønn-blå som skiller seg fra alle andre */
