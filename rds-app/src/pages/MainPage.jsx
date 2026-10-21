@@ -119,36 +119,10 @@ function MainPage() {
                 body: text
             });
 
-            /*
-            const paramParts = [];
-            const encodeAspectKey = (a) => a.replace(/%/g, "%25").replace(/=/g, "%3D");
-            const allAspects = ["=", "%", "-", "%%"];
-            allAspects.forEach(a => {
-                paramParts.push(`aspect_${encodeAspectKey(a)}=${activeAspect.includes(a) ? "true" : "false"}`);
-            });
-            console.log("Etter push encode"+allAspects)
-            // Send cross-filter (master toggle)
-            paramParts.push(`rel_cross=${activeRelation.includes("cross") ? "true" : "false"}`);
-            // Sends individual relation types (A, B etc.) for known types
-            relationTypes.forEach(type => {
-                paramParts.push(`rel_${type}=${activeRelation.includes(type) ? "true" : "false"}`);
-            });
-            const paramString = paramParts.join("&");
-            console.log("ParamString: "+paramString)
-            const response = await fetch(`http://localhost:8080/parse?${paramString}`, {
-                method: "POST",
-                headers: { "content-type": "text/plain", "Accept": "application/json" },
-                body: text
-            });*/
 
             if (!response.ok) {
                 const errObject = await response.json();
                 throw errObject;
-
-                /*if (!text.includes("<")) {
-                    setError("Invalid input. A topnode is required");
-                }*/
-                //return;
             }
             const graph = await response.json();
             setBackendGraph(graph);
