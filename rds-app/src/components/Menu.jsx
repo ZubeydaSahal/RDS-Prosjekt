@@ -19,7 +19,9 @@ function Menu({
   onToggleFullscreen,
   isFullscreen = false,
     setToggleName,
-    toggleName
+    toggleName,
+    setRefDesignation,
+    refDesignation
 }) {
     return (
         <div className="menu">
@@ -44,6 +46,8 @@ function Menu({
                     graphMaxDepth={graphMaxDepth}
                     toggleName={toggleName}
                     setToggleName={setToggleName}
+                    setRefDesignation={setRefDesignation}
+                    refDesignation={refDesignation}
                 />
 
 

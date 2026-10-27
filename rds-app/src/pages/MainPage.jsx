@@ -21,6 +21,7 @@ function MainPage() {
     const [fullscreen, setFullscreen] = useState(false);
     const graphRef = useRef(null);
     const [toggleName, setToggleName] = useState(true)
+    const [refDesignation, setRefDesignation] = useState(true)
     //const rootName = "";
 
     useEffect(() => {
@@ -300,6 +301,8 @@ function MainPage() {
                     isFullscreen={true}
                     setToggleName = {setToggleName}
                     toggleName = {toggleName}
+                    setRefDesignation={setRefDesignation}
+                    refDesignation={refDesignation}
                 />
                 {error && <div className="error-box">{error}</div>}
                 <SplitPane
@@ -312,6 +315,7 @@ function MainPage() {
                     setText={setText}
                     onBuild={handleBuild}
                     toggleName={toggleName}
+                    refDesignation={refDesignation}
                 />
             </div>
         );
@@ -342,6 +346,8 @@ function MainPage() {
                         onToggleFullscreen={() => setFullscreen(true)}
                         setToggleName = {setToggleName}
                         toggleName = {toggleName}
+                        setRefDesignation={setRefDesignation}
+                        refDesignation={refDesignation}
                     />
 
                     {error && <div className="error-box">{error}</div>}
@@ -356,6 +362,7 @@ function MainPage() {
                         setText={setText}
                         onBuild={handleBuild}
                         toggleName={toggleName}
+                        refDesignation={refDesignation}
                     />
 
                 </div>
