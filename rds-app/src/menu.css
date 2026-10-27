@@ -115,6 +115,34 @@
     padding: 2px 6px;
 }
 
+.remove-file-button {
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.remove-file-button:hover {
+    color: #dc2626;
+}
+
+.file-name-button {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+    font-family: inherit;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
 .file-button:hover { background: #dff0f5; }
 .file-button:active { transform: scale(0.95); }
 .menu label span {}

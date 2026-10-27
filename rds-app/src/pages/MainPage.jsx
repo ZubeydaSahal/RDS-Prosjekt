@@ -293,14 +293,7 @@ function MainPage() {
         URL.revokeObjectURL(url);
     };
 
-    /*const handleFileUpload = (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => setText(e.target.result);
-        reader.readAsText(file);
-    };
-    */
+    
     const handleFileUpload = async (event) => {
         const files = Array.from(event.target.files);
         if (!files.length) return;
@@ -331,11 +324,30 @@ function MainPage() {
         }
 
         event.target.value = "";
-        
-
-
 
     };
+
+    const handleRemoveFile = (filename) => {
+    setUploadedFiles(prev => {
+        const next = new Map(prev);
+        next.delete(filename);
+        return next;
+    });
+
+    if (filename === mainScript) {
+        setMainScript(null);
+        setText("");
+    }
+    };
+
+    const handleSetMainScript = (filename) => {
+    const content = uploadedFiles.get(filename);
+
+    if (content === undefined) return;
+
+    setMainScript(filename);
+    setText(content);
+};
 
     if (fullscreen) {
         return (
@@ -362,6 +374,8 @@ function MainPage() {
                     refDesignation={refDesignation}
                     uploadedFiles={uploadedFiles}
                     mainScript={mainScript}
+                    onRemoveFile={handleRemoveFile}
+                    onSetMainScript={handleSetMainScript}
                 />
                 {error && <div className="error-box">{error}</div>}
                 <SplitPane
@@ -409,6 +423,8 @@ function MainPage() {
                         refDesignation={refDesignation}
                         uploadedFiles={uploadedFiles}
                         mainScript={mainScript}
+                        onRemoveFile={handleRemoveFile}
+                        onSetMainScript={handleSetMainScript}
                     />
 
                     {error && <div className="error-box">{error}</div>}

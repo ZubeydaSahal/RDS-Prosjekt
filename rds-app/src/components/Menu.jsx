@@ -25,7 +25,9 @@ function Menu({
     setRefDesignation,
     refDesignation,
     uploadedFiles = new Map(),
-    mainScript = null
+    mainScript = null,
+    onRemoveFile,
+    onSetMainScript
 }) {
 
     const [showActiveFiles, setShowActiveFiles] = useState(false);
@@ -34,51 +36,68 @@ function Menu({
             <div className="left">
 
                 <div className="fd-wrapper active-files-wrapper">
-    <button
-        type="button"
-        className="fd-trigger"
-        onClick={() => setShowActiveFiles(prev => !prev)}
-        aria-expanded={showActiveFiles}
-    >
-        <span>Active files</span>
+                    <button
+                        type="button"
+                        className="fd-trigger"
+                        onClick={() => setShowActiveFiles(prev => !prev)}
+                        aria-expanded={showActiveFiles}
+                    >
+                        <span>Active files</span>
 
-        <span className="fd-badge">
-            {uploadedFiles.size}
-        </span>
-
-        <span className="fd-chevron">
-            {showActiveFiles ? "▲" : "▼"}
-        </span>
-    </button>
-
-    {showActiveFiles && (
-        <div className="fd-dropdown active-files-dropdown">
-            <p className="fd-section-title">Uploaded files</p>
-
-            <ul className="fd-list">
-                {[...uploadedFiles.keys()].map(filename => (
-                    <li key={filename} className="fd-item">
-                        <span className="fd-label" title={filename}>
-                            {filename}
+                        <span className="fd-badge">
+                            {uploadedFiles.size}
                         </span>
 
-                        {filename === mainScript && (
-                            <span className="main-file-badge">
-                                Main
-                            </span>
-                        )}
-                    </li>
-                ))}
-            </ul>
+                        <span className="fd-chevron">
+                            {showActiveFiles ? "▲" : "▼"}
+                        </span>
+                    </button>
 
-            {uploadedFiles.size === 0 && (
-                <span className="fd-empty">
-                    No files uploaded
-                </span>
-            )}
-        </div>
-    )}
-</div>
+                    {showActiveFiles && (
+                        <div className="fd-dropdown active-files-dropdown">
+                            <p className="fd-section-title">Uploaded files</p>
+
+                            <ul className="fd-list">
+                                {[...uploadedFiles.keys()].map(filename => (
+                                    <li key={filename} className="fd-item">
+
+                                        <button
+                                            type="button"
+                                            className="fd-label file-name-button"
+                                            onClick={() => onSetMainScript?.(filename)}
+                                            title={`Set ${filename} as main script`}
+                                        >
+                                            {filename}
+                                        </button>
+
+                                        {filename === mainScript && (
+                                            <span className="main-file-badge">
+                                                Main
+                                            </span>
+                                        )}
+
+                                        {/* Remove file btton*/}
+                                        <button
+                                            type="button"
+                                            className="remove-file-button"
+                                            onClick={() => onRemoveFile?.(filename)}
+                                            title={`Remove ${filename}`}
+                                            aria-label={`Remove ${filename}`}
+                                        >
+                                            ×
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+
+                            {uploadedFiles.size === 0 && (
+                                <span className="fd-empty">
+                                    No files uploaded
+                                </span>
+                            )}
+                        </div>
+                    )}
+                </div>
 
             </div>
 
