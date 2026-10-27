@@ -1,43 +1,97 @@
+import { useState } from "react";
 import FilterDropdown from "./FilterDropdown";
 import imageDownload from "../assets/image-download.svg"
 import TextDownload from "../assets/file-download.svg"
 import TextUpload from "../assets/upload text.svg"
+
 function Menu({
-  activeAspect,
-  setActiveAspect,
-  activeRelation,
-  setActiveRelation,
-  relationTypes = [],
-  maxDepth,
-  setMaxDepth,
-  graphMaxDepth = 0,
-  onBuild,
-  onDownloadImage,
-  onDownloadText,
-  onDownloadGraphObject,
-  onUploadFile,
-  onToggleFullscreen,
-  isFullscreen = false,
+    activeAspect,
+    setActiveAspect,
+    activeRelation,
+    setActiveRelation,
+    relationTypes = [],
+    maxDepth,
+    setMaxDepth,
+    graphMaxDepth = 0,
+    onBuild,
+    onDownloadImage,
+    onDownloadText,
+    onDownloadGraphObject,
+    onUploadFile,
+    onToggleFullscreen,
+    isFullscreen = false,
     setToggleName,
     toggleName,
     setRefDesignation,
-    refDesignation
+    refDesignation,
+    uploadedFiles = new Map(),
+    mainScript = null
 }) {
+
+    const [showActiveFiles, setShowActiveFiles] = useState(false);
     return (
         <div className="menu">
             <div className="left">
 
+                <div className="fd-wrapper active-files-wrapper">
+    <button
+        type="button"
+        className="fd-trigger"
+        onClick={() => setShowActiveFiles(prev => !prev)}
+        aria-expanded={showActiveFiles}
+    >
+        <span>Active files</span>
+
+        <span className="fd-badge">
+            {uploadedFiles.size}
+        </span>
+
+        <span className="fd-chevron">
+            {showActiveFiles ? "▲" : "▼"}
+        </span>
+    </button>
+
+    {showActiveFiles && (
+        <div className="fd-dropdown active-files-dropdown">
+            <p className="fd-section-title">Uploaded files</p>
+
+            <ul className="fd-list">
+                {[...uploadedFiles.keys()].map(filename => (
+                    <li key={filename} className="fd-item">
+                        <span className="fd-label" title={filename}>
+                            {filename}
+                        </span>
+
+                        {filename === mainScript && (
+                            <span className="main-file-badge">
+                                Main
+                            </span>
+                        )}
+                    </li>
+                ))}
+            </ul>
+
+            {uploadedFiles.size === 0 && (
+                <span className="fd-empty">
+                    No files uploaded
+                </span>
+            )}
+        </div>
+    )}
+</div>
+
             </div>
 
             <div className="center">
+
                 <label className="file-button" title="Upload text">
-                    <img src={TextUpload} alt="Upload text" height={24} width={24}/>
+                    <img src={TextUpload} alt="Upload text" height={24} width={24} />
                     <span>Open file</span>
-                    <input 
-                    type="file" 
-                    multiple
-                    accept=".txt"
-                    onChange={onUploadFile}
+                    <input
+                        type="file"
+                        multiple
+                        accept=".txt"
+                        onChange={onUploadFile}
                     />
                 </label>
                 <FilterDropdown
@@ -60,18 +114,18 @@ function Menu({
                 <button className="primary" onClick={onBuild}>Build Graph</button>
 
                 <button onClick={onDownloadText} title="Download Text">
-                    <img src={TextDownload} alt="Download Text" height={24} width={24}/>
+                    <img src={TextDownload} alt="Download Text" height={24} width={24} />
                     <span>Save Text</span>
                 </button>
 
                 <button onClick={onDownloadImage} title="Download Diagram">
-                    <img src={imageDownload} alt="Download Diagram" height={24} width={24}/>
+                    <img src={imageDownload} alt="Download Diagram" height={24} width={24} />
                     <span>Save Diagram</span>
                 </button>
 
                 {/* Temporarily added 'save graph-object' */}
                 <button onClick={onDownloadGraphObject} title="Download Graph-object">
-                    <img src={imageDownload} alt="Download Graph-object" height={24} width={24}/>
+                    <img src={imageDownload} alt="Download Graph-object" height={24} width={24} />
                     <span>Save Graph-object</span>
                 </button>
             </div>
@@ -79,17 +133,17 @@ function Menu({
                 <button className="fullscreen-btn" onClick={onToggleFullscreen} title={isFullscreen ? "Exit fullscreen (Esc)" : "Fullscreen"}>
                     {isFullscreen ? (
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="4 14 10 14 10 20"/>
-                            <polyline points="20 10 14 10 14 4"/>
-                            <line x1="10" y1="14" x2="3" y2="21"/>
-                            <line x1="21" y1="3" x2="14" y2="10"/>
+                            <polyline points="4 14 10 14 10 20" />
+                            <polyline points="20 10 14 10 14 4" />
+                            <line x1="10" y1="14" x2="3" y2="21" />
+                            <line x1="21" y1="3" x2="14" y2="10" />
                         </svg>
                     ) : (
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="15 3 21 3 21 9"/>
-                            <polyline points="9 21 3 21 3 15"/>
-                            <line x1="21" y1="3" x2="14" y2="10"/>
-                            <line x1="3" y1="21" x2="10" y2="14"/>
+                            <polyline points="15 3 21 3 21 9" />
+                            <polyline points="9 21 3 21 3 15" />
+                            <line x1="21" y1="3" x2="14" y2="10" />
+                            <line x1="3" y1="21" x2="10" y2="14" />
                         </svg>
                     )}
                     <span>{isFullscreen ? "Exit fullscreen" : "Fullscreen"}</span>

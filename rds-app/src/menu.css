@@ -82,6 +82,39 @@
     box-sizing: border-box;
 }
 
+/* For active file*/
+.active-files-wrapper {
+    margin-left: 0;
+}
+
+.active-files-dropdown {
+    width: 280px;
+}
+
+/* Filename and Main badge on the same row */
+.active-files-dropdown .fd-item {
+    justify-content: space-between;
+    min-width: 0;
+}
+
+.active-files-dropdown .fd-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.main-file-badge {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 700;
+    color: #4da3c8;
+    background: #f0f9fc;
+    border: 1px solid #c8dde3;
+    border-radius: 4px;
+    padding: 2px 6px;
+}
+
 .file-button:hover { background: #dff0f5; }
 .file-button:active { transform: scale(0.95); }
 .menu label span {}

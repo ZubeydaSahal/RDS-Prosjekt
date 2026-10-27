@@ -360,6 +360,8 @@ function MainPage() {
                     toggleName={toggleName}
                     setRefDesignation={setRefDesignation}
                     refDesignation={refDesignation}
+                    uploadedFiles={uploadedFiles}
+                    mainScript={mainScript}
                 />
                 {error && <div className="error-box">{error}</div>}
                 <SplitPane
@@ -405,6 +407,8 @@ function MainPage() {
                         toggleName={toggleName}
                         setRefDesignation={setRefDesignation}
                         refDesignation={refDesignation}
+                        uploadedFiles={uploadedFiles}
+                        mainScript={mainScript}
                     />
 
                     {error && <div className="error-box">{error}</div>}
