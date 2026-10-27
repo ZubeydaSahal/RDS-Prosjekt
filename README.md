@@ -1,52 +1,11 @@
 # RDS-Prosjekt
 
-## Pakket program (fra ZIP-fil)
-**Kjøre programmet:**
-- Åpne mappen "RDS-Visualization"
-- Åpne / dobbelt trykk på "start" / "start.bat"
-
-- Terminalen vil åpne seg og starte serveren
-- Instrukser vil stå øverst i terminalen
-- Vent på at nettleseren åpner seg automatisk
-
-**Avslutte Programmet:**
-- Trykk på terminal-vinduet 
-- Tast Ctrl + c
-- Tast y, deretter enter
-
-**Installasjon av pakke** 
-- Pakk ut "RDS-Visualization-Windows-x64.zip" 
-    - Enten dobelt tykk -> pakk ut
-    - Eller høyreklikk -> pakk ut
-- Trykk på 'start' -> pakk ut
-- Der etter kan programmet kjøres ved å dobbelt trykke på 'start'
-
-
-
-## Kjøre kildekode
-*- Kjør frontend:*
-cd rds-app
-npm run dev
-
-*- Kjør backend:*
-cd rds-backend 
-./mvnw spring-boot:run
-
-**Åpne webapplikasjonen**
-*Kjører som regel på "http://localhost:5173/"*
-
-<img width="331" height="143" alt="image" src="https://github.com/user-attachments/assets/690c01aa-5fb7-42eb-b5ff-3e18764b1e8b" />
- 
-
-
-# Steg for steg bruk av systemet
+## Hvordan bruke programmet
 1.	Når applikasjonen er startet kan du enten:
 -	Laste opp en RDS fil fra menyen 
 -	Skrive inn RDS skript direkte i tekstboksen 
  
 <img width="209" height="191" alt="image" src="https://github.com/user-attachments/assets/fa5e47ff-43f4-4539-a2c6-61756b111402" />
-
-
 
 
 For å visualisere skriptet kan du trykke på Build Graph knappen eller trykke Ctrl+Enter.
@@ -64,3 +23,45 @@ Når du er ferdig med skriptet og visualisering kan du:
  
 <img width="435" height="151" alt="image" src="https://github.com/user-attachments/assets/052de143-c5a4-4c0c-992c-2f8c27dfdae1" />
 
+
+
+## Hvordan installere pakket program (Zip fil)
+### **Installasjon av pakke** 
+- Pakk ut "RDS-Visualization-Windows-x64.zip" 
+    - Enten dobelt tykk -> pakk ut
+    - Eller høyreklikk -> pakk ut
+- Trykk på 'start' -> pakk ut
+- Der etter kan programmet kjøres ved å dobbelt trykke på 'start'
+
+### **Kjøre programmet:**
+- Åpne mappen "RDS-Visualization"
+- Åpne / dobbelt trykk på "start" / "start.bat"
+
+- Terminalen vil åpne seg og starte serveren
+- Instrukser vil stå øverst i terminalen
+- Vent på at nettleseren åpner seg automatisk
+
+### **Avslutte Programmet:**
+- Trykk på terminal-vinduet 
+- Tast Ctrl + c
+- Tast y, deretter enter
+
+
+
+
+
+## Kjøre kildekode direkte 
+_(Dette krever at bl.a Java, springboot og react er installert.)_
+*- Kjør frontend:*
+cd rds-app
+npm run dev
+
+*- Kjør backend:*
+cd rds-backend 
+./mvnw spring-boot:run
+
+**Åpne webapplikasjonen**
+*Kjører som regel på "http://localhost:5173/"*
+
+<img width="331" height="143" alt="image" src="https://github.com/user-attachments/assets/690c01aa-5fb7-42eb-b5ff-3e18764b1e8b" />
+ 
