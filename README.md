@@ -1,8 +1,29 @@
 # RDS-Prosjekt
 
+## Pakket program (fra ZIP-fil)
 **Kjøre programmet:**
-- Åpne mappen
+- Åpne mappen "RDS-Visualization"
+- Åpne / dobbelt trykk på "start" / "start.bat"
 
+- Terminalen vil åpne seg og starte serveren
+- Instrukser vil stå øverst i terminalen
+- Vent på at nettleseren åpner seg automatisk
+
+**Avslutte Programmet:**
+- Trykk på terminal-vinduet 
+- Tast Ctrl + c
+- Tast y, deretter enter
+
+**Installasjon av pakke** 
+- Pakk ut "RDS-Visualization-Windows-x64.zip" 
+    - Enten dobelt tykk -> pakk ut
+    - Eller høyreklikk -> pakk ut
+- Trykk på 'start' -> pakk ut
+- Der etter kan programmet kjøres ved å dobbelt trykke på 'start'
+
+
+
+## Kjøre kildekode
 *- Kjør frontend:*
 cd rds-app
 npm run dev
@@ -18,7 +39,7 @@ cd rds-backend
  
 
 
-**Steg for steg bruk av systemet**
+# Steg for steg bruk av systemet
 1.	Når applikasjonen er startet kan du enten:
 -	Laste opp en RDS fil fra menyen 
 -	Skrive inn RDS skript direkte i tekstboksen 
@@ -43,4 +64,3 @@ Når du er ferdig med skriptet og visualisering kan du:
  
 <img width="435" height="151" alt="image" src="https://github.com/user-attachments/assets/052de143-c5a4-4c0c-992c-2f8c27dfdae1" />
 
-[Download File](package-lock.json)
