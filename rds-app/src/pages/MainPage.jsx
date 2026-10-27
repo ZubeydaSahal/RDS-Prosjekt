@@ -6,7 +6,8 @@ import Menu from "../components/Menu";
 import Navbar from "../components/Layout/Navbar";
 import Footer from "../components/Layout/Footer";
 
-import {getAspectSymbols} from "../../../config/aspects.ts";
+import { getAspectSymbols } from "../../../config/aspects.ts";
+import { expandIncludes } from "/src/utils/expandIncludes.js";
 
 function MainPage() {
 
@@ -23,6 +24,9 @@ function MainPage() {
     const [toggleName, setToggleName] = useState(true)
     const [refDesignation, setRefDesignation] = useState(true)
     //const rootName = "";
+    // Testing:
+    const [uploadedFiles, setUploadedFiles] = useState(new Map());
+    const [mainScript, setMainScript] = useState(null);
 
     useEffect(() => {
         function handleKeyDown(e) {
@@ -32,15 +36,21 @@ function MainPage() {
         return () => document.removeEventListener("keydown", handleKeyDown);
     }, [fullscreen]);
 
+    useEffect(() => {
+        console.log("Opplastede filer:", [...uploadedFiles.keys()]);
+        console.log("Hovedskript:", mainScript);
+    }, [uploadedFiles, mainScript]);
+
     // Calculate max local depth per aspect column from node IDs (dot notation)
     const graphMaxDepth = (() => {
         if (!backendGraph?.nodeDTO) return 0;
         let globalMax = 0;
         Object.entries(backendGraph.nodeDTO).forEach(([key, list]) => {
 
-            if (key === "<root>" || !Array.isArray(list) || list.length === 0){ 
-                
-                return;}
+            if (key === "<root>" || !Array.isArray(list) || list.length === 0) {
+
+                return;
+            }
 
             const dotCounts = list.map(n => (n.id.match(/\./g) || []).length);
             const colDepth = Math.max(...dotCounts) - Math.min(...dotCounts);
@@ -53,7 +63,7 @@ function MainPage() {
     const allRelationTypes = backendGraph ? (backendGraph.relationDTO || []).map(r => r.type) : [];
     const hasUntypedRelations = allRelationTypes.some(t => !t);
 
-     const relationTypes = [
+    const relationTypes = [
         ...new Set(allRelationTypes.filter(Boolean)),
         ...(hasUntypedRelations ? ["none"] : []),
     ];
@@ -79,7 +89,15 @@ function MainPage() {
             setError("No data input")
             return;
         }
+        let processedText;
         try {
+            // Trying new function
+            const processedText = expandIncludes(
+                    text,
+                    uploadedFiles
+                );
+                console.log(processedText)
+
             const params = new URLSearchParams();
 
             // Get all aspects
@@ -94,7 +112,7 @@ function MainPage() {
             // List of all aspects from config
             params.append("allAspects", JSON.stringify(getAspectSymbols));
 
-            console.log("(MainPage) params: "+params.toString());
+            console.log("(MainPage) params: " + params.toString());
 
             activeAspect.forEach(a => {
                 params.append(`aspect_${a}`, "true");
@@ -111,13 +129,16 @@ function MainPage() {
             const url = `/parse?${params.toString()}`;
             console.log("URL:", url);
 
+        
+            
+
             const response = await fetch(url, {
                 method: "POST",
                 headers: {
                     "content-type": "text/plain",
                     "Accept": "application/json"
                 },
-                body: text
+                body: processedText
             });
 
 
@@ -129,14 +150,14 @@ function MainPage() {
             setBackendGraph(graph);
         } catch (err) {
             console.error("Network error:", err);
-            setError("Backend response error:\n"+err.message);
+            setError("Backend response error:\n" + err.message);
         }
     };
 
     // Auto-rebuild when filter changes 
     useEffect(() => {
-    if (backendGraph) handleBuild();
-}, [activeAspect]); // bare aspekt trigger backend
+        if (backendGraph) handleBuild();
+    }, [activeAspect]); // bare aspekt trigger backend
 
     /* Download Image button functionality */
     const handleDownloadImage = async () => {
@@ -196,9 +217,9 @@ function MainPage() {
             // Fetch root name
             const rootName = backendGraph.nodeDTO["<root>"][0].id || "RDSscript"; // RDSscript as defaultif error fetvching rootname
 
-                link.download = `${rootName}_${timestamp}.png` // Create filename using rootname and timestamp
-                link.href = dataUrl;
-                link.click();
+            link.download = `${rootName}_${timestamp}.png` // Create filename using rootname and timestamp
+            link.href = dataUrl;
+            link.click();
         } catch (err) {
             alert("Could not download image");
         } finally {
@@ -213,23 +234,23 @@ function MainPage() {
         const link = document.createElement("a");
 
 
-    // Fetch timestamp
-    const now = new Date();
-    const timestamp =
-        now.getFullYear() + "-" +
-        String(now.getMonth() + 1).padStart(2, "0") + "-" +
-        String(now.getDate()).padStart(2, "0") + "_" +
-        String(now.getHours()).padStart(2, "0") + "-" +
-        String(now.getMinutes()).padStart(2, "0") + "-" +
-        String(now.getSeconds()).padStart(2, "0");
+        // Fetch timestamp
+        const now = new Date();
+        const timestamp =
+            now.getFullYear() + "-" +
+            String(now.getMonth() + 1).padStart(2, "0") + "-" +
+            String(now.getDate()).padStart(2, "0") + "_" +
+            String(now.getHours()).padStart(2, "0") + "-" +
+            String(now.getMinutes()).padStart(2, "0") + "-" +
+            String(now.getSeconds()).padStart(2, "0");
 
         // Fetch root name
         const rootName = backendGraph.nodeDTO["<root>"][0].id || "RDSscript"; // RDSscript as defaultif error fetvching rootname
 
-        
+
         link.href = url;
         link.download = `${rootName}_${timestamp}.txt` // Create filename using rootname and timestamp
-    
+
 
 
         document.body.appendChild(link);
@@ -240,44 +261,80 @@ function MainPage() {
 
     /* Dowload Graph-object button functionality */
     const handleDownloadGraphObject = () => {
-    if (!backendGraph) return;
+        if (!backendGraph) return;
 
-    const graph = JSON.stringify(backendGraph, null, 2);
+        const graph = JSON.stringify(backendGraph, null, 2);
 
-    const blob = new Blob([graph], { type: "text/plain" });
+        const blob = new Blob([graph], { type: "text/plain" });
 
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
 
-    // Timestamp
-    const now = new Date();
-    const timestamp =
-        now.getFullYear() + "-" +
-        String(now.getMonth() + 1).padStart(2, "0") + "-" +
-        String(now.getDate()).padStart(2, "0") + "_" +
-        String(now.getHours()).padStart(2, "0") + "-" +
-        String(now.getMinutes()).padStart(2, "0") + "-" +
-        String(now.getSeconds()).padStart(2, "0");
+        // Timestamp
+        const now = new Date();
+        const timestamp =
+            now.getFullYear() + "-" +
+            String(now.getMonth() + 1).padStart(2, "0") + "-" +
+            String(now.getDate()).padStart(2, "0") + "_" +
+            String(now.getHours()).padStart(2, "0") + "-" +
+            String(now.getMinutes()).padStart(2, "0") + "-" +
+            String(now.getSeconds()).padStart(2, "0");
 
-    // Root name
-    const rootName = backendGraph?.nodeDTO?.["<root>"]?.[0]?.id || "GraphObject";
+        // Root name
+        const rootName = backendGraph?.nodeDTO?.["<root>"]?.[0]?.id || "GraphObject";
 
-    link.href = url;
-    link.download = `${rootName}_${timestamp}.txt`;
+        link.href = url;
+        link.download = `${rootName}_${timestamp}.txt`;
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
-    URL.revokeObjectURL(url);
-};
+        URL.revokeObjectURL(url);
+    };
 
-    const handleFileUpload = (event) => {
+    /*const handleFileUpload = (event) => {
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onload = (e) => setText(e.target.result);
         reader.readAsText(file);
+    };
+    */
+    const handleFileUpload = async (event) => {
+        const files = Array.from(event.target.files);
+        if (!files.length) return;
+        console.log("Nye filer valgt:", files.map(f => f.name));
+
+        const fileContents = await Promise.all(
+            files.map(async (file) => [
+                file.name,
+                await file.text()
+            ])
+        );
+
+        setUploadedFiles(prev => {
+            const next = new Map(prev);
+
+            fileContents.forEach(([name, content]) => {
+                next.set(name, content);
+            });
+            console.log("Alle lagrede filer:", [...next.keys()]);
+
+            return next;
+        });
+
+        // Første opplastede fil blir hovedskript
+        if (mainScript === null) {
+            setMainScript(files[0].name);
+            setText(await files[0].text());
+        }
+
+        event.target.value = "";
+        
+
+
+
     };
 
     if (fullscreen) {
@@ -299,8 +356,8 @@ function MainPage() {
                     onUploadFile={handleFileUpload}
                     onToggleFullscreen={() => setFullscreen(false)}
                     isFullscreen={true}
-                    setToggleName = {setToggleName}
-                    toggleName = {toggleName}
+                    setToggleName={setToggleName}
+                    toggleName={toggleName}
                     setRefDesignation={setRefDesignation}
                     refDesignation={refDesignation}
                 />
@@ -344,8 +401,8 @@ function MainPage() {
                         onDownloadGraphObject={handleDownloadGraphObject}
                         onUploadFile={handleFileUpload}
                         onToggleFullscreen={() => setFullscreen(true)}
-                        setToggleName = {setToggleName}
-                        toggleName = {toggleName}
+                        setToggleName={setToggleName}
+                        toggleName={toggleName}
                         setRefDesignation={setRefDesignation}
                         refDesignation={refDesignation}
                     />

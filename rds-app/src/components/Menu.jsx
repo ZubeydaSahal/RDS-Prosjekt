@@ -33,7 +33,12 @@ function Menu({
                 <label className="file-button" title="Upload text">
                     <img src={TextUpload} alt="Upload text" height={24} width={24}/>
                     <span>Open file</span>
-                    <input type="file" onChange={onUploadFile}/>
+                    <input 
+                    type="file" 
+                    multiple
+                    accept=".txt"
+                    onChange={onUploadFile}
+                    />
                 </label>
                 <FilterDropdown
                     activeAspect={activeAspect}
