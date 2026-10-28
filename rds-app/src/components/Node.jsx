@@ -1,6 +1,6 @@
 import {aspectHeaderColour, aspectNodeColour, getAspectSymbols} from "../../../config/aspects.ts";
 
-export default function Node({ node, onToggle, collapsed, toggleName }) {
+export default function Node({ node, onToggle, collapsed, toggleName, refDesignation }) {
 
   // ----------------------------
   // TRUNCATE TEKST (…)
@@ -17,6 +17,7 @@ export default function Node({ node, onToggle, collapsed, toggleName }) {
   // SPLITT PREFIX + REST
   // ----------------------------
   function splitLabel(label) {
+
     if (!label) return { prefix: "", rest: "" };
 
     const parts = label.split(" ");
@@ -90,7 +91,7 @@ export default function Node({ node, onToggle, collapsed, toggleName }) {
     <g>
 
       {/* TOOLTIP */}
-      <title>{node.label}</title>
+      <title>{node.id +" "+ node.name}</title>
 
       {/* ----------------------------
           BOKS
@@ -155,7 +156,8 @@ export default function Node({ node, onToggle, collapsed, toggleName }) {
         node.label
       ) : (
     <>
-      <tspan fontWeight="bold">{prefix}</tspan>
+      {/* Show name / Show reference designation*/}
+      {refDesignation && (<tspan fontWeight="bold">{prefix}</tspan>)}
       {toggleName &&rest && (
         <tspan dx="6" fontWeight="normal">{rest}</tspan>
       )}

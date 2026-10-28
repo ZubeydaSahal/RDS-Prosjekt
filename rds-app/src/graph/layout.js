@@ -1,4 +1,4 @@
-import {getAspectLabels, getAspectSymbols} from "../../../config/aspects.ts";
+import { getAspectLabels, getAspectSymbols } from "../../../config/aspects.ts";
 
 export function layoutTree(graph, aspectOrder) {
 
@@ -10,6 +10,7 @@ export function layoutTree(graph, aspectOrder) {
   const collapsedNodes = graph.collapsedNodes || new Set();
   const maxDepth = graph.maxDepth ?? null;
   const nodes = [];
+  console.log("MaxDepth i layout.js: " + maxDepth)
 
   const backendEdges = (graph.relations || []).filter(
     e => e.type !== "hierarchy"
@@ -42,7 +43,7 @@ export function layoutTree(graph, aspectOrder) {
   const nodeMap = {};
   graph.nodes.forEach(n => {
     // Find deepest node
-    if(n.depth > greatestDepth) {
+    if (n.depth > greatestDepth) {
       greatestDepth = n.depth;  // replace 'greatestDepth'
     }
 
@@ -52,11 +53,11 @@ export function layoutTree(graph, aspectOrder) {
   // =====  Column spacing incrementing ====
   // Increase spacing between columns if node depth is greater than 5
   if (greatestDepth > 1) {
-    if(greatestDepth > 50){
+    if (greatestDepth > 50) {
       incrColBy = 30;
     }
-      if (greatestDepth > 100) {
-        incrColBy = 40;  // increase spacing between columns with 40 for each depth}
+    if (greatestDepth > 100) {
+      incrColBy = 40;  // increase spacing between columns with 40 for each depth}
     }
     // indent = 40 per child/generation 5*40 = 200 -> increament by 200 for each time to keep gap large enough
     //colSpacing = colSpacing + 200 * Math.floor(greatestDepth / 5)  // increase spacing between columns with 1.5 *
@@ -71,7 +72,7 @@ export function layoutTree(graph, aspectOrder) {
   nodes.push({
     ...graph.root,
     //x: 350 * 1.5 + (incrColBy * greatestDepth * 1.5),
-    x: 50 +(colSpacing * (aspects.length-1)/2),
+    x: 50 + (colSpacing * (aspects.length - 1) / 2),
     y: 40,
     type: "root"
   });
@@ -100,7 +101,7 @@ export function layoutTree(graph, aspectOrder) {
   aspects.forEach((aspect) => {
     nodes.push({
       id: "aspect_" + aspect.id,
-      label: ASPECT_NAMES[aspect.id] || aspect.label, 
+      label: ASPECT_NAMES[aspect.id] || aspect.label,
       x: COLUMN_X[aspect.id],
       y: 120,
       type: "aspect"
@@ -173,7 +174,18 @@ export function layoutTree(graph, aspectOrder) {
           : `${node.aspect} ${node.code} ${name}`
         : "";
 
-        const isCollapsed = collapsedNodes.has(node.id);
+      const autoCollapsed =
+        maxDepth != null && depth >= maxDepth - 1;
+
+      const hasManualOverride =
+        Object.prototype.hasOwnProperty.call(
+          graph.manualOverrides || {},
+          node.id
+        );
+
+      const isCollapsed = hasManualOverride
+        ? graph.manualOverrides[node.id]
+        : autoCollapsed;
 
       nodes.push({
         ...node,
@@ -181,21 +193,26 @@ export function layoutTree(graph, aspectOrder) {
         x: COLUMN_X[aspect.id] + depth * 20,
         y: currentY,
         children: node.children,
-        collapsed:isCollapsed
+        collapsed: isCollapsed
       });
 
       currentY += ROW_GAP;
 
-        const depthLimited = maxDepth !== null && depth >= maxDepth - 1;
-        if (!isCollapsed && !depthLimited) {
+
+      if (!isCollapsed) {
         node.children.forEach(child => {
-          visibleHierarchyEdges.push({ from: node.id, to: child.id, type: "hierarchy" });
+          visibleHierarchyEdges.push({
+            from: node.id,
+            to: child.id,
+            type: "hierarchy"
+          });
+
           dfs(child, depth + 1);
         });
       }
     }
 
-      
+
     rootsByAspect[aspect.id].forEach(rootNode => {
       dfs(nodeMap[rootNode.id], 0);
     });

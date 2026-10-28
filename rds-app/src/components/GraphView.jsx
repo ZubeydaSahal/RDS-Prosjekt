@@ -4,26 +4,38 @@ import { transformGraph } from "./transformGraph";
 
 import Node from "./Node";
 import Edge from "./Edge";
-import {aspectLineColour, getAspectSymbols} from "../../../config/aspects.ts";
+import { aspectLineColour, getAspectSymbols } from "../../../config/aspects.ts";
 
 
 //
 const ASPECT_COLORS = aspectLineColour
-    /*
-     Erstattet av config
-    .{
-  "=": "#f97316",
-  "%": "#3b82f6",
-  "-": "#6ccf4f",
-  "%%": "#a855f7",
+/*
+ Erstattet av config
+.{
+"=": "#f97316",
+"%": "#3b82f6",
+"-": "#6ccf4f",
+"%%": "#a855f7",
 };*/
 
-export default function GraphView({ graph, graphRef, aspectOrder, activeRelation = [], maxDepth = null, toggleName }) {
+export default function GraphView({ graph, graphRef, aspectOrder, activeRelation = [], maxDepth = null, toggleName, refDesignation }) {
   aspectOrder = getAspectSymbols;
-  console.log("GraphView 'AspectOrder': "+aspectOrder)
+  console.log("GraphView 'AspectOrder': " + aspectOrder)
   const [fitView, setFitView] = useState(true);
   const [zoom, setZoom] = useState(1);
-  const [collapsedNodes, setCollapsedNodes] = useState(new Set());
+
+  //const [collapsedNodes, setCollapsedNodes] = useState(new Set());
+  const [collapseState, setCollapseState] = useState({
+    maxDepth,
+    overrides: {}
+  });
+
+  // Ignorer gamle manuelle valg når filteret endres
+  const manualOverrides =
+    Object.is(collapseState.maxDepth, maxDepth)
+      ? collapseState.overrides
+      : {};
+
 
   const [hoveredEdge, setHoveredEdge] = useState(null);
   const svgRef = useRef(null);
@@ -59,15 +71,35 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
     if (fitView) setZoom(1);
   }, [fitView]);
 
+  useEffect(() => {
+  setCollapseState({
+    maxDepth,
+    overrides: {}
+  });
+}, [maxDepth]);
+
   // ----------------------------
   // COLLAPSE NODES
   // ----------------------------
   function handleToggle(nodeId) {
-    setCollapsedNodes(prev => {
-      const next = new Set(prev);
-      if (next.has(nodeId)) next.delete(nodeId);
-      else next.add(nodeId);
-      return next;
+    const node = layout.nodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    const currentlyCollapsed = Boolean(node.collapsed);
+
+    setCollapseState(prev => {
+      const overrides =
+        Object.is(prev.maxDepth, maxDepth)
+          ? prev.overrides
+          : {};
+
+      return {
+        maxDepth,
+        overrides: {
+          ...overrides,
+          [nodeId]: !currentlyCollapsed
+        }
+      };
     });
   }
 
@@ -78,9 +110,9 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
     if (!graph) return { nodes: [], hierarchyEdges: [] };
     const transformed = transformGraph(graph);
     if (!transformed) return { nodes: [], hierarchyEdges: [] };
-    console.log("Aspect order before layOutTree: "+aspectOrder)
-    return layoutTree({ ...transformed, collapsedNodes, maxDepth }, aspectOrder);
-  }, [graph, aspectOrder, collapsedNodes, maxDepth]);
+    console.log("Aspect order before layOutTree: " + aspectOrder)
+    return layoutTree({ ...transformed, manualOverrides, maxDepth }, aspectOrder);
+  }, [graph, aspectOrder, manualOverrides, maxDepth]);
 
   const nodes = layout.nodes || [];
   const relations = layout.hierarchyEdges || [];
@@ -97,7 +129,7 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
     return true;
   });
 
-  
+
   const nodeMap = Object.fromEntries(nodes.map(node => [node.id, node]));
   const rootNode = nodes.find(n => n.type === "root");
   const aspectNodes = nodes.filter(n => n.type === "aspect");
@@ -224,8 +256,9 @@ export default function GraphView({ graph, graphRef, aspectOrder, activeRelation
                 key={node.id}
                 node={node}
                 onToggle={handleToggle}
-                collapsed={collapsedNodes.has(node.id)}
+                collapsed={Boolean(node.collapsed)}
                 toggleName={toggleName}
+                refDesignation={refDesignation}
               />
             ))}
           </g>
