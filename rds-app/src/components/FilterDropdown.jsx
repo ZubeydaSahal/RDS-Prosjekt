@@ -72,99 +72,7 @@ export default function FilterDropdown({
       {open && (
         <div className="fd-dropdown">
 
-          {/* ASPECTS */}
-          {/*<p className="fd-section-title">ASPECTS</p>
-          <ul className="fd-list">
-            {ASPECTS.map(({ symbol, label }) => (
-              <li key={symbol}>
-                <label className="fd-item">
-                  <input
-                    type="checkbox"
-                    checked={activeAspect.includes(symbol)}
-                    onChange={() => toggleAspect(symbol)}
-                  />
-                  <span className="fd-symbol">{symbol}</span>
-                  <span className="fd-label">{label}</span>
-                </label>
-              </li>
-            ))}
-          </ul>*/}
-          {/* ASPECTS */}
-          <p className="fd-section-title">Aspects</p>
-          <ul className="fd-list">
-            <li>
-              <label className="fd-item" ref={aspectTriggerRef}>
-                <input
-                  type="checkbox"
-                  checked={showAspects}
-                  onChange={(e) => {
-                    if (e.target.checked && aspectTriggerRef.current) {
-                      const rect = aspectTriggerRef.current.getBoundingClientRect();
-
-                      setAspectPosition({
-                        top: rect.top,
-                        left: rect.right
-                      });
-                    }
-
-                    setShowAspects(e.target.checked);
-                  }}
-                />
-                <span className="fd-label">Aspect list</span>
-              </label>
-            </li>
-          </ul>
-          {/*
-          
-
-<p className="fd-section-title">RELATIONS</p>
-          <ul className="fd-list">
-            <li>
-              <label className="fd-item">
-                <input
-                  type="checkbox"
-                  checked={activeRelation.includes("cross")}
-                  onChange={() => toggleRelation("cross")}
-                />
-                <span className="fd-label">Cross-relation</span>
-              </label>
-            </li>
-          </ul>
-*/}
-
-
-
-
-          {showAspects && (
-            <div
-              className="fd-aspect-menu"
-              style={{
-                top: aspectPosition.top - 25,
-                left: aspectPosition.left
-              }}
-            >
-              <p className="fd-section-title">ASPECT list</p>
-              <ul className="fd-list">
-                {ASPECTS.map(({ symbol, label }) => (
-                  <li key={symbol}>
-                    <label className="fd-item">
-                      <input
-                        type="checkbox"
-                        checked={activeAspect.includes(symbol)}
-                        onChange={() => toggleAspect(symbol)}
-                      />
-                      <span className="fd-symbol">{symbol}</span>
-                      <span className="fd-label">{label}</span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <div className="fd-divider" />
-
-          {/* RELATIONS — master toggle */}
+          {/*  ==== RELATIONS — master toggle ==== */}
           <p className="fd-section-title">RELATIONS</p>
           <ul className="fd-list">
             <li>
@@ -204,10 +112,94 @@ export default function FilterDropdown({
           {relationTypes.length === 0 && (
             <span className="fd-empty">No relations in the graph</span>
           )}
-
           <div className="fd-divider" />
 
-          {/* DEPTH */}
+          
+          {/* ==== ASPECTS ==== */}
+          <p className="fd-section-title">Aspects</p>
+          <ul className="fd-list">
+            <li>
+              <label className="fd-item" ref={aspectTriggerRef}>
+                <input
+                  type="checkbox"
+                  checked={showAspects}
+                  onChange={(e) => {
+                    if (e.target.checked && aspectTriggerRef.current) {
+                      const rect = aspectTriggerRef.current.getBoundingClientRect();
+
+                      setAspectPosition({
+                        top: rect.top,
+                        left: rect.right
+                      });
+                    }
+
+                    setShowAspects(e.target.checked);
+                  }}
+                />
+                <span className="fd-label">Aspect list</span>
+              </label>
+            </li>
+          </ul>
+          
+          {/* Aspects side menu */}
+          {showAspects && (
+            <div
+              className="fd-aspect-menu"
+              style={{
+                top: aspectPosition.top - 25,
+                left: aspectPosition.left
+              }}
+            >
+              <p className="fd-section-title">ASPECT list</p>
+              <ul className="fd-list">
+                {ASPECTS.map(({ symbol, label }) => (
+                  <li key={symbol}>
+                    <label className="fd-item">
+                      <input
+                        type="checkbox"
+                        checked={activeAspect.includes(symbol)}
+                        onChange={() => toggleAspect(symbol)}
+                      />
+                      <span className="fd-symbol">{symbol}</span>
+                      <span className="fd-label">{label}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <div className="fd-divider" />
+
+
+          {/* ==== Node label lsit ==== */}
+          <p className="fd-section-title" style={{ marginTop: 4 }}>Node labels</p>
+          <ul className="fd-list">
+            
+            {/* Toggle names */}
+            <label className="fd-item">
+              <input
+                type="checkbox"
+                checked={toggleName}
+                onChange={() => setToggleName(!toggleName) && alert("toggled to: " + setToggleName)}
+              />
+              <span className="fd-label">Name property</span>
+            </label>
+
+            {/*refDesignation*/}
+            <label className="fd-item">
+              <input
+                type="checkbox"
+                checked={refDesignation}
+                onChange={() => setRefDesignation(!refDesignation) && alert("toggled to: " + setRefDesignation)}
+              />
+              <span className="fd-label">Reference designation</span>
+            </label>
+
+          </ul>
+          <div className="fd-divider" />
+
+
+          {/*  ==== DEPTH  ==== */}
           <p className="fd-section-title" style={{ marginTop: 4 }}>DEPTH</p>
           {graphMaxDepth > 0 ? (
             <ul className="fd-list">
@@ -227,35 +219,6 @@ export default function FilterDropdown({
           ) : (
             <span className="fd-empty">Build a graph to filter by depth</span>
           )}
-
-
-          {/*Node label lsit*/}
-          <p className="fd-section-title" style={{ marginTop: 4 }}>Node labels</p>
-          <ul className="fd-list">
-            {/* Toggle names */}
-            <label className="fd-item">
-              <input
-                type="checkbox"
-                checked={toggleName}
-                onChange={() => setToggleName(!toggleName) && alert("toggled to: " + setToggleName)}
-              />
-              <span className="fd-label">Name property</span>
-            </label>
-
-
-
-            {/*refDesignation*/}
-            <label className="fd-item">
-              <input
-                type="checkbox"
-                checked={refDesignation}
-                onChange={() => setRefDesignation(!refDesignation) && alert("toggled to: " + setRefDesignation)}
-              />
-              <span className="fd-label">Reference designation</span>
-            </label>
-
-          </ul>
-
         </div>
       )}
     </div>
