@@ -4,7 +4,7 @@ setlocal
 
 if /I "%~1"=="--open-browser" goto open_browser
 
-title RDS Visualization
+title RDS PlayGround
 cd /d "%~dp0"
 
 if not exist "runtime\bin\java.exe" (
@@ -20,7 +20,7 @@ if not exist "backend.jar" (
 )
 
 echo ========================================
-echo          RDS Visualization
+echo          RDS PlayGround
 echo ========================================
 echo.
 echo Starter programmet...
