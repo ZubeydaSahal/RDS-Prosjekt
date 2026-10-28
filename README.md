@@ -28,8 +28,9 @@ Når du er ferdig med skriptet og visualisering kan du:
 ## Hvordan installere pakket program (Zip fil)
 ### **Installasjon av pakke** 
 - Pakk ut "RDS-Visualization-Windows-x64.zip" 
-    - Enten dobelt tykk -> pakk ut
-    - Eller høyreklikk -> pakk ut
+    - Høyreklikk på zip-fil -> Velg "egenskaper"
+    - Huk av "fjern blokkering"
+    - Dobbelttrykk på zip fil -> "pakk ut alle"
 - Trykk på 'start' -> pakk ut
 - Der etter kan programmet kjøres ved å dobbelt trykke på 'start'
 
@@ -52,6 +53,7 @@ Når du er ferdig med skriptet og visualisering kan du:
 
 ## Kjøre kildekode direkte 
 _(Dette krever at bl.a Java, springboot og react er installert.)_
+
 *- Kjør frontend:*
 cd rds-app
 npm run dev
