@@ -67,6 +67,7 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    width: 100%;
 }
 
 .fd-item {
@@ -112,4 +113,25 @@
     height: 1px;
     background: #e8f4f8;
     margin: 8px 0;
+}
+
+.fd-submenu-trigger {
+    width: 100%;
+    justify-content: space-between;
+    background: white;
+    border: 0;
+    text-align: left;
+    font: inherit;
+}
+
+.fd-aspect-menu {
+    position: fixed;
+    padding-top: 10px;
+    z-index: 1000;
+    width: 180px;
+    max-height: 60vh;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #c8dde3;
+    border-radius: 10px;
 }
