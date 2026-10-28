@@ -10,6 +10,7 @@ export function layoutTree(graph, aspectOrder) {
   const collapsedNodes = graph.collapsedNodes || new Set();
   const maxDepth = graph.maxDepth ?? null;
   const nodes = [];
+  console.log("MaxDepth i layout.js: "+maxDepth)
 
   const backendEdges = (graph.relations || []).filter(
     e => e.type !== "hierarchy"

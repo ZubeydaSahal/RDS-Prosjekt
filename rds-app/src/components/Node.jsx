@@ -17,7 +17,7 @@ export default function Node({ node, onToggle, collapsed, toggleName, refDesigna
   // SPLITT PREFIX + REST
   // ----------------------------
   function splitLabel(label) {
-    console.log("label før split: "+label)
+
     if (!label) return { prefix: "", rest: "" };
 
     const parts = label.split(" ");

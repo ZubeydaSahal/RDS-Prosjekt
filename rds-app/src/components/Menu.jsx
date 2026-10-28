@@ -14,7 +14,6 @@ function Menu({
   onBuild,
   onDownloadImage,
   onDownloadText,
-  onDownloadGraphObject,
   onUploadFile,
   onToggleFullscreen,
   isFullscreen = false,
@@ -64,11 +63,6 @@ function Menu({
                     <span>Save Diagram</span>
                 </button>
 
-                {/* Temporarily added 'save graph-object' */}
-                <button onClick={onDownloadGraphObject} title="Download Graph-object">
-                    <img src={imageDownload} alt="Download Graph-object" height={24} width={24}/>
-                    <span>Save Graph-object</span>
-                </button>
             </div>
             <div className="right">
                 <button className="fullscreen-btn" onClick={onToggleFullscreen} title={isFullscreen ? "Exit fullscreen (Esc)" : "Fullscreen"}>

@@ -238,39 +238,6 @@ function MainPage() {
         URL.revokeObjectURL(url);
     };
 
-    /* Dowload Graph-object button functionality */
-    const handleDownloadGraphObject = () => {
-    if (!backendGraph) return;
-
-    const graph = JSON.stringify(backendGraph, null, 2);
-
-    const blob = new Blob([graph], { type: "text/plain" });
-
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    // Timestamp
-    const now = new Date();
-    const timestamp =
-        now.getFullYear() + "-" +
-        String(now.getMonth() + 1).padStart(2, "0") + "-" +
-        String(now.getDate()).padStart(2, "0") + "_" +
-        String(now.getHours()).padStart(2, "0") + "-" +
-        String(now.getMinutes()).padStart(2, "0") + "-" +
-        String(now.getSeconds()).padStart(2, "0");
-
-    // Root name
-    const rootName = backendGraph?.nodeDTO?.["<root>"]?.[0]?.id || "GraphObject";
-
-    link.href = url;
-    link.download = `${rootName}_${timestamp}.txt`;
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    URL.revokeObjectURL(url);
-};
 
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
@@ -295,7 +262,6 @@ function MainPage() {
                     onBuild={handleBuild}
                     onDownloadImage={handleDownloadImage}
                     onDownloadText={handleDownloadText}
-                    onDownloadGraphObject={handleDownloadGraphObject}
                     onUploadFile={handleFileUpload}
                     onToggleFullscreen={() => setFullscreen(false)}
                     isFullscreen={true}
@@ -341,7 +307,6 @@ function MainPage() {
                         onBuild={handleBuild}
                         onDownloadImage={handleDownloadImage}
                         onDownloadText={handleDownloadText}
-                        onDownloadGraphObject={handleDownloadGraphObject}
                         onUploadFile={handleFileUpload}
                         onToggleFullscreen={() => setFullscreen(true)}
                         setToggleName = {setToggleName}
